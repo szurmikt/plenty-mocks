@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlentyOne – Setup</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 13px;
+  background: #dcdcdc;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════
+   TOP NAV  —  very dark #1c1f26
+════════════════════════════════════ */
+.topnav {
+  background: #1c1f26;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  flex-shrink: 0;
+  gap: 0;
+}
+
+/* Logo circle */
+.tn-logo {
+  width: 34px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; padding: 0 7px;
+}
+.tn-logo-circle {
+  width: 26px; height: 26px;
+  background: #e8a400;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.tn-logo-circle svg { width: 14px; height: 14px; }
+
+/* Nav links */
+.tn-links {
+  display: flex; align-items: stretch; height: 40px; flex: 1;
+}
+.tn-link {
+  color: #a8b0be; text-decoration: none; font-size: 12px;
+  padding: 0 8px; display: flex; align-items: center; gap: 4px;
+  height: 40px; border-bottom: 2px solid transparent; white-space: nowrap;
+  cursor: pointer; border-top: none; border-left: none; border-right: none;
+  background: none; font-family: inherit;
+}
+.tn-link:hover { color: #e0e6f0; background: rgba(255,255,255,.04); }
+.tn-link.active { color: #fff; border-bottom-color: #e8a400; }
+.tn-link .ni { /* nav icon */
+  opacity: .75; display: flex; align-items: center;
+}
+.tn-link .ni svg { width: 13px; height: 13px; }
+
+/* Right side */
+.tn-right {
+  display: flex; align-items: center; gap: 2px; padding-right: 6px; margin-left: auto;
+}
+.tn-search {
+  display: flex; align-items: center;
+  background: #2e3340; border: 1px solid #3e4555;
+  border-radius: 3px; padding: 0 8px; gap: 5px;
+  height: 26px; width: 155px;
+}
+.tn-search input {
+  background: none; border: none; outline: none;
+  color: #c0c8d4; font-size: 12px; width: 100%; font-family: inherit;
+}
+.tn-search input::placeholder { color: #5a6070; }
+.tn-search svg { color: #6a7080; flex-shrink: 0; }
+.tn-btn {
+  background: none; border: none; cursor: pointer;
+  color: #8890a0; width: 28px; height: 28px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: inherit;
+}
+.tn-btn:hover { background: rgba(255,255,255,.07); color: #c0c8d4; }
+.tn-btn svg { width: 14px; height: 14px; }
+.tn-user {
+  background: none; border: 1px solid #3a3f4d; cursor: pointer;
+  color: #a8b0be; padding: 0 8px; height: 26px; border-radius: 3px;
+  font-size: 12px; display: flex; align-items: center; gap: 4px; font-family: inherit;
+}
+.tn-user:hover { background: rgba(255,255,255,.05); color: #e0e6f0; }
+.tn-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #3a4055; border: 1px solid #505870;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.tn-avatar svg { width: 14px; height: 14px; color: #a0a8b8; }
+
+/* ════════════════════════════════════
+   TAB BAR  — #282c35 background
+════════════════════════════════════ */
+.tabbar {
+  background: #282c35;
+  display: flex; align-items: flex-end;
+  padding: 0 0 0 0;
+  height: 34px; flex-shrink: 0;
+  border-bottom: 1px solid #1c1f26;
+}
+.tb-tab {
+  height: 32px; display: flex; align-items: center; gap: 5px;
+  padding: 0 12px; font-size: 12.5px; cursor: pointer;
+  color: #9098a8;
+  border-top: 1px solid transparent;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  border-bottom: none;
+  margin-bottom: 0;
+  border-radius: 0;
+  background: none;
+  white-space: nowrap;
+}
+.tb-tab:hover { color: #d0d8e8; }
+.tb-tab.active {
+  background: #dcdcdc;
+  color: #333;
+  border-top-color: #555;
+  border-left-color: #555;
+  border-right-color: #555;
+}
+.tb-dots { color: #888; font-size: 15px; line-height: 1; }
+.tb-close { color: #888; font-size: 16px; line-height: 1; cursor: pointer; padding: 0 1px; }
+.tb-close:hover { color: #222; }
+
+/* ════════════════════════════════════
+   BODY LAYOUT
+════════════════════════════════════ */
+.body-layout { display: flex; flex: 1; overflow: hidden; }
+
+/* ════════════════════════════════════
+   LEFT SIDEBAR  — #232830
+════════════════════════════════════ */
+.sidebar {
+  width: 198px; flex-shrink: 0;
+  background: #232830;
+  overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column;
+  border-right: 1px solid #1a1d24;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+
+/* Sidebar search row */
+.sb-search {
+  display: flex; align-items: center;
+  background: #1c1f26;
+  height: 38px;
+  padding: 0 10px; gap: 6px;
+  border-bottom: 1px solid #1a1d24;
+  flex-shrink: 0;
+}
+.sb-search input {
+  background: none; border: none; outline: none;
+  color: #a0a8b8; font-size: 12.5px; width: 100%; font-family: inherit;
+}
+.sb-search input::placeholder { color: #4a5060; }
+.sb-search svg { color: #505868; flex-shrink: 0; }
+.sb-search .sb-search-icon-right {
+  margin-left: auto; color: #505868; cursor: pointer;
+}
+
+/* Nav items */
+.sbi {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 10px 0 12px;
+  height: 34px;
+  color: #a8b0be; font-size: 12.5px; cursor: pointer;
+  user-select: none; flex-shrink: 0;
+  border-left: 3px solid transparent;
+}
+.sbi:hover { background: rgba(255,255,255,.05); color: #d0d8e8; }
+.sbi .lft { display: flex; align-items: center; gap: 8px; }
+.sbi .lft svg { width: 14px; height: 14px; opacity: .7; flex-shrink: 0; }
+.sbi .arr { /* chevron */
+  color: #555a68; font-size: 13px;
+}
+.sbi .arr svg { width: 12px; height: 12px; }
+
+/* "Markets" row — slightly highlighted as expanded parent */
+.sbi.expanded { color: #c8d0de; }
+.sbi.expanded .lft svg { opacity: .9; }
+
+/* Amazon group header */
+.sb-amz {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 10px 0 28px;
+  height: 32px;
+  color: #a8b0be; font-size: 12.5px; cursor: pointer;
+  user-select: none; flex-shrink: 0;
+  border-left: 3px solid transparent;
+}
+.sb-amz:hover { background: rgba(255,255,255,.04); color: #d0d8e8; }
+.sb-amz .lft { display: flex; align-items: center; gap: 8px; }
+.sb-amz .lft svg { width: 13px; height: 13px; opacity: .65; flex-shrink: 0; }
+.sb-amz .arr svg { width: 11px; height: 11px; color: #555a68; }
+
+/* Amazon sub-items (Settings, New settings…) */
+.sb-sub {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 10px 0 36px;
+  height: 30px;
+  color: #8890a0; font-size: 12.5px; cursor: pointer;
+  user-select: none; flex-shrink: 0;
+  border-left: 3px solid transparent;
+}
+.sb-sub:hover { background: rgba(255,255,255,.04); color: #c8d0de; }
+.sb-sub .lft { display: flex; align-items: center; gap: 7px; }
+.sb-sub .lft svg { width: 12px; height: 12px; opacity: .55; flex-shrink: 0; }
+.sb-sub .arr svg { width: 11px; height: 11px; color: #444; }
+
+/* "Data exchange" — bold expanded parent */
+.sb-sub.de-parent {
+  color: #c8d0de; font-weight: 600;
+}
+.sb-sub.de-parent:hover { color: #e0e6f0; }
+
+/* Sub-sub items (Data export, Order import…) */
+.sb-sub2 {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 10px 0 46px;
+  height: 30px;
+  color: #7880909; font-size: 12.5px; cursor: pointer;
+  user-select: none; flex-shrink: 0;
+  border-left: 3px solid transparent;
+  color: #808898;
+}
+.sb-sub2:hover { background: rgba(255,255,255,.04); color: #c8d0de; }
+.sb-sub2 .lft { display: flex; align-items: center; gap: 7px; }
+.sb-sub2 .lft svg { width: 12px; height: 12px; opacity: .5; flex-shrink: 0; }
+
+/* "Data export" — active/selected */
+.sb-sub2.active-item {
+  background: #1a3a5c;
+  color: #e8f0ff;
+  border-left-color: #e8a400;
+}
+.sb-sub2.active-item:hover { background: #1e4268; }
+.sb-sub2.active-item .lft svg { opacity: .9; }
+
+/* ════════════════════════════════════
+   MAIN CONTENT
+════════════════════════════════════ */
+.main {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  background: #dcdcdc;
+  padding: 6px 6px 20px 6px;
+}
+.main::-webkit-scrollbar { width: 8px; }
+.main::-webkit-scrollbar-track { background: #c8c8c8; }
+.main::-webkit-scrollbar-thumb { background: #aaa; border-radius: 4px; }
+
+/* ════════════════════════════════════
+   PANEL
+════════════════════════════════════ */
+.panel {
+  background: #fff;
+  border: 1px solid #c0c0c0;
+  margin-bottom: 6px;
+}
+.ptab-bar {
+  background: #efefef;
+  display: flex;
+  border-bottom: 1px solid #c8c8c8;
+  padding: 0;
+}
+.ptab {
+  display: inline-flex; align-items: center;
+  padding: 5px 14px 5px 14px;
+  font-size: 12.5px; cursor: pointer;
+  background: #d8d8d8; color: #555;
+  border: 1px solid #bbb;
+  border-bottom: none;
+  margin-bottom: -1px;
+  border-radius: 3px 3px 0 0;
+  user-select: none;
+}
+.ptab.on {
+  background: #fff; color: #222;
+  border-color: #bbb; border-bottom-color: #fff;
+}
+.pbody { padding: 12px 16px 14px; }
+
+/* Alert red */
+.alert-red {
+  background: #d9534f; color: #fff;
+  padding: 8px 14px; font-size: 12.5px; line-height: 1.55;
+  margin-bottom: 10px;
+}
+
+/* Form */
+.fdesc { font-size: 13px; color: #333; margin-bottom: 10px; }
+.frow { display: flex; align-items: flex-start; margin-bottom: 7px; }
+.flbl { width: 180px; flex-shrink: 0; font-size: 13px; color: #333; padding-top: 4px; line-height: 1.3; }
+.fval { display: flex; align-items: center; gap: 6px; }
+
+select, input[type="text"], input[type="number"], textarea {
+  font-family: inherit; font-size: 12.5px; color: #333; outline: none;
+  border: 1px solid #aaa; border-radius: 2px; background: #fff;
+}
+select {
+  height: 26px; padding: 1px 18px 1px 5px;
+  appearance: none; -webkit-appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 5px center;
+}
+select:focus { border-color: #5b9bd5; box-shadow: 0 0 0 2px rgba(91,155,213,.2); }
+input[type="text"], input[type="number"] { height: 26px; padding: 1px 6px; }
+input[type="text"]:focus, input[type="number"]:focus { border-color: #5b9bd5; box-shadow: 0 0 0 2px rgba(91,155,213,.2); }
+textarea { padding: 4px 6px; resize: vertical; }
+textarea:focus { border-color: #5b9bd5; box-shadow: 0 0 0 2px rgba(91,155,213,.2); }
+input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-color: #5b9bd5; margin: 0; }
+
+.icobtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; background: #f0f0f0;
+  border: 1px solid #bbb; border-radius: 2px; cursor: pointer; color: #444;
+}
+.icobtn:hover { background: #e0e0e0; }
+.icobtn svg { width: 15px; height: 15px; }
+
+/* Table */
+.dtbl { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #c0c0c0; }
+.dtbl thead tr { background: #2b3240; }
+.dtbl th {
+  padding: 7px 12px; color: #e0e4ea; font-weight: 600; font-size: 12.5px;
+  text-align: left; border-right: 1px solid #3d4455;
+}
+.dtbl th:last-child { border-right: none; }
+.dtbl td {
+  padding: 7px 12px; color: #555; border-bottom: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+}
+.dtbl td:last-child { border-right: none; }
+.dtbl tbody tr:last-child td { border-bottom: none; }
+.dtbl tbody tr:hover td { background: #f5f7fa; }
+
+/* Adapter rows */
+.arow { display: flex; align-items: flex-start; padding: 6px 0; border-top: 1px solid #e8e8e8; }
+.arow:first-child { border-top: none; }
+.albl { width: 220px; flex-shrink: 0; font-size: 13px; font-weight: 600; color: #333; padding-top: 4px; }
+.aval { flex: 1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+/* Modal */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: none; align-items: center; justify-content: center; z-index: 200; }
+.overlay.open { display: flex; }
+.modal { background: #fff; border: 1px solid #bbb; border-radius: 3px; padding: 20px 24px; width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,.25); }
+.modal h3 { font-size: 14.5px; font-weight: 700; margin-bottom: 10px; }
+.modal p { font-size: 12.5px; color: #555; margin-bottom: 18px; line-height: 1.6; }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-cancel { padding: 5px 14px; border-radius: 2px; font-size: 12.5px; cursor: pointer; background: #f0f0f0; color: #333; border: 1px solid #bbb; font-family: inherit; }
+.btn-cancel:hover { background: #e0e0e0; }
+.btn-ok { padding: 5px 14px; border-radius: 2px; font-size: 12.5px; cursor: pointer; background: #5b9bd5; color: #fff; border: 1px solid #4a87bd; font-family: inherit; display: flex; align-items: center; gap: 5px; }
+.btn-ok:hover { background: #4a87bd; }
+.spin { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: sp .7s linear infinite; display: none; }
+@keyframes sp { to { transform: rotate(360deg); } }
+
+/* Toast */
+.toast { position: fixed; bottom: 20px; right: 20px; z-index: 300; background: #2b3240; color: #fff; padding: 9px 16px; border-radius: 3px; font-size: 12.5px; box-shadow: 0 3px 12px rgba(0,0,0,.25); border-left: 4px solid #5b9bd5; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; transform: translateY(6px); max-width: 360px; }
+.toast.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+/* SVG icon helpers */
+.sq-icon { /* small square bracket icon used throughout sidebar */
+  display: inline-block; width: 12px; height: 12px; flex-shrink: 0; opacity: .55;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     TOP NAV
+══════════════════════════════ -->
+<div class="topnav">
+  <!-- Logo -->
+  <div class="tn-logo">
+    <div class="tn-logo-circle">
+      <!-- Plentymarkets "p" mark approximation -->
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 4h7a4 4 0 0 1 0 8H7v4H4V4z" fill="#fff"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Nav links -->
+  <div class="tn-links">
+    <button class="tn-link">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="2.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg></span>
+      Item
+    </button>
+    <button class="tn-link">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="12" height="9" rx="1"/><path d="M5 5V3.5A2.5 2.5 0 0 1 10.5 3.5V5"/><line x1="5" y1="9" x2="11" y2="9"/></svg></span>
+      Sales Channels
+    </button>
+    <button class="tn-link">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="12" height="9" rx="1"/><path d="M5 5V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span>
+      Stock
+    </button>
+    <button class="tn-link">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 14v-1.5a3.5 3.5 0 0 0-3.5-3.5h-3A3.5 3.5 0 0 0 1 12.5V14"/><circle cx="5.5" cy="4.5" r="2.5"/><path d="M13 7a2.5 2.5 0 0 1 0 5"/><path d="M13 7a2.5 2.5 0 0 1 2 4.4"/></svg></span>
+      CRM
+    </button>
+    <button class="tn-link">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h10l1.5 3v8a1 1 0 0 1-1 1H2.5a1 1 0 0 1-1-1V5L3 2z"/><line x1="1.5" y1="5" x2="14.5" y2="5"/></svg></span>
+      Orders
+    </button>
+    <button class="tn-link">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1,8 4,8 6,13 10,3 12,8 15,8"/></svg></span>
+      Data
+    </button>
+    <button class="tn-link">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5l6-4 6 4v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/></svg></span>
+      Shop
+    </button>
+    <button class="tn-link">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M11.54 4.46l1.41-1.41M3.05 12.95l1.41-1.41"/></svg></span>
+      Plugins
+    </button>
+    <button class="tn-link">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="3,2 13,8 3,14"/></svg></span>
+      Automation
+    </button>
+    <button class="tn-link active">
+      <span class="ni"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M11.54 4.46l1.41-1.41M3.05 12.95l1.41-1.41"/></svg></span>
+      Setup
+    </button>
+  </div>
+
+  <!-- Right controls -->
+  <div class="tn-right">
+    <!-- Search -->
+    <div class="tn-search">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+      <input type="text" placeholder="Search">
+    </div>
+    <!-- Bell -->
+    <button class="tn-btn" title="Notifications">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1a5 5 0 0 1 5 5c0 5-2 6.5-2 6.5H3S1 11 1 6a5 5 0 0 1 5-5z"/><path d="M6.5 14.5a1.5 1.5 0 0 0 3 0"/></svg>
+    </button>
+    <!-- Chat -->
+    <button class="tn-btn" title="Messages">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h3l3 3 3-3h3a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/></svg>
+    </button>
+    <!-- Bell 2 -->
+    <button class="tn-btn" title="Alerts">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1a5 5 0 0 1 5 5c0 5-2 6.5-2 6.5H3S1 11 1 6a5 5 0 0 1 5-5z"/><path d="M6.5 14.5a1.5 1.5 0 0 0 3 0"/></svg>
+    </button>
+    <!-- Help -->
+    <button class="tn-btn" title="Help">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><path d="M6 6a2 2 0 1 1 2.5 2L8 10"/><circle cx="8" cy="13" r=".5" fill="currentColor"/></svg>
+    </button>
+    <!-- User number -->
+    <button class="tn-user">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="5" height="5" rx=".5"/><rect x="10" y="1" width="5" height="5" rx=".5"/><rect x="1" y="10" width="5" height="5" rx=".5"/><rect x="10" y="10" width="5" height="5" rx=".5"/></svg>
+      60222
+    </button>
+    <!-- Avatar -->
+    <div class="tn-avatar">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5.5" r="2.5"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     TAB BAR
+══════════════════════════════ -->
+<div class="tabbar">
+  <div class="tb-tab">Dashboard <span class="tb-dots" style="margin-left:3px;">⋮</span></div>
+  <div class="tb-tab active">
+    Setup
+    <span class="tb-dots">⋮</span>
+    <span class="tb-close" onclick="this.closest('.tb-tab').style.display='none'" title="Close">×</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     BODY LAYOUT
+══════════════════════════════ -->
+<div class="body-layout">
+
+  <!-- ════ SIDEBAR ════ -->
+  <div class="sidebar">
+
+    <!-- Search row -->
+    <div class="sb-search">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+      <input type="text" placeholder="Search">
+      <div class="sb-search-icon-right">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="8" y1="5" x2="8" y2="11"/></svg>
+      </div>
+    </div>
+
+    <!-- Guided Setup -->
+    <div class="sbi">
+      <span class="lft">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2L2 5v5c0 3 2.5 5.5 6 6.5 3.5-1 6-3.5 6-6.5V5L8 2z"/></svg>
+        Guided Setup
+      </span>
+    </div>
+
+    <!-- Assistants -->
+    <div class="sbi">
+      <span class="lft">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="2.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+        Assistants
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+    </div>
+
+    <!-- Settings -->
+    <div class="sbi">
+      <span class="lft">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M2.93 2.93l1.41 1.41M11.66 11.66l1.41 1.41M11.66 4.34l1.41-1.41M2.93 13.07l1.41-1.41"/></svg>
+        Settings
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+    </div>
+
+    <!-- Account management -->
+    <div class="sbi">
+      <span class="lft">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="2.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M11 2l1 1-1 1M13 3H9"/></svg>
+        Account management
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+    </div>
+
+    <!-- Client -->
+    <div class="sbi">
+      <span class="lft">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="10" rx="1"/><line x1="5" y1="3" x2="5" y2="13"/></svg>
+        Client
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+    </div>
+
+    <!-- Item -->
+    <div class="sbi">
+      <span class="lft">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1L1 5v6l7 4 7-4V5L8 1z"/><polyline points="1,5 8,9 15,5"/><line x1="8" y1="9" x2="8" y2="15"/></svg>
+        Item
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+    </div>
+
+    <!-- Listings -->
+    <div class="sbi">
+      <span class="lft">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="3" y1="4" x2="13" y2="4"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="12" x2="9" y2="12"/></svg>
+        Listings
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+    </div>
+
+    <!-- Markets — expanded parent -->
+    <div class="sbi expanded">
+      <span class="lft">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="7"/><line x1="1" y1="8" x2="15" y2="8"/><path d="M8 1a10 10 0 0 1 3 7 10 10 0 0 1-3 7 10 10 0 0 1-3-7 10 10 0 0 1 3-7z"/></svg>
+        Markets
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,4 6,8 9,4"/></svg></span>
+    </div>
+
+    <!-- ── Amazon group ── -->
+    <!-- Amazon header row -->
+    <div class="sb-amz">
+      <span class="lft">
+        <!-- small square/monitor icon -->
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1.5" width="12" height="8.5" rx="1"/><line x1="4" y1="13" x2="10" y2="13"/><line x1="7" y1="10" x2="7" y2="13"/></svg>
+        Amazon
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,4 6,8 9,4"/></svg></span>
+    </div>
+
+    <!-- Settings -->
+    <div class="sb-sub">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Settings
+      </span>
+    </div>
+
+    <!-- New settings -->
+    <div class="sb-sub">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        New settings
+      </span>
+    </div>
+
+    <!-- Add catalogue templates -->
+    <div class="sb-sub">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Add catalogue templates
+      </span>
+    </div>
+
+    <!-- Reports (has sub-chevron) -->
+    <div class="sb-sub">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Reports
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+    </div>
+
+    <!-- Feeds -->
+    <div class="sb-sub">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Feeds
+      </span>
+    </div>
+
+    <!-- Freely definable fields -->
+    <div class="sb-sub">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Freely definable fields
+      </span>
+    </div>
+
+    <!-- Category link -->
+    <div class="sb-sub">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Category link
+      </span>
+    </div>
+
+    <!-- Data exchange — bold active parent with chevron down -->
+    <div class="sb-sub de-parent">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Data exchange
+      </span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,4 6,8 9,4"/></svg></span>
+    </div>
+
+    <!-- Data export — SELECTED -->
+    <div class="sb-sub2 active-item">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Self-Service
+      </span>
+    </div>
+
+    <!-- Order import -->
+    <div class="sb-sub2">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Order import
+      </span>
+    </div>
+
+    <!-- Shipping confirmation -->
+    <div class="sb-sub2">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Shipping confirmation
+      </span>
+    </div>
+
+    <!-- Reports -->
+    <div class="sb-sub2">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        Reports
+      </span>
+    </div>
+
+    <!-- FBA stock -->
+    <div class="sb-sub2">
+      <span class="lft">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        FBA stock
+      </span>
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <!-- ════ MAIN ════ -->
+  <div class="main">
+
+    <!-- PANEL 1: Self-service -->
+    <div class="panel" id="ss-panel">
+      <div class="ptab-bar">
+        <div class="ptab on">Self-service</div>
+      </div>
+      <div class="pbody">
+
+        <!-- Action selector row -->
+        <div class="arow" style="border-top:none; align-items:center;">
+          <div class="albl">Action</div>
+          <div class="aval">
+            <select id="ss-action" onchange="ssActionChange()" style="width:200px;">
+              <option value="">-- Select action --</option>
+              <option value="order">Order Import</option>
+              <option value="document">Document Upload</option>
+              <option value="product">Product Update</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Input row — label changes based on selection -->
+        <div class="arow" id="ss-input-row" style="display:none; align-items:flex-start;">
+          <div class="albl" style="padding-top:5px;" id="ss-input-label">Identifiers</div>
+          <div class="aval" style="flex-direction:column; align-items:flex-start; gap:6px;">
+            <div style="display:flex; align-items:flex-start; gap:8px;">
+              <textarea id="ss-ids" placeholder="Enter up to 10 values, comma-separated…" style="width:380px; height:64px; font-family:inherit;"></textarea>
+              <div id="ss-allvariants-wrap" style="display:none; align-items:center; gap:5px; padding-top:6px; white-space:nowrap;">
+                <input type="checkbox" id="ss-allvariants">
+                <label for="ss-allvariants" style="font-size:13px; cursor:pointer;">Update all variants</label>
+              </div>
+            </div>
+            <div style="font-size:11.5px; color:#888;" id="ss-hint">Maximum 10 values, comma-separated.</div>
+          </div>
+        </div>
+
+        <!-- Throttle + Execute row -->
+        <div class="arow" id="ss-exec-row" style="display:none; border-top:none; align-items:center;">
+          <div class="albl"></div>
+          <div class="aval" style="gap:10px; align-items:center;">
+            <button id="ss-exec-btn" onclick="ssExecute()"
+              style="padding:5px 18px; background:#2b3a50; color:#fff; border:1px solid #1a2a3e; border-radius:2px; font-size:13px; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:7px;">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="3,2 13,8 3,14"/></svg>
+              Execute
+            </button>
+            <span id="ss-throttle-msg" style="font-size:12px; color:#999; display:none;">
+              ⏳ Next execution available in <strong id="ss-cd">15</strong>s
+            </span>
+          </div>
+        </div>
+
+        <!-- Output log -->
+        <div id="ss-log-wrap" style="display:none; margin-top:4px;">
+          <div style="border-top:1px solid #e0e0e0; padding-top:10px;">
+            <div id="ss-log"
+              style="font-size:12.5px; font-family:'Consolas','Courier New',monospace; line-height:1.9; background:#f8f9fb; border:1px solid #dde2ea; border-radius:2px; padding:10px 14px; min-height:48px; max-height:260px; overflow-y:auto;">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /body-layout -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="m-title">Confirm export</h3>
+    <p id="m-body"></p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-ok" id="m-ok" onclick="confirmExport()">
+        <div class="spin" id="m-spin"></div>
+        <span id="m-lbl">Run export</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let _type = '';
+
+  function triggerExport(type) {
+    _type = type;
+    if (type === 'catalogue') {
+      const cat = document.getElementById('sel-catalogue').value;
+      const exp = document.getElementById('sel-exporttyp').value || '--';
+      document.getElementById('m-title').textContent = 'Export catalogue to Amazon';
+      document.getElementById('m-body').innerHTML =
+        `Start export of <strong>${cat}</strong> (type: <strong>${exp}</strong>)?<br><br>
+         The export runs asynchronously. Do not repeat. Track progress under <strong>Setup » Markets » Amazon » Feeds</strong>.`;
+    } else {
+      const acc = document.getElementById('sel-account').value;
+      const cat = document.getElementById('sel-itemcat').value;
+      document.getElementById('m-title').textContent = 'Item export – Adapter';
+      document.getElementById('m-body').innerHTML =
+        `Start adapter export of <strong>${cat}</strong> for account <strong>${acc}</strong>?<br><br>
+         A report named <strong>[SellerID]_manual.csv</strong> will be created.`;
+    }
+    document.getElementById('m-lbl').textContent = 'Run export';
+    document.getElementById('m-ok').disabled = false;
+    document.getElementById('m-spin').style.display = 'none';
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+
+  function confirmExport() {
+    const btn = document.getElementById('m-ok');
+    btn.disabled = true;
+    document.getElementById('m-spin').style.display = 'block';
+    document.getElementById('m-lbl').textContent = 'Running…';
+    setTimeout(() => {
+      if (_type === 'adapter') addReportRow();
+      closeModal();
+      showToast('Export started. Track it under Setup » Markets » Amazon » Feeds.');
+    }, 1800);
+  }
+
+  function filterTable(val) { showToast('Loading reports for Merchant ID: ' + val); }
+
+  function addReportRow() {
+    const merchant = document.getElementById('sel-merchant').value;
+    const now = new Date().toLocaleString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    document.getElementById('rep-tbody').innerHTML = `
+      <tr>
+        <td>${merchant}</td>
+        <td>${now}</td>
+        <td style="text-align:right; padding-right:10px;">
+          <button onclick="showToast('CSV download started.')" style="font-size:11.5px; padding:3px 10px; cursor:pointer; background:#f0f0f0; border:1px solid #bbb; border-radius:2px; font-family:inherit; color:#333;">
+            ⬇ Download CSV
+          </button>
+        </td>
+      </tr>`;
+  }
+
+  /* ══════════════════════════════════════
+     SELF-SERVICE PANEL
+  ══════════════════════════════════════ */
+  let ssThrottled = false;
+  let ssCdTimer = null;
+
+  function ssActionChange() {
+    const action = document.getElementById('ss-action').value;
+    const inputRow = document.getElementById('ss-input-row');
+    const execRow  = document.getElementById('ss-exec-row');
+    const lbl      = document.getElementById('ss-input-label');
+    const avWrap   = document.getElementById('ss-allvariants-wrap');
+    const hint     = document.getElementById('ss-hint');
+    const ta       = document.getElementById('ss-ids');
+
+    if (!action) {
+      inputRow.style.display = 'none';
+      execRow.style.display  = 'none';
+      return;
+    }
+
+    inputRow.style.display = '';
+    execRow.style.display  = '';
+    document.getElementById('ss-log-wrap').style.display = 'none';
+    document.getElementById('ss-log').innerHTML = '';
+
+    if (action === 'order') {
+      lbl.textContent         = 'Order ID(s)';
+      ta.placeholder          = 'e.g. 823822, 823901, 824010 — max 10';
+      hint.textContent        = 'Maximum 10 Order IDs, comma-separated.';
+      avWrap.style.display    = 'none';
+    } else if (action === 'document') {
+      lbl.textContent         = 'Document ID(s)';
+      ta.placeholder          = 'e.g. INV-2024-001, CN-2024-042 — max 10';
+      hint.textContent        = 'Maximum 10 invoice or credit note numbers, comma-separated.';
+      avWrap.style.display    = 'none';
+    } else if (action === 'product') {
+      lbl.textContent         = 'SKU(s)';
+      ta.placeholder          = 'e.g. SKU-001, SKU-002 — max 10, or leave empty and check "Update all variants"';
+      hint.textContent        = 'Maximum 10 SKUs, comma-separated. Or use "Update all variants".';
+      avWrap.style.display    = 'flex';
+    }
+  }
+
+  function ssParseIds() {
+    const raw = document.getElementById('ss-ids').value;
+    return raw.split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+      .slice(0, 10);
+  }
+
+  function ssActionLabel(action, id) {
+    if (action === 'order')    return `Re-importing order: <strong>${id}</strong>`;
+    if (action === 'document') return `Uploading document: <strong>${id}</strong>`;
+    if (action === 'product') {
+      const all = document.getElementById('ss-allvariants').checked;
+      if (all) return `Transmitting stock, price and product update for <strong>all variants</strong>`;
+      return `Transmitting stock, price and product update for SKU: <strong>${id}</strong>`;
+    }
+    return id;
+  }
+
+  function ssExecute() {
+    if (ssThrottled) return;
+
+    const action = document.getElementById('ss-action').value;
+    if (!action) { showToast('Please select an action first.'); return; }
+
+    const allVariants = action === 'product' && document.getElementById('ss-allvariants').checked;
+    let ids = ssParseIds();
+
+    if (ids.length === 0 && !allVariants) {
+      showToast('Please enter at least one value.'); return;
+    }
+    if (allVariants && action === 'product') {
+      ids = ['__ALL__'];
+    }
+
+    // Throttle
+    ssThrottled = true;
+    const btn = document.getElementById('ss-exec-btn');
+    btn.disabled = true;
+    btn.style.opacity = '.5';
+    btn.style.cursor  = 'not-allowed';
+    const throttleMsg = document.getElementById('ss-throttle-msg');
+    const cdEl = document.getElementById('ss-cd');
+    throttleMsg.style.display = '';
+    let remaining = 15;
+    cdEl.textContent = remaining;
+    ssCdTimer = setInterval(() => {
+      remaining--;
+      cdEl.textContent = remaining;
+      if (remaining <= 0) {
+        clearInterval(ssCdTimer);
+        ssThrottled = false;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor  = 'pointer';
+        throttleMsg.style.display = 'none';
+      }
+    }, 1000);
+
+    // Show log
+    const logWrap = document.getElementById('ss-log-wrap');
+    const log     = document.getElementById('ss-log');
+    logWrap.style.display = '';
+    log.innerHTML = '';
+
+    // Process items one by one with delay
+    let i = 0;
+    function processNext() {
+      if (i >= ids.length) {
+        // All done
+        setTimeout(() => {
+          const finLine = document.createElement('div');
+          finLine.style.cssText = 'color:#1a6632; font-weight:600; margin-top:6px; padding-top:6px; border-top:1px solid #dde2ea;';
+          finLine.textContent = '✔ Execution is finished';
+          log.appendChild(finLine);
+          log.scrollTop = log.scrollHeight;
+        }, 400);
+        return;
+      }
+
+      const id = ids[i];
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex; align-items:center; gap:8px; padding:1px 0;';
+
+      const labelSpan = document.createElement('span');
+      labelSpan.innerHTML = ssActionLabel(action, id);
+
+      const spinEl = document.createElement('span');
+      spinEl.innerHTML = `<svg class="ss-spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5b9bd5" stroke-width="2.5" style="animation:sp .7s linear infinite; display:inline-block; vertical-align:middle;"><circle cx="12" cy="12" r="9" stroke-dasharray="28 56"/></svg>`;
+
+      const statusSpan = document.createElement('span');
+      statusSpan.style.marginLeft = '2px';
+
+      row.appendChild(labelSpan);
+      row.appendChild(spinEl);
+      row.appendChild(statusSpan);
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
+
+      // Simulate async work: random 1.2–2.8s, ~15% chance of error
+      const delay = 1200 + Math.random() * 1600;
+      const fail  = Math.random() < 0.15;
+
+      setTimeout(() => {
+        spinEl.innerHTML = '';
+        if (fail) {
+          statusSpan.innerHTML = `<span style="color:#c0392b; font-weight:600;">✗ Failed</span>`;
+          const errLine = document.createElement('div');
+          errLine.style.cssText = 'color:#c0392b; font-size:12px; padding-left:12px; margin-bottom:2px;';
+          errLine.textContent   = `  → Error: Connection timeout or invalid identifier "${id}". Please verify and retry.`;
+          log.insertBefore(errLine, row.nextSibling);
+        } else {
+          statusSpan.innerHTML = `<span style="color:#1a6632; font-weight:600;">✓ Done</span>`;
+        }
+        log.scrollTop = log.scrollHeight;
+        i++;
+        processNext();
+      }, delay);
+    }
+
+    processNext();
+  }
+
+  /* ══════════════════════════════════════
+     END SELF-SERVICE
+  ══════════════════════════════════════ */
+
+  let _tt;
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(_tt);
+    _tt = setTimeout(() => el.classList.remove('show'), 3500);
+  }
+</script>
+</body>
+</html>
