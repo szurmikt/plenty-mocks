@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price &amp; Stock export logs – PlentyOne</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    color: #333;
+    background: #f0f0f0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── TOP NAV ── */
+  .top-nav {
+    background: #1a1f2e;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 4px;
+    gap: 0;
+    flex-shrink: 0;
+  }
+  /* Logo: white rounded square with P icon */
+  .top-nav .logo {
+    width: 36px; height: 36px;
+    background: #fff;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 6px 0 4px;
+    flex-shrink: 0;
+    color: #1a1f2e;
+  }
+  .top-nav .logo svg { width: 20px; height: 20px; }
+
+  /* Nav items: no box, just text + icon, grey, tighter */
+  .nav-item {
+    color: #9da5b4;
+    padding: 0 11px;
+    height: 44px;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color .12s;
+    position: relative;
+  }
+  .nav-item:hover { color: #fff; }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; opacity: .85; }
+
+  /* Active nav item: subtle grey bg, 2px yellow-green top border, white text */
+  .nav-item.active {
+    background: #2d3347;
+    color: #fff;
+    border-top: 2px solid #c8d400;
+    padding-top: 2px; /* compensate for border so height stays the same */
+  }
+  .nav-item.active svg { opacity: 1; color: #fff; }
+  .nav-item.active:hover { background: #323849; color: #fff; }
+
+  .nav-spacer { flex: 1; }
+
+  /* Right side of nav */
+  .nav-right {
+    display: flex; align-items: center; gap: 0;
+    padding-right: 8px;
+  }
+
+  /* Search: visible input with border, search icon on the RIGHT inside */
+  .nav-search-wrap {
+    position: relative;
+    margin-right: 4px;
+  }
+  .nav-search {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 4px;
+    color: #c5cad4;
+    padding: 0 30px 0 10px;
+    height: 28px; width: 160px; font-size: 12.5px;
+    font-family: inherit;
+    outline: none;
+  }
+  .nav-search::placeholder { color: #6b7280; }
+  /* magnifier icon sits on the RIGHT of the search input */
+  .nav-search-wrap .search-icon {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    color: #6b7280; width: 13px; height: 13px; pointer-events: none;
+  }
+
+  /* Icon buttons: bell, ?, store, avatar */
+  .nav-icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 4px; background: transparent; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #9da5b4;
+  }
+  .nav-icon-btn:hover { color: #fff; background: rgba(255,255,255,.07); }
+  .nav-icon-btn svg { width: 16px; height: 16px; }
+
+  /* Store number: small store icon + number */
+  .nav-store {
+    display: flex; align-items: center; gap: 5px;
+    color: #9da5b4; font-size: 12.5px; padding: 0 6px;
+    cursor: pointer; white-space: nowrap;
+  }
+  .nav-store svg { width: 14px; height: 14px; }
+  .nav-store:hover { color: #fff; }
+
+  /* Avatar circle */
+  .nav-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #3d5a99;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 11px; font-weight: 600;
+    cursor: pointer; margin-left: 4px;
+    border: 2px solid rgba(255,255,255,.15);
+  }
+
+  /* ── TAB BAR ── */
+  .tab-bar {
+    background: #232938;
+    height: 34px;
+    display: flex;
+    align-items: stretch;
+    flex-shrink: 0;
+  }
+
+  /* "Dashboard" — plain text, no background */
+  .tab {
+    display: flex; align-items: center; gap: 5px;
+    padding: 0 14px;
+    color: #8a91a0;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .tab:hover { color: #c5cad4; }
+
+  /* Active tab: yellow-green, dark text */
+  .tab.active {
+    background: #c8d400;
+    color: #1a1f2e;
+    font-weight: 500;
+  }
+  .tab.active:hover { color: #1a1f2e; }
+
+  /* The ⋮ dots — slightly dimmer */
+  .tab-dots {
+    font-size: 14px;
+    opacity: .6;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  /* × close — plain character, no box */
+  .tab-close {
+    font-size: 15px; line-height: 1;
+    opacity: .7; cursor: pointer;
+    padding: 0 1px;
+  }
+  .tab-close:hover { opacity: 1; }
+
+  /* ── MAIN LAYOUT ── */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 250px;
+    background: #2d3444;
+    flex-shrink: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-hamburger {
+    padding: 12px 16px;
+    color: #8a91a0;
+    cursor: pointer;
+    display: flex; align-items: center;
+  }
+  .sidebar-hamburger:hover { color: #fff; }
+
+  .sidebar-section-label {
+    color: #8a91a0;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px 4px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+  }
+  .sidebar-section-label .channel-name {
+    color: #e0e3ea;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .sidebar-section-label svg { color:#8a91a0; }
+
+  .sidebar-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 16px 9px 16px;
+    color: #b0b7c6;
+    font-size: 13px;
+    cursor: pointer;
+    gap: 8px;
+    transition: background .12s;
+  }
+  .sidebar-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+  .sidebar-item.active { background: #e9f000; color: #1e2430; font-weight: 500; }
+  .sidebar-item.active svg { color: #1e2430 !important; }
+  .sidebar-item svg { width:14px; height:14px; color:#6b7280; flex-shrink:0; }
+  .sidebar-item .item-left { display:flex; align-items:center; gap:8px; }
+  .sidebar-item .item-right svg { width:12px; height:12px; color:#6b7280; }
+
+  .sidebar-submenu .sidebar-subitem {
+    padding: 7px 16px 7px 44px;
+    color: #8a91a0;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: background .12s;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sidebar-submenu .sidebar-subitem:hover { background: rgba(255,255,255,.06); color:#d0d5df; }
+  .sidebar-submenu .sidebar-subitem.active { color: #e9f000; font-weight:500; }
+
+  .sidebar-divider { height:1px; background:rgba(255,255,255,.07); margin: 4px 0; }
+
+  .sidebar-add {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    color: #8a91a0;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: auto;
+  }
+  .sidebar-add:hover { color: #d0d5df; }
+
+  /* ── CONTENT ── */
+  .content {
+    flex: 1;
+    background: #f0f2f5;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-header {
+    background: #fff;
+    padding: 16px 24px 14px;
+    border-bottom: 1px solid #e0e3ea;
+  }
+  .page-breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 18px; font-weight: 600; color: #1e2430;
+    margin-bottom: 4px;
+  }
+  .page-breadcrumb .channel { color: #4a7fd4; cursor: pointer; }
+  .page-breadcrumb .channel:hover { text-decoration: underline; }
+  .page-breadcrumb .sep { color: #9ca3af; font-weight: 300; }
+  .page-subtitle { color: #6b7280; font-size: 12.5px; }
+
+  /* ── TABLE PANEL ── */
+  .table-panel {
+    background: #fff;
+    margin: 12px;
+    border: 1px solid #e0e3ea;
+    border-radius: 4px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* ── TOOLBAR ROW 1: Search ── */
+  .toolbar-search {
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+    height: 40px;
+  }
+  /* Search field occupies a fixed width (~220px) with light grey bg, no outer border, separated by subtle border-right */
+  .search-wrap {
+    position: relative;
+    width: 220px;
+    border-right: 1px solid #e5e7eb;
+    flex-shrink: 0;
+  }
+  .search-wrap input {
+    width: 100%;
+    height: 100%;
+    padding: 0 10px 0 32px;
+    border: none;
+    outline: none;
+    background: #f3f4f6;
+    font-size: 13px;
+    color: #6b7280;
+    font-family: inherit;
+  }
+  .search-wrap input::placeholder { color: #9ca3af; }
+  .search-wrap svg {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 14px; height: 14px; color: #9ca3af; pointer-events: none;
+  }
+  /* Bookmark and filter icons — borderless, right of search */
+  .toolbar-icon {
+    width: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; background: #fff; color: #6b7280;
+    border: none; flex-shrink: 0;
+  }
+  .toolbar-icon:hover { color: #374151; background: #f9fafb; }
+  .toolbar-icon svg { width: 16px; height: 16px; }
+
+  /* ── TOOLBAR ROW 2: Actions + Pagination ── */
+  .toolbar-actions {
+    padding: 0 12px;
+    display: flex; align-items: center; gap: 4px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+    height: 40px;
+  }
+  /* The + button is a bare text/symbol, not boxed */
+  .action-plus {
+    font-size: 20px; font-weight: 300; line-height: 1;
+    color: #374151; cursor: pointer; padding: 0 4px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; height: 28px;
+    margin-right: 2px;
+  }
+  .action-plus:hover { color: #111; }
+  /* Icon-only action buttons — no border, no background box */
+  .action-btn {
+    width: 28px; height: 28px;
+    border: none; background: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #6b7280;
+    border-radius: 3px;
+  }
+  .action-btn:hover { background: #f3f4f6; color: #374151; }
+  .action-btn svg { width: 16px; height: 16px; }
+
+  .toolbar-spacer { flex: 1; }
+
+  /* "Results per page" label */
+  .pagination-info {
+    color: #374151;
+    font-size: 13px;
+    white-space: nowrap;
+    margin-right: 6px;
+  }
+  /* "25" dropdown — has a visible border box */
+  .per-page-select {
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    padding: 3px 22px 3px 8px;
+    font-size: 13px; color: #374151;
+    font-family: inherit;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23374151' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 5px center;
+    -webkit-appearance: none; outline: none; cursor: pointer;
+    height: 28px;
+  }
+  /* "1-3 of 3" text */
+  .pagination-count {
+    color: #374151; font-size: 13px;
+    margin: 0 8px; white-space: nowrap;
+  }
+  /* Nav icon buttons — no border */
+  .page-nav-btn {
+    width: 26px; height: 26px;
+    border: none; background: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #6b7280; border-radius: 3px;
+  }
+  .page-nav-btn:hover { background: #f3f4f6; color: #374151; }
+  .page-nav-btn.disabled { opacity: .35; cursor: default; pointer-events: none; }
+  .page-nav-btn svg { width: 14px; height: 14px; }
+  /* Refresh and settings use slightly different stroke weight visually */
+  .page-nav-btn.nav-refresh svg,
+  .page-nav-btn.nav-settings svg { width: 15px; height: 15px; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; flex: 1; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead tr { background: #f9fafb; }
+  thead th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+    font-size: 12px;
+    position: sticky; top: 0; z-index: 1;
+    background: #f9fafb;
+  }
+  thead th input[type="checkbox"] { cursor: pointer; }
+
+  tbody tr { border-bottom: 1px solid #f0f2f5; }
+  tbody tr:nth-child(odd)  { background: #ffffff; }
+  tbody tr:nth-child(even) { background: #f7f8fa; }
+  tbody tr:hover { background: #eff6ff !important; }
+
+  tbody td {
+    padding: 9px 12px;
+    color: #374151;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  tbody td input[type="checkbox"] { cursor: pointer; }
+
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 500; white-space: nowrap;
+  }
+  .badge-amazon  { background: #fef3c7; color: #92400e; }
+  .badge-ebay    { background: #dbeafe; color: #1e40af; }
+  .badge-etsy    { background: #fce7f3; color: #9d174d; }
+  .badge-kaufland{ background: #dcfce7; color: #166534; }
+  .badge-otto    { background: #ede9fe; color: #5b21b6; }
+
+  .export-type-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 7px; border-radius: 3px;
+    font-size: 11px; font-weight: 500;
+  }
+  .badge-stock { background: #e0f2fe; color: #0369a1; }
+  .badge-price { background: #fdf4ff; color: #7e22ce; }
+
+  .error-cell, .ok-cell { font-size: 12px; display: inline-flex; align-items: center; gap: 5px; }
+  .error-cell { color: #dc2626; }
+  .ok-cell    { color: #16a34a; }
+  .error-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #dc2626;
+    flex-shrink: 0;
+  }
+
+  .tx-id { font-family: 'SF Mono', 'Fira Mono', monospace; font-size: 11px; color:#6b7280; }
+  .value-cell { font-family: 'SF Mono', 'Fira Mono', monospace; font-size: 11px; color:#374151; }
+
+  /* Value cell with expand button */
+  .value-wrap { display: inline-flex; align-items: center; gap: 5px; }
+  .price-expand-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 3px;
+    background: #f3f4f6; border: 1px solid #d1d5db;
+    cursor: pointer; color: #6b7280; font-size: 13px; line-height: 1;
+    flex-shrink: 0; transition: background .12s, color .12s;
+    font-family: inherit; padding: 0;
+  }
+  .price-expand-btn:hover { background: #e5e7eb; color: #374151; }
+
+  /* Price detail popup */
+  .price-popup {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.14), 0 2px 6px rgba(0,0,0,.08);
+    width: 420px;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .price-popup.visible { display: block; }
+  .price-popup-header {
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 9px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .popup-title {
+    font-size: 12px; font-weight: 600; color: #374151;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .popup-title svg { width:13px; height:13px; color:#6b7280; }
+  .price-popup-close {
+    font-size: 17px; color: #9ca3af; cursor: pointer; line-height: 1;
+    padding: 0 2px; background: none; border: none;
+  }
+  .price-popup-close:hover { color: #374151; }
+  .price-popup-body { padding: 10px 12px; max-height: 380px; overflow-y: auto; }
+  .price-popup-body pre {
+    margin: 0;
+    font-family: 'SF Mono', 'Fira Mono', monospace;
+    font-size: 11.5px;
+    color: #374151;
+    line-height: 1.65;
+    white-space: pre;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 8px 10px;
+  }
+  .k { color: #7c3aed; }
+  .n { color: #2563eb; }
+  .s { color: #059669; }
+  .p { color: #6b7280; }
+
+  .transmission-badge {
+    background: #f3f4f6; color: #4b5563;
+    padding: 1px 7px; border-radius: 3px;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="logo">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+      <circle cx="14" cy="14" r="13" stroke="#1a1f2e" stroke-width="2" fill="none"/>
+      <path d="M9 8h6a4 4 0 010 8H9V8zm0 8v6" stroke="#1a1f2e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+    Item
+  </div>
+  <div class="nav-item active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    Sales channels
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Stock
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    Text
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    Orders
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+    Data
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6z"/></svg>
+    CMS
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 00-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+    Plugins
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Processes
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+    Setup
+  </div>
+
+  <div class="nav-spacer"></div>
+  <div class="nav-right">
+    <div class="nav-search-wrap">
+      <input class="nav-search" type="text" placeholder="Search">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <button class="nav-icon-btn" title="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </button>
+    <button class="nav-icon-btn" title="Help">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </button>
+    <div class="nav-store">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      62999
+    </div>
+    <div class="nav-avatar">TK</div>
+  </div>
+</nav>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <div class="tab">
+    Dashboard
+    <span class="tab-dots">⋮</span>
+  </div>
+  <div class="tab active">
+    Channel Control Centre
+    <span class="tab-dots">⋮</span>
+    <span class="tab-close">×</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-hamburger">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </div>
+
+    <!-- Overview -->
+    <div class="sidebar-item" style="padding-left:16px;">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Overview
+      </div>
+    </div>
+
+    <!-- Channel label -->
+    <div class="sidebar-section-label">
+      <span class="channel-name">Amazon</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <!-- Offer listings -->
+    <div class="sidebar-item" onclick="toggleMenu(this)">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Offer listings
+      </div>
+      <div class="item-right">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <!-- Product listings -->
+    <div class="sidebar-item" onclick="toggleMenu(this)">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Product listings
+      </div>
+      <div class="item-right">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="sidebar-item" onclick="toggleMenu(this)">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Settings
+      </div>
+      <div class="item-right">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <!-- Mapping – collapsed (no submenus shown) -->
+    <div class="sidebar-item" onclick="toggleMenu(this)" id="mapping-item">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        Mapping
+      </div>
+      <div class="item-right">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <!-- Process Overview – expanded with submenus -->
+    <div class="sidebar-item" id="process-overview-item" onclick="toggleProcessMenu()" style="background:rgba(255,255,255,.05);">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Process Overview
+      </div>
+      <div class="item-right" id="process-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="sidebar-submenu" id="process-submenu">
+      <div class="sidebar-subitem active" onclick="navigate('price-stock')">Price &amp; Stock export logs</div>
+      <div class="sidebar-subitem" onclick="navigate('order-imports')">Order Import logs</div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- Add sales channel -->
+    <div class="sidebar-add">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add sales channel
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <div class="page-header">
+      <div class="page-breadcrumb">
+        <span class="channel">Amazon</span>
+        <span class="sep">›</span>
+        <span>Price &amp; Stock export logs</span>
+      </div>
+      <div class="page-subtitle">View the audit trail of all price and stock transmissions sent to this sales channel.</div>
+    </div>
+
+    <div class="table-panel">
+
+      <!-- Row 1: Search -->
+      <div class="toolbar-search">
+        <div class="search-wrap">
+          <!-- magnifier icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search">
+        </div>
+        <!-- bookmark icon -->
+        <div class="toolbar-icon" title="Saved searches">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        </div>
+        <!-- sliders / filter icon -->
+        <div class="toolbar-icon" title="Filters">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+        </div>
+      </div>
+
+      <!-- Row 2: Actions + Pagination -->
+      <div class="toolbar-actions">
+        <!-- + (bare, larger) -->
+        <button class="action-plus" title="Add">+</button>
+        <!-- history / undo clock -->
+        <div class="action-btn" title="History">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        </div>
+        <!-- upload arrow -->
+        <div class="action-btn" title="Export">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 7 12 3 8 7"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M20 21H4"/></svg>
+        </div>
+        <!-- question mark circle -->
+        <div class="action-btn" title="Help">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+
+        <div class="toolbar-spacer"></div>
+
+        <span class="pagination-info">Results per page</span>
+        <select class="per-page-select">
+          <option>25</option>
+          <option>50</option>
+          <option>100</option>
+        </select>
+        <span class="pagination-count">1-13 of 13</span>
+
+        <!-- |< first -->
+        <div class="page-nav-btn disabled" title="First">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="11 17 6 12 11 7"/><line x1="6" y1="7" x2="6" y2="17"/></svg>
+        </div>
+        <!-- < prev -->
+        <div class="page-nav-btn disabled" title="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+        <!-- + add page (the two + icons in the design are nav placeholders) -->
+        <div class="page-nav-btn disabled" title="—">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="page-nav-btn disabled" title="—">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <!-- refresh -->
+        <div class="page-nav-btn nav-refresh" title="Refresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        </div>
+        <!-- gear / settings -->
+        <div class="page-nav-btn nav-settings" title="Column settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:36px;"><input type="checkbox"></th>
+              <th>Sub Channel</th>
+              <th>Account</th>
+              <th>Export Type</th>
+              <th>Transmission Type</th>
+              <th>Transmission ID</th>
+              <th>SKU</th>
+              <th>Value</th>
+              <th>Error Response</th>
+              <th>Transmitted At</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-de</td>
+              <td><span class="tx-id">123-abc-de1</span></td>
+              <td><span class="badge export-type-badge badge-stock">stock</span></td>
+              <td><span class="transmission-badge">feed</span></td>
+              <td><span class="tx-id">100291837</span></td>
+              <td>foobar-001</td>
+              <td><span class="value-cell">{quantity: 42}</span></td>
+              <td><span class="error-cell"><span class="error-dot"></span>500 Internal</span></td>
+              <td>2026-04-14 16:12:00</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-fr</td>
+              <td><span class="tx-id">456-def-fg2</span></td>
+              <td><span class="badge export-type-badge badge-price">price</span></td>
+              <td><span class="transmission-badge">api</span></td>
+              <td><span class="tx-id">200384726</span></td>
+              <td>widget-pro</td>
+              <td><span class="value-wrap"><span class="value-cell">{price: 19.99}</span><button class="price-expand-btn" id="pd-widget-pro" onclick="openPopup(this,'pd-widget-pro')">···</button></span></td>
+              <td><span class="ok-cell">200 OK</span></td>
+              <td>2026-04-14 15:47:22</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-at</td>
+              <td><span class="tx-id">789-ghi-hj3</span></td>
+              <td><span class="badge export-type-badge badge-stock">stock</span></td>
+              <td><span class="transmission-badge">feed</span></td>
+              <td><span class="tx-id">300492815</span></td>
+              <td>gadget-x200</td>
+              <td><span class="value-cell">{quantity: 0}</span></td>
+              <td><span class="ok-cell">200 OK</span></td>
+              <td>2026-04-14 15:30:05</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-it</td>
+              <td><span class="tx-id">321-jkl-kl4</span></td>
+              <td><span class="badge export-type-badge badge-price">price</span></td>
+              <td><span class="transmission-badge">api</span></td>
+              <td><span class="tx-id">400581923</span></td>
+              <td>lamp-basic</td>
+              <td><span class="value-cell">{price: 34.50}</span></td>
+              <td><span class="error-cell"><span class="error-dot"></span>422 Unprocessable</span></td>
+              <td>2026-04-14 14:58:11</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-de</td>
+              <td><span class="tx-id">654-mno-mn5</span></td>
+              <td><span class="badge export-type-badge badge-stock">stock</span></td>
+              <td><span class="transmission-badge">webhook</span></td>
+              <td><span class="tx-id">500673041</span></td>
+              <td>handcraft-07</td>
+              <td><span class="value-cell">{quantity: 15}</span></td>
+              <td><span class="ok-cell">201 Created</span></td>
+              <td>2026-04-14 14:21:47</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-fr</td>
+              <td><span class="tx-id">987-pqr-pq6</span></td>
+              <td><span class="badge export-type-badge badge-price">price</span></td>
+              <td><span class="transmission-badge">feed</span></td>
+              <td><span class="tx-id">600764158</span></td>
+              <td>console-stand</td>
+              <td><span class="value-wrap"><span class="value-cell">{price: 12.99}</span><button class="price-expand-btn" id="pd-console-stand" onclick="openPopup(this,'pd-console-stand')">···</button></span></td>
+              <td><span class="ok-cell">200 OK</span></td>
+              <td>2026-04-14 13:55:30</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-at</td>
+              <td><span class="tx-id">135-rst-rs7</span></td>
+              <td><span class="badge export-type-badge badge-stock">stock</span></td>
+              <td><span class="transmission-badge">api</span></td>
+              <td><span class="tx-id">700855267</span></td>
+              <td>cable-usbc</td>
+              <td><span class="value-cell">{quantity: 200}</span></td>
+              <td><span class="error-cell"><span class="error-dot"></span>503 Unavailable</span></td>
+              <td>2026-04-14 13:10:09</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-it</td>
+              <td><span class="tx-id">246-uvw-uv8</span></td>
+              <td><span class="badge export-type-badge badge-price">price</span></td>
+              <td><span class="transmission-badge">feed</span></td>
+              <td><span class="tx-id">800946374</span></td>
+              <td>shoe-runner-42</td>
+              <td><span class="value-cell">{price: 89.95}</span></td>
+              <td><span class="ok-cell">200 OK</span></td>
+              <td>2026-04-14 12:44:55</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-de</td>
+              <td><span class="tx-id">579-xyz-xy9</span></td>
+              <td><span class="badge export-type-badge badge-stock">stock</span></td>
+              <td><span class="transmission-badge">webhook</span></td>
+              <td><span class="tx-id">901037481</span></td>
+              <td>desk-lamp-led</td>
+              <td><span class="value-cell">{quantity: 7}</span></td>
+              <td><span class="ok-cell">200 OK</span></td>
+              <td>2026-04-14 12:01:38</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-fr</td>
+              <td><span class="tx-id">802-abc-ab10</span></td>
+              <td><span class="badge export-type-badge badge-price">price</span></td>
+              <td><span class="transmission-badge">api</span></td>
+              <td><span class="tx-id">101128589</span></td>
+              <td>watch-sport</td>
+              <td><span class="value-wrap"><span class="value-cell">{price: 149.00}</span><button class="price-expand-btn" id="pd-watch-sport" onclick="openPopup(this,'pd-watch-sport')">···</button></span></td>
+              <td><span class="error-cell"><span class="error-dot"></span>400 Bad Request</span></td>
+              <td>2026-04-14 11:33:17</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-at</td>
+              <td><span class="tx-id">113-def-de11</span></td>
+              <td><span class="badge export-type-badge badge-stock">stock</span></td>
+              <td><span class="transmission-badge">feed</span></td>
+              <td><span class="tx-id">201219697</span></td>
+              <td>candle-amber</td>
+              <td><span class="value-cell">{quantity: 30}</span></td>
+              <td><span class="ok-cell">200 OK</span></td>
+              <td>2026-04-14 10:58:44</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-it</td>
+              <td><span class="tx-id">424-ghi-gh12</span></td>
+              <td><span class="badge export-type-badge badge-price">price</span></td>
+              <td><span class="transmission-badge">api</span></td>
+              <td><span class="tx-id">301310805</span></td>
+              <td>keyboard-mech</td>
+              <td><span class="value-wrap"><span class="value-cell">{price: 74.99}</span><button class="price-expand-btn" id="pd-keyboard-mech" onclick="openPopup(this,'pd-keyboard-mech')">···</button></span></td>
+              <td><span class="ok-cell">200 OK</span></td>
+              <td>2026-04-14 10:22:03</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>amazon-de</td>
+              <td><span class="tx-id">735-jkl-jk13</span></td>
+              <td><span class="badge export-type-badge badge-stock">stock</span></td>
+              <td><span class="transmission-badge">webhook</span></td>
+              <td><span class="tx-id">401401913</span></td>
+              <td>yoga-mat-pro</td>
+              <td><span class="value-cell">{quantity: 55}</span></td>
+              <td><span class="error-cell"><span class="error-dot"></span>500 Internal</span></td>
+              <td>2026-04-14 09:47:29</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Price detail popup -->
+<div class="price-popup" id="pricePopup">
+  <div class="price-popup-header">
+    <div class="popup-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Price details
+    </div>
+    <button class="price-popup-close" onclick="closePopup()">×</button>
+  </div>
+  <div class="price-popup-body">
+    <pre id="pricePopupContent"></pre>
+  </div>
+</div>
+
+<script>
+  function toggleMenu(el) {
+    const arrow = el.querySelector('.item-right svg');
+    if (arrow) {
+      const isOpen = el.dataset.open === '1';
+      el.dataset.open = isOpen ? '0' : '1';
+      arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
+    }
+  }
+
+  function toggleProcessMenu() {
+    const submenu = document.getElementById('process-submenu');
+    const arrow = document.getElementById('process-arrow').querySelector('svg');
+    const isOpen = submenu.style.display !== 'none';
+    submenu.style.display = isOpen ? 'none' : 'block';
+    arrow.style.transform = isOpen ? 'rotate(-90deg)' : '';
+    document.getElementById('process-overview-item').style.background = isOpen ? '' : 'rgba(255,255,255,.05)';
+  }
+
+  function navigate(page) {
+    document.querySelectorAll('.sidebar-subitem').forEach(el => el.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  // Price detail data keyed by button id
+  const basePricePayload = (ourPrice, discountedPrice, b2bPrice) => [
+    {
+      marketplace_id: "A1PA6795UKMFR9",
+      currency: "EUR",
+      audience: "ALL",
+      our_price: [{ schedule: [{ value_with_tax: ourPrice }] }],
+      discounted_price: [{ schedule: [{ value_with_tax: discountedPrice, start_at: "2026-05-01T00:00:00Z", end_at: "2026-05-31T23:59:59Z" }] }],
+      minimum_advertised_price: [{ schedule: [{ value_with_tax: +(ourPrice * 0.9).toFixed(2) }] }],
+      maximum_seller_allowed_price: [{ schedule: [{ value_with_tax: +(ourPrice * 2).toFixed(2) }] }],
+      minimum_seller_allowed_price: [{ schedule: [{ value_with_tax: +(ourPrice * 0.6).toFixed(2) }] }]
+    },
+    {
+      marketplace_id: "A1PA6795UKMFR9",
+      currency: "EUR",
+      audience: "B2B",
+      our_price: [{ schedule: [{ value_with_tax: b2bPrice }] }],
+      quantity_discount_plan: [{ schedule: [{ discount_type: "PERCENT", levels: [{ lower_bound: 5, value: 10.0 }, { lower_bound: 10, value: 15.0 }] }] }]
+    }
+  ];
+
+  const priceDetails = {
+    'pd-widget-pro':    basePricePayload(19.99, 15.99, 14.50),
+    'pd-console-stand': basePricePayload(12.99, 10.99,  9.80),
+    'pd-watch-sport':   basePricePayload(149.00, 129.00, 112.00),
+    'pd-keyboard-mech': basePricePayload(74.99, 64.99, 58.00)
+  };
+
+  function syntaxHighlight(obj) {
+    const json = JSON.stringify(obj, null, 2);
+    return json.replace(/("[\w_]+")\s*:/g, '<span class="k">$1</span>:')
+               .replace(/:\s*(".*?")/g, ': <span class="s">$1</span>')
+               .replace(/:\s*(\d[\d.]*)/g, ': <span class="n">$1</span>')
+               .replace(/:\s*(true|false|null)/g, ': <span class="n">$1</span>');
+  }
+
+  function openPopup(btnEl, id) {
+    event.stopPropagation();
+    const popup = document.getElementById('pricePopup');
+    const content = document.getElementById('pricePopupContent');
+    content.innerHTML = syntaxHighlight(priceDetails[id]);
+
+    const rect = btnEl.getBoundingClientRect();
+    const pw = 420, ph = 420;
+    let top = rect.bottom + 6;
+    let left = rect.left;
+    if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+    if (top + ph > window.innerHeight - 12) top = rect.top - ph - 6;
+
+    popup.style.top = top + 'px';
+    popup.style.left = left + 'px';
+    popup.classList.add('visible');
+  }
+
+  function closePopup() {
+    document.getElementById('pricePopup').classList.remove('visible');
+  }
+
+  document.addEventListener('click', function(e) {
+    const popup = document.getElementById('pricePopup');
+    if (!popup.contains(e.target) && !e.target.classList.contains('price-expand-btn')) {
+      popup.classList.remove('visible');
+    }
+  });
+
+  // Init: process submenu open
+  document.getElementById('process-submenu').style.display = 'block';
+
+  // Row click to select checkbox
+  document.querySelectorAll('tbody tr').forEach(row => {
+    row.addEventListener('click', function(e) {
+      if (e.target.tagName === 'INPUT' || e.target.classList.contains('price-expand-btn')) return;
+      const cb = this.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      this.style.background = cb.checked ? '#dbeafe' : '';
+    });
+  });
+</script>
+</body>
+</html>
