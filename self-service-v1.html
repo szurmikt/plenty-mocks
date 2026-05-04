@@ -5,13 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PlentyOne – Setup</title>
 <style>
+/* ═══════════════════════════════════════════
+   PLENTYMARKETS DESIGN SYSTEM TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --c-primary: #F07C6E;
+  --c-accent: #EDFF6C;
+  --c-accent-text: #1A1A2E;
+  --c-success: #1D9E75;
+  --c-danger: #E24B4A;
+  --c-warning: #EF9F27;
+  --c-info: #378ADD;
+  --s-dark-nav: #0C181F;
+  --s-dark-base: #141C20;
+  --s-dark-side: #1C2A30;
+  --s-dark-elevated: #25363D;
+  --s-dark-border: #25363D;
+  --t-dark-primary: #DCE2E5;
+  --t-dark-secondary: #9BA9B0;
+  --t-dark-muted: #64757D;
+  --s-base: #FFFFFF;
+  --s-secondary: #F5F5F3;
+  --s-tertiary: #E8E7E2;
+  --border-light: #D3D1C7;
+  --border-active: #0C181F;
+  --t-primary: #0C181F;
+  --t-secondary: #3D4E57;
+  --t-muted: #64757D;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --h-nav: 48px;
+  --h-tab: 36px;
+  --h-input: 36px;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 13px;
-  background: #dcdcdc;
-  color: #333;
+  background: var(--s-dark-base);
+  color: var(--t-dark-primary);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -19,11 +54,11 @@ body {
 }
 
 /* ════════════════════════════════════
-   TOP NAV  —  very dark #1c1f26
+   TOP NAV — DS: #0C181F, h=48px
 ════════════════════════════════════ */
 .topnav {
-  background: #1c1f26;
-  height: 40px;
+  background: var(--s-dark-nav);
+  height: var(--h-nav);
   display: flex;
   align-items: center;
   padding: 0;
@@ -31,110 +66,99 @@ body {
   gap: 0;
 }
 
-/* Logo circle */
 .tn-logo {
-  width: 34px; height: 40px;
+  width: 40px; height: var(--h-nav);
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; padding: 0 7px;
+  flex-shrink: 0; padding: 0 8px;
 }
 .tn-logo-circle {
-  width: 26px; height: 26px;
-  background: #e8a400;
+  width: 28px; height: 28px;
+  background: var(--c-primary);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
 }
-.tn-logo-circle svg { width: 14px; height: 14px; }
+.tn-logo-circle svg { width: 15px; height: 15px; }
 
-/* Nav links */
 .tn-links {
-  display: flex; align-items: stretch; height: 40px; flex: 1;
+  display: flex; align-items: stretch; height: var(--h-nav); flex: 1;
 }
 .tn-link {
-  color: #a8b0be; text-decoration: none; font-size: 12px;
-  padding: 0 8px; display: flex; align-items: center; gap: 4px;
-  height: 40px; border-bottom: 2px solid transparent; white-space: nowrap;
+  color: var(--t-dark-secondary); text-decoration: none; font-size: 12px;
+  padding: 0 9px; display: flex; align-items: center; gap: 4px;
+  height: var(--h-nav); border-bottom: 2px solid transparent; white-space: nowrap;
   cursor: pointer; border-top: none; border-left: none; border-right: none;
-  background: none; font-family: inherit;
+  background: none; font-family: inherit; transition: color .12s, background .12s;
 }
-.tn-link:hover { color: #e0e6f0; background: rgba(255,255,255,.04); }
-.tn-link.active { color: #fff; border-bottom-color: #e8a400; }
-.tn-link .ni { /* nav icon */
-  opacity: .75; display: flex; align-items: center;
-}
+.tn-link:hover { color: var(--t-dark-primary); background: rgba(255,255,255,.04); }
+.tn-link.active { color: #fff; border-bottom-color: var(--c-accent); }
+.tn-link .ni { opacity: .75; display: flex; align-items: center; }
 .tn-link .ni svg { width: 13px; height: 13px; }
 
-/* Right side */
 .tn-right {
-  display: flex; align-items: center; gap: 2px; padding-right: 6px; margin-left: auto;
+  display: flex; align-items: center; gap: 2px; padding-right: 8px; margin-left: auto;
 }
 .tn-search {
   display: flex; align-items: center;
-  background: #2e3340; border: 1px solid #3e4555;
-  border-radius: 3px; padding: 0 8px; gap: 5px;
-  height: 26px; width: 155px;
+  background: var(--s-dark-side); border: 1px solid var(--s-dark-border);
+  border-radius: var(--radius-sm); padding: 0 8px; gap: 5px;
+  height: 28px; width: 160px;
 }
 .tn-search input {
   background: none; border: none; outline: none;
-  color: #c0c8d4; font-size: 12px; width: 100%; font-family: inherit;
+  color: var(--t-dark-secondary); font-size: 12px; width: 100%; font-family: inherit;
 }
-.tn-search input::placeholder { color: #5a6070; }
-.tn-search svg { color: #6a7080; flex-shrink: 0; }
+.tn-search input::placeholder { color: var(--t-dark-muted); }
+.tn-search svg { color: var(--t-dark-muted); flex-shrink: 0; }
 .tn-btn {
   background: none; border: none; cursor: pointer;
-  color: #8890a0; width: 28px; height: 28px; border-radius: 3px;
+  color: var(--t-dark-muted); width: 30px; height: 30px; border-radius: var(--radius-sm);
   display: flex; align-items: center; justify-content: center;
-  font-family: inherit;
+  font-family: inherit; transition: background .12s, color .12s;
 }
-.tn-btn:hover { background: rgba(255,255,255,.07); color: #c0c8d4; }
+.tn-btn:hover { background: rgba(255,255,255,.07); color: var(--t-dark-primary); }
 .tn-btn svg { width: 14px; height: 14px; }
 .tn-user {
-  background: none; border: 1px solid #3a3f4d; cursor: pointer;
-  color: #a8b0be; padding: 0 8px; height: 26px; border-radius: 3px;
+  background: none; border: 1px solid var(--s-dark-border); cursor: pointer;
+  color: var(--t-dark-secondary); padding: 0 9px; height: 28px; border-radius: var(--radius-sm);
   font-size: 12px; display: flex; align-items: center; gap: 4px; font-family: inherit;
+  transition: background .12s;
 }
-.tn-user:hover { background: rgba(255,255,255,.05); color: #e0e6f0; }
+.tn-user:hover { background: rgba(255,255,255,.05); color: var(--t-dark-primary); }
 .tn-avatar {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: #3a4055; border: 1px solid #505870;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--s-dark-elevated); border: 1px solid var(--s-dark-border);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
-.tn-avatar svg { width: 14px; height: 14px; color: #a0a8b8; }
+.tn-avatar svg { width: 14px; height: 14px; color: var(--t-dark-secondary); }
 
 /* ════════════════════════════════════
-   TAB BAR  — #282c35 background
+   TAB BAR — DS: #1C2A30, h=36px
+   Active: #25363D bg + 2px #EDFF6C bottom
 ════════════════════════════════════ */
 .tabbar {
-  background: #282c35;
+  background: var(--s-dark-side);
   display: flex; align-items: flex-end;
-  padding: 0 0 0 0;
-  height: 34px; flex-shrink: 0;
-  border-bottom: 1px solid #1c1f26;
+  height: var(--h-tab); flex-shrink: 0;
+  border-bottom: 1px solid var(--s-dark-border);
 }
 .tb-tab {
-  height: 32px; display: flex; align-items: center; gap: 5px;
-  padding: 0 12px; font-size: 12.5px; cursor: pointer;
-  color: #9098a8;
-  border-top: 1px solid transparent;
-  border-left: 1px solid transparent;
-  border-right: 1px solid transparent;
-  border-bottom: none;
-  margin-bottom: 0;
-  border-radius: 0;
-  background: none;
-  white-space: nowrap;
+  height: 34px; display: flex; align-items: center; gap: 5px;
+  padding: 0 14px; font-size: 12px; cursor: pointer;
+  color: var(--t-dark-secondary);
+  border-bottom: 2px solid transparent;
+  border-top: none; border-left: none; border-right: none;
+  background: none; white-space: nowrap; font-family: inherit;
+  transition: color .12s;
 }
-.tb-tab:hover { color: #d0d8e8; }
+.tb-tab:hover { color: var(--t-dark-primary); }
 .tb-tab.active {
-  background: #dcdcdc;
-  color: #333;
-  border-top-color: #555;
-  border-left-color: #555;
-  border-right-color: #555;
+  background: var(--s-dark-elevated);
+  color: var(--t-dark-primary);
+  border-bottom-color: var(--c-accent);
 }
-.tb-dots { color: #888; font-size: 15px; line-height: 1; }
-.tb-close { color: #888; font-size: 16px; line-height: 1; cursor: pointer; padding: 0 1px; }
-.tb-close:hover { color: #222; }
+.tb-dots { color: var(--t-dark-muted); font-size: 14px; line-height: 1; }
+.tb-close { color: var(--t-dark-muted); font-size: 15px; line-height: 1; cursor: pointer; padding: 0 1px; }
+.tb-close:hover { color: var(--t-dark-primary); }
 
 /* ════════════════════════════════════
    BODY LAYOUT
@@ -142,239 +166,432 @@ body {
 .body-layout { display: flex; flex: 1; overflow: hidden; }
 
 /* ════════════════════════════════════
-   LEFT SIDEBAR  — #232830
+   LEFT SIDEBAR — DS: #1C2A30, w=240px
+   Active item: 2px solid #EDFF6C left border
 ════════════════════════════════════ */
 .sidebar {
-  width: 198px; flex-shrink: 0;
-  background: #232830;
+  width: 240px; flex-shrink: 0;
+  background: var(--s-dark-side);
   overflow-y: auto; overflow-x: hidden;
   display: flex; flex-direction: column;
-  border-right: 1px solid #1a1d24;
+  border-right: 1px solid var(--s-dark-border);
 }
 .sidebar::-webkit-scrollbar { width: 4px; }
-.sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--s-dark-elevated); border-radius: 2px; }
 
-/* Sidebar search row */
 .sb-search {
   display: flex; align-items: center;
-  background: #1c1f26;
-  height: 38px;
-  padding: 0 10px; gap: 6px;
-  border-bottom: 1px solid #1a1d24;
+  background: var(--s-dark-side);
+  height: 48px;
+  padding: 0 14px; gap: 10px;
+  border-bottom: 1px solid var(--s-dark-border);
   flex-shrink: 0;
 }
+.sb-search .sb-hamburger { color: var(--t-dark-secondary); flex-shrink: 0; cursor: pointer; }
+.sb-search .sb-hamburger svg { width: 16px; height: 16px; }
 .sb-search input {
   background: none; border: none; outline: none;
-  color: #a0a8b8; font-size: 12.5px; width: 100%; font-family: inherit;
+  color: var(--t-dark-primary); font-size: 13px; width: 100%; font-family: inherit;
 }
-.sb-search input::placeholder { color: #4a5060; }
-.sb-search svg { color: #505868; flex-shrink: 0; }
-.sb-search .sb-search-icon-right {
-  margin-left: auto; color: #505868; cursor: pointer;
-}
+.sb-search input::placeholder { color: var(--t-dark-muted); }
+.sb-search .sb-search-btn { color: var(--t-dark-muted); flex-shrink: 0; cursor: pointer; }
+.sb-search .sb-search-btn svg { width: 16px; height: 16px; }
 
-/* Nav items */
 .sbi {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 10px 0 12px;
-  height: 34px;
-  color: #a8b0be; font-size: 12.5px; cursor: pointer;
+  padding: 0 14px 0 16px;
+  height: 44px;
+  color: var(--t-dark-primary); font-size: 13px; cursor: pointer;
   user-select: none; flex-shrink: 0;
-  border-left: 3px solid transparent;
+  border-left: 2px solid transparent;
+  transition: background .12s;
 }
-.sbi:hover { background: rgba(255,255,255,.05); color: #d0d8e8; }
-.sbi .lft { display: flex; align-items: center; gap: 8px; }
-.sbi .lft svg { width: 14px; height: 14px; opacity: .7; flex-shrink: 0; }
-.sbi .arr { /* chevron */
-  color: #555a68; font-size: 13px;
-}
-.sbi .arr svg { width: 12px; height: 12px; }
+.sbi:hover { background: rgba(255,255,255,.04); }
+.sbi .lft { display: flex; align-items: center; gap: 12px; }
+.sbi .lft svg { width: 18px; height: 18px; flex-shrink: 0; fill: var(--t-dark-primary); stroke: none; }
+.sbi .arr svg { width: 12px; height: 12px; stroke: var(--t-dark-secondary); fill: none; }
 
-/* "Markets" row — slightly highlighted as expanded parent */
-.sbi.expanded { color: #c8d0de; }
-.sbi.expanded .lft svg { opacity: .9; }
+.sbi.expanded { color: var(--t-dark-primary); }
+.sbi.expanded .lft svg { fill: var(--t-dark-primary); }
 
-/* Amazon group header */
 .sb-amz {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 10px 0 28px;
-  height: 32px;
-  color: #a8b0be; font-size: 12.5px; cursor: pointer;
+  padding: 0 14px 0 16px;
+  height: 44px;
+  background: var(--s-dark-elevated);
+  border-left: 2px solid var(--c-accent);
+  color: var(--t-dark-primary); font-size: 13px; cursor: pointer;
   user-select: none; flex-shrink: 0;
-  border-left: 3px solid transparent;
+  transition: background .12s;
 }
-.sb-amz:hover { background: rgba(255,255,255,.04); color: #d0d8e8; }
-.sb-amz .lft { display: flex; align-items: center; gap: 8px; }
-.sb-amz .lft svg { width: 13px; height: 13px; opacity: .65; flex-shrink: 0; }
-.sb-amz .arr svg { width: 11px; height: 11px; color: #555a68; }
+.sb-amz:hover { background: rgba(255,255,255,.06); }
+.sb-amz .lft { display: flex; align-items: center; gap: 12px; }
+.sb-amz .lft svg { width: 16px; height: 16px; fill: var(--t-dark-primary); stroke: none; flex-shrink: 0; }
+.sb-amz .arr svg { width: 12px; height: 12px; stroke: var(--t-dark-secondary); fill: none; }
 
-/* Amazon sub-items (Settings, New settings…) */
+/* ── Amazon sub-items ── */
 .sb-sub {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 10px 0 36px;
-  height: 30px;
-  color: #8890a0; font-size: 12.5px; cursor: pointer;
+  padding: 0 14px 0 36px;
+  height: 40px;
+  color: var(--t-dark-secondary); font-size: 13px; cursor: pointer;
   user-select: none; flex-shrink: 0;
-  border-left: 3px solid transparent;
+  border-left: 2px solid transparent;
+  transition: background .12s, color .12s;
 }
-.sb-sub:hover { background: rgba(255,255,255,.04); color: #c8d0de; }
-.sb-sub .lft { display: flex; align-items: center; gap: 7px; }
-.sb-sub .lft svg { width: 12px; height: 12px; opacity: .55; flex-shrink: 0; }
-.sb-sub .arr svg { width: 11px; height: 11px; color: #444; }
+.sb-sub:hover { background: rgba(255,255,255,.04); color: var(--t-dark-primary); }
+.sb-sub .lft { display: flex; align-items: center; gap: 10px; }
+.sb-sub .lft svg { width: 14px; height: 14px; fill: none; stroke: var(--t-dark-secondary); stroke-width: 1.5; flex-shrink: 0; }
+.sb-sub:hover .lft svg { stroke: var(--t-dark-primary); }
+.sb-sub .arr svg { width: 11px; height: 11px; stroke: var(--t-dark-muted); fill: none; }
+.sb-sub.de-parent { color: var(--t-dark-secondary); }
 
-/* "Data exchange" — bold expanded parent */
-.sb-sub.de-parent {
-  color: #c8d0de; font-weight: 600;
-}
-.sb-sub.de-parent:hover { color: #e0e6f0; }
-
-/* Sub-sub items (Data export, Order import…) */
 .sb-sub2 {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 10px 0 46px;
-  height: 30px;
-  color: #7880909; font-size: 12.5px; cursor: pointer;
+  padding: 0 14px 0 52px;
+  height: 38px;
+  color: var(--t-dark-secondary); font-size: 12px; cursor: pointer;
   user-select: none; flex-shrink: 0;
-  border-left: 3px solid transparent;
-  color: #808898;
+  border-left: 2px solid transparent;
+  transition: background .12s, color .12s;
 }
-.sb-sub2:hover { background: rgba(255,255,255,.04); color: #c8d0de; }
-.sb-sub2 .lft { display: flex; align-items: center; gap: 7px; }
-.sb-sub2 .lft svg { width: 12px; height: 12px; opacity: .5; flex-shrink: 0; }
+.sb-sub2:hover { background: rgba(255,255,255,.04); color: var(--t-dark-primary); }
+.sb-sub2 .lft { display: flex; align-items: center; gap: 10px; }
+.sb-sub2 .lft svg { width: 12px; height: 12px; fill: none; stroke: var(--t-dark-secondary); stroke-width: 1.5; flex-shrink: 0; }
+.sb-sub2:hover .lft svg { stroke: var(--t-dark-primary); }
 
-/* "Data export" — active/selected */
 .sb-sub2.active-item {
-  background: #1a3a5c;
-  color: #e8f0ff;
-  border-left-color: #e8a400;
+  background: var(--s-dark-elevated);
+  color: var(--t-dark-primary);
+  border-left-color: var(--c-accent);
 }
-.sb-sub2.active-item:hover { background: #1e4268; }
-.sb-sub2.active-item .lft svg { opacity: .9; }
+.sb-sub2.active-item:hover { background: rgba(255,255,255,.06); }
+.sb-sub2.active-item .lft svg { stroke: var(--t-dark-primary); }
 
 /* ════════════════════════════════════
-   MAIN CONTENT
+   MAIN CONTENT — DS: #F5F5F3 bg
 ════════════════════════════════════ */
 .main {
   flex: 1; overflow-y: auto; overflow-x: hidden;
-  background: #dcdcdc;
-  padding: 6px 6px 20px 6px;
+  background: var(--s-secondary);
+  padding: 0;
 }
-.main::-webkit-scrollbar { width: 8px; }
-.main::-webkit-scrollbar-track { background: #c8c8c8; }
-.main::-webkit-scrollbar-thumb { background: #aaa; border-radius: 4px; }
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-track { background: var(--s-tertiary); }
+.main::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
 
 /* ════════════════════════════════════
-   PANEL
+   PANEL — DS card style
 ════════════════════════════════════ */
 .panel {
-  background: #fff;
-  border: 1px solid #c0c0c0;
-  margin-bottom: 6px;
+  background: var(--s-base);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  margin-bottom: 8px;
 }
 .ptab-bar {
-  background: #efefef;
+  background: var(--s-secondary);
   display: flex;
-  border-bottom: 1px solid #c8c8c8;
+  border-bottom: 1px solid var(--border-light);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: 0;
 }
 .ptab {
   display: inline-flex; align-items: center;
-  padding: 5px 14px 5px 14px;
-  font-size: 12.5px; cursor: pointer;
-  background: #d8d8d8; color: #555;
-  border: 1px solid #bbb;
-  border-bottom: none;
-  margin-bottom: -1px;
-  border-radius: 3px 3px 0 0;
-  user-select: none;
+  padding: 6px 16px;
+  font-size: 12px; cursor: pointer;
+  background: transparent; color: var(--t-muted);
+  border: none; border-bottom: 2px solid transparent;
+  user-select: none; font-family: inherit;
+  transition: color .12s;
 }
 .ptab.on {
-  background: #fff; color: #222;
-  border-color: #bbb; border-bottom-color: #fff;
+  color: var(--t-primary); font-weight: 500;
+  border-bottom-color: var(--c-info);
 }
-.pbody { padding: 12px 16px 14px; }
+.pbody { padding: 14px 18px 16px; }
 
-/* Alert red */
+/* Alert */
 .alert-red {
-  background: #d9534f; color: #fff;
-  padding: 8px 14px; font-size: 12.5px; line-height: 1.55;
-  margin-bottom: 10px;
+  background: var(--c-danger); color: #fff;
+  padding: 8px 14px; font-size: 12px; line-height: 1.55;
+  margin-bottom: 10px; border-radius: var(--radius-md);
 }
 
 /* Form */
-.fdesc { font-size: 13px; color: #333; margin-bottom: 10px; }
-.frow { display: flex; align-items: flex-start; margin-bottom: 7px; }
-.flbl { width: 180px; flex-shrink: 0; font-size: 13px; color: #333; padding-top: 4px; line-height: 1.3; }
+.fdesc { font-size: 13px; color: var(--t-secondary); margin-bottom: 10px; }
+.frow { display: flex; align-items: flex-start; margin-bottom: 8px; }
+.flbl { width: 180px; flex-shrink: 0; font-size: 13px; color: var(--t-secondary); padding-top: 4px; line-height: 1.3; }
 .fval { display: flex; align-items: center; gap: 6px; }
 
 select, input[type="text"], input[type="number"], textarea {
-  font-family: inherit; font-size: 12.5px; color: #333; outline: none;
-  border: 1px solid #aaa; border-radius: 2px; background: #fff;
+  font-family: inherit; font-size: 13px; color: var(--t-primary); outline: none;
+  border: 1px solid var(--border-light); border-radius: var(--radius-md); background: var(--s-base);
+  transition: border-color .15s;
 }
 select {
-  height: 26px; padding: 1px 18px 1px 5px;
+  height: var(--h-input); padding: 0 28px 0 10px;
   appearance: none; -webkit-appearance: none; cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 5px center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2364757D'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
 }
-select:focus { border-color: #5b9bd5; box-shadow: 0 0 0 2px rgba(91,155,213,.2); }
-input[type="text"], input[type="number"] { height: 26px; padding: 1px 6px; }
-input[type="text"]:focus, input[type="number"]:focus { border-color: #5b9bd5; box-shadow: 0 0 0 2px rgba(91,155,213,.2); }
-textarea { padding: 4px 6px; resize: vertical; }
-textarea:focus { border-color: #5b9bd5; box-shadow: 0 0 0 2px rgba(91,155,213,.2); }
-input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-color: #5b9bd5; margin: 0; }
+select:focus { border-color: var(--border-active); box-shadow: none; }
+input[type="text"], input[type="number"] { height: var(--h-input); padding: 0 10px; }
+input[type="text"]:focus, input[type="number"]:focus { border-color: var(--border-active); box-shadow: none; }
+textarea { padding: 8px 10px; resize: vertical; }
+textarea:focus { border-color: var(--border-active); box-shadow: none; }
+input[type="checkbox"] { width: 14px; height: 14px; cursor: pointer; accent-color: var(--c-info); margin: 0; }
 
 .icobtn {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; background: #f0f0f0;
-  border: 1px solid #bbb; border-radius: 2px; cursor: pointer; color: #444;
+  width: 32px; height: 32px; background: var(--s-secondary);
+  border: 1px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; color: var(--t-secondary);
+  transition: background .12s;
 }
-.icobtn:hover { background: #e0e0e0; }
+.icobtn:hover { background: var(--s-tertiary); }
 .icobtn svg { width: 15px; height: 15px; }
 
 /* Table */
-.dtbl { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #c0c0c0; }
-.dtbl thead tr { background: #2b3240; }
+.dtbl { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; }
+.dtbl thead tr { background: var(--s-dark-base); }
 .dtbl th {
-  padding: 7px 12px; color: #e0e4ea; font-weight: 600; font-size: 12.5px;
-  text-align: left; border-right: 1px solid #3d4455;
+  padding: 8px 14px; color: var(--t-dark-primary); font-weight: 500; font-size: 12px;
+  text-align: left; border-right: 1px solid var(--s-dark-elevated);
 }
 .dtbl th:last-child { border-right: none; }
 .dtbl td {
-  padding: 7px 12px; color: #555; border-bottom: 1px solid #e0e0e0;
-  border-right: 1px solid #e0e0e0;
+  padding: 8px 14px; color: var(--t-secondary); border-bottom: 1px solid var(--s-tertiary);
+  border-right: 1px solid var(--s-tertiary);
 }
 .dtbl td:last-child { border-right: none; }
 .dtbl tbody tr:last-child td { border-bottom: none; }
-.dtbl tbody tr:hover td { background: #f5f7fa; }
+.dtbl tbody tr:hover td { background: var(--s-secondary); }
 
 /* Adapter rows */
-.arow { display: flex; align-items: flex-start; padding: 6px 0; border-top: 1px solid #e8e8e8; }
+.arow { display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--s-tertiary); }
 .arow:first-child { border-top: none; }
-.albl { width: 220px; flex-shrink: 0; font-size: 13px; font-weight: 600; color: #333; padding-top: 4px; }
+.albl { width: 220px; flex-shrink: 0; font-size: 13px; font-weight: 500; color: var(--t-primary); padding-top: 4px; }
 .aval { flex: 1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
 /* Modal */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: none; align-items: center; justify-content: center; z-index: 200; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 200; }
 .overlay.open { display: flex; }
-.modal { background: #fff; border: 1px solid #bbb; border-radius: 3px; padding: 20px 24px; width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,.25); }
-.modal h3 { font-size: 14.5px; font-weight: 700; margin-bottom: 10px; }
-.modal p { font-size: 12.5px; color: #555; margin-bottom: 18px; line-height: 1.6; }
+.modal { background: var(--s-base); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 20px 24px; width: 440px; box-shadow: 0 8px 32px rgba(0,0,0,.18); }
+.modal h3 { font-size: 15px; font-weight: 500; margin-bottom: 10px; color: var(--t-primary); }
+.modal p { font-size: 13px; color: var(--t-secondary); margin-bottom: 18px; line-height: 1.6; }
 .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
-.btn-cancel { padding: 5px 14px; border-radius: 2px; font-size: 12.5px; cursor: pointer; background: #f0f0f0; color: #333; border: 1px solid #bbb; font-family: inherit; }
-.btn-cancel:hover { background: #e0e0e0; }
-.btn-ok { padding: 5px 14px; border-radius: 2px; font-size: 12.5px; cursor: pointer; background: #5b9bd5; color: #fff; border: 1px solid #4a87bd; font-family: inherit; display: flex; align-items: center; gap: 5px; }
-.btn-ok:hover { background: #4a87bd; }
-.spin { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: sp .7s linear infinite; display: none; }
+.btn-cancel { padding: 6px 16px; border-radius: var(--radius-md); font-size: 13px; cursor: pointer; background: var(--s-secondary); color: var(--t-primary); border: 1px solid var(--border-light); font-family: inherit; transition: background .12s; }
+.btn-cancel:hover { background: var(--s-tertiary); }
+.btn-ok { padding: 6px 16px; border-radius: var(--radius-md); font-size: 13px; cursor: pointer; background: var(--s-dark-base); color: var(--t-dark-primary); border: none; font-family: inherit; display: flex; align-items: center; gap: 6px; font-weight: 500; transition: opacity .12s; }
+.btn-ok:hover { opacity: .85; }
+.spin { width: 13px; height: 13px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: sp .7s linear infinite; display: none; }
 @keyframes sp { to { transform: rotate(360deg); } }
 
 /* Toast */
-.toast { position: fixed; bottom: 20px; right: 20px; z-index: 300; background: #2b3240; color: #fff; padding: 9px 16px; border-radius: 3px; font-size: 12.5px; box-shadow: 0 3px 12px rgba(0,0,0,.25); border-left: 4px solid #5b9bd5; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; transform: translateY(6px); max-width: 360px; }
+.toast { position: fixed; bottom: 20px; right: 20px; z-index: 300; background: var(--s-dark-elevated); color: var(--t-dark-primary); padding: 10px 16px; border-radius: var(--radius-md); font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.25); border-left: 3px solid var(--c-accent); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; transform: translateY(6px); max-width: 380px; }
 .toast.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
-/* SVG icon helpers */
-.sq-icon { /* small square bracket icon used throughout sidebar */
-  display: inline-block; width: 12px; height: 12px; flex-shrink: 0; opacity: .55;
+.sq-icon { display: inline-block; width: 12px; height: 12px; flex-shrink: 0; opacity: .55; }
+
+/* ════════════════════════════════════
+   DEMO PAGE
+════════════════════════════════════ */
+.demo-page {
+  display: none;
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  background: var(--s-secondary);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px; color: var(--t-primary);
+}
+
+/* Connected banner */
+.dp-banner {
+  background: var(--s-base);
+  border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: stretch; justify-content: space-between;
+  min-height: 48px;
+}
+.dp-banner-left {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 20px;
+  border-left: 3px solid var(--c-success);
+  font-size: 13px; color: var(--t-primary); font-weight: 400;
+}
+.dp-banner-left svg { flex-shrink: 0; width: 18px; height: 18px; }
+.dp-banner-right {
+  display: flex; align-items: center;
+  padding: 0 24px;
+  font-size: 12px; font-weight: 600; color: var(--t-secondary);
+  letter-spacing: .07em; cursor: pointer; text-transform: uppercase;
+  transition: color .12s;
+}
+.dp-banner-right:hover { color: var(--t-primary); }
+
+/* 2-column grid */
+.dp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+}
+
+/* Section card — DS expansion panel style */
+.dp-section {
+  background: var(--s-base);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+/* Section header */
+.dp-section-hdr {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 20px 10px;
+  font-size: 13px; font-weight: 500; color: var(--t-primary);
+  cursor: pointer; user-select: none;
+  border-bottom: 1px solid var(--s-tertiary);
+  background: var(--s-base);
+}
+.dp-section-hdr > svg { width: 16px; height: 16px; stroke: var(--t-muted); flex-shrink: 0; }
+.dp-section-hdr-actions { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+
+/* Section body */
+.dp-section-body {
+  padding: 6px 20px 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+/* ── Input field: floated label ── */
+.dp-field {
+  position: relative;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--s-base);
+  display: flex; align-items: center;
+  min-height: 50px;
+  padding: 8px 12px;
+  gap: 6px;
+  margin-top: 18px;
+  transition: border-color .15s;
+}
+.dp-field:focus-within { border-color: var(--border-active); border-width: 1px; }
+
+.dp-field-inner { flex: 1; min-width: 0; }
+
+.dp-field-inner label {
+  position: absolute;
+  top: -8px; left: 10px;
+  font-size: 11px;
+  color: var(--t-muted);
+  background: var(--s-base);
+  padding: 0 4px;
+  line-height: 16px;
+  height: 16px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+  letter-spacing: .01em;
+}
+.dp-field-inner label span { color: var(--c-danger); }
+
+.dp-field-inner input,
+.dp-field-inner select {
+  display: block; width: 100%;
+  border: none; outline: none; background: none;
+  font-size: 13px; font-weight: 500; color: var(--t-primary);
+  font-family: inherit; padding: 0; margin: 0;
+  line-height: 1.4;
+  appearance: none; -webkit-appearance: none;
+}
+
+.dp-chevron {
+  color: var(--t-muted); flex-shrink: 0; pointer-events: none; line-height: 0;
+}
+.dp-chevron svg { width: 18px; height: 18px; display: block; }
+
+.dp-cal {
+  background: none; border: none; cursor: pointer;
+  color: var(--t-muted); flex-shrink: 0; line-height: 0; padding: 2px;
+  transition: color .12s;
+}
+.dp-cal svg { width: 18px; height: 18px; display: block; }
+.dp-cal:hover { color: var(--t-primary); }
+
+/* help button — DS: dark circle */
+.dp-help {
+  background: var(--s-dark-elevated);
+  border: none; border-radius: 50%;
+  width: 18px; height: 18px;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t-dark-secondary); font-size: 10px; font-style: italic;
+  font-family: Georgia, serif; font-weight: 700;
+  line-height: 1; padding: 0;
+  transition: background .12s;
+}
+.dp-help:hover { background: var(--s-dark-base); }
+
+.dp-icon-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--t-muted); line-height: 0; padding: 3px;
+  display: flex; align-items: center; border-radius: var(--radius-sm);
+  transition: color .12s, background .12s;
+}
+.dp-icon-btn svg { width: 16px; height: 16px; display: block; }
+.dp-icon-btn:hover { color: var(--t-primary); background: var(--s-secondary); }
+
+/* Toggle switch — DS: #1D9E75 on, #9BA9B0 off */
+.dp-toggle-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.dp-toggle-row > span { font-size: 13px; color: var(--t-primary); }
+
+.dp-toggle {
+  position: relative;
+  width: 44px; height: 24px;
+  flex-shrink: 0; cursor: pointer;
+  display: inline-block;
+}
+.dp-toggle input {
+  opacity: 0; width: 0; height: 0;
+  position: absolute; margin: 0;
+}
+.dp-track {
+  position: absolute; inset: 0;
+  border-radius: 12px;
+  background: var(--t-dark-secondary);
+  transition: background .15s;
+}
+.dp-toggle input:checked + .dp-track {
+  background: var(--c-success);
+}
+.dp-track::before {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px; left: 3px;
+  transition: transform .15s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+.dp-toggle input:checked + .dp-track::before {
+  transform: translateX(20px);
+}
+.dp-track::after {
+  content: '';
+  position: absolute;
+  opacity: 0;
+  transition: opacity .15s, transform .15s;
+  width: 5px; height: 9px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  top: 7px; left: 26px;
+  transform: rotate(45deg);
+}
+.dp-toggle input:checked + .dp-track::after {
+  opacity: 1;
 }
 </style>
 </head>
@@ -493,271 +710,515 @@ input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-colo
   <!-- ════ SIDEBAR ════ -->
   <div class="sidebar">
 
-    <!-- Search row -->
+    <!-- Search bar -->
     <div class="sb-search">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+      <span class="sb-hamburger">
+        <svg viewBox="0 0 20 20" fill="currentColor"><rect y="3" width="20" height="2.5" rx="1"/><rect y="9" width="20" height="2.5" rx="1"/><rect y="15" width="20" height="2.5" rx="1"/></svg>
+      </span>
       <input type="text" placeholder="Search">
-      <div class="sb-search-icon-right">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="8" y1="5" x2="8" y2="11"/></svg>
-      </div>
+      <span class="sb-search-btn">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><line x1="13.5" y1="13.5" x2="18" y2="18"/></svg>
+      </span>
     </div>
 
-    <!-- Guided Setup -->
+    <!-- Guided Setup — flag icon -->
     <div class="sbi">
       <span class="lft">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2L2 5v5c0 3 2.5 5.5 6 6.5 3.5-1 6-3.5 6-6.5V5L8 2z"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 2h1v17H3V2zm1 1v8l9-4-9-4z"/></svg>
         Guided Setup
       </span>
     </div>
 
-    <!-- Assistants -->
+    <!-- Assistants — handshake icon -->
     <div class="sbi">
       <span class="lft">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="2.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 4c-1 0-2 .4-2.8 1L4 8.5C3.4 9.1 3 9.9 3 10.8c0 1.8 1.4 3.2 3.2 3.2.9 0 1.7-.4 2.3-.9l.5-.5 4-4c.6-.6 1.4-.9 2.2-.9.5 0 1 .1 1.4.3L14.5 6c-.5-.7-1.3-1.2-2.2-1.4L11 4.1C10.7 4 10.3 4 10 4zm5.5 3.7c.3.5.5 1 .5 1.6 0 .9-.4 1.7-1 2.3l-4 4c-.6.6-1.4.9-2.3.9-1.8 0-3.2-1.4-3.2-3.2 0-.6.2-1.1.5-1.6l.7.7c-.1.3-.2.6-.2.9 0 1.1.9 2 2 2 .5 0 1-.2 1.4-.6l4-4c.4-.4.6-.9.6-1.4s-.2-1-.6-1.4L13.5 7l.8-.8 1.2 1.2-.2.2.2.1z"/><path d="M7 7.5l5.5 5.5-.7.7L6.3 8.2 7 7.5z"/></svg>
         Assistants
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,3 4,6 8,9"/></svg></span>
     </div>
 
-    <!-- Settings -->
+    <!-- Settings — gear icon -->
     <div class="sbi">
       <span class="lft">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M2.93 2.93l1.41 1.41M11.66 11.66l1.41 1.41M11.66 4.34l1.41-1.41M2.93 13.07l1.41-1.41"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 0 1-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 0 1 .947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 0 1 2.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 0 1 2.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 0 1 .947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 0 1-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 0 1-2.287-.947zM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" clip-rule="evenodd"/></svg>
         Settings
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,3 4,6 8,9"/></svg></span>
     </div>
 
-    <!-- Account management -->
+    <!-- Account management — key icon -->
     <div class="sbi">
       <span class="lft">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="2.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M11 2l1 1-1 1M13 3H9"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 8a6 6 0 0 1-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1 1 18 8zm-6-4a1 1 0 1 0 0 2 2 2 0 0 1 2 2 1 1 0 1 0 2 0 4 4 0 0 0-4-4z" clip-rule="evenodd"/></svg>
         Account management
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,3 4,6 8,9"/></svg></span>
     </div>
 
-    <!-- Client -->
+    <!-- Client — building/shop icon -->
     <div class="sbi">
       <span class="lft">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="10" rx="1"/><line x1="5" y1="3" x2="5" y2="13"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-.293.707L13 11.414V17a1 1 0 0 1-.553.894l-4 2A1 1 0 0 1 7 19v-7.586L2.293 6.707A1 1 0 0 1 2 6V4z"/></svg>
         Client
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,3 4,6 8,9"/></svg></span>
     </div>
 
-    <!-- Item -->
+    <!-- Item — tag/price icon -->
     <div class="sbi">
       <span class="lft">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1L1 5v6l7 4 7-4V5L8 1z"/><polyline points="1,5 8,9 15,5"/><line x1="8" y1="9" x2="8" y2="15"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17.707 9.293a1 1 0 0 1 0 1.414l-7 7a1 1 0 0 1-1.414 0l-7-7A.997.997 0 0 1 2 10V5a3 3 0 0 1 3-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" clip-rule="evenodd"/></svg>
         Item
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,3 4,6 8,9"/></svg></span>
     </div>
 
-    <!-- Listings -->
+    <!-- Listings — lines+eye icon -->
     <div class="sbi">
       <span class="lft">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><line x1="3" y1="4" x2="13" y2="4"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="12" x2="9" y2="12"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 0 0 5.18 4C4 4 2.86 4.23 1.818 4.65A.5.5 0 0 0 1.5 5.12v9.563a.5.5 0 0 0 .68.467A7.456 7.456 0 0 1 5.18 14.6c1.39 0 2.7.37 3.82 1.02V4.804zM10 15.62a7.97 7.97 0 0 1 3.82-1.02c1.12 0 2.18.24 3.136.65a.5.5 0 0 0 .544-.078.5.5 0 0 0 .136-.342V5.12a.5.5 0 0 0-.318-.466A9.456 9.456 0 0 0 13.82 4 7.968 7.968 0 0 0 10 4.804V15.62z"/></svg>
         Listings
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,3 4,6 8,9"/></svg></span>
     </div>
 
-    <!-- Markets — expanded parent -->
+    <!-- Markets — dotted grid/globe icon, expanded (chevron down) -->
     <div class="sbi expanded">
       <span class="lft">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="7"/><line x1="1" y1="8" x2="15" y2="8"/><path d="M8 1a10 10 0 0 1 3 7 10 10 0 0 1-3 7 10 10 0 0 1-3-7 10 10 0 0 1 3-7z"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4zm0 7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3zm7-7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V4zm0 7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-3z"/></svg>
         Markets
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,4 6,8 9,4"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,4 6,8 9,4"/></svg></span>
     </div>
 
-    <!-- ── Amazon group ── -->
-    <!-- Amazon header row -->
+    <!-- ── Amazon — selected parent, grey bg + amber left border ── -->
     <div class="sb-amz">
       <span class="lft">
-        <!-- small square/monitor icon -->
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1.5" width="12" height="8.5" rx="1"/><line x1="4" y1="13" x2="10" y2="13"/><line x1="7" y1="10" x2="7" y2="13"/></svg>
+        <!-- Square bracket / window icon matching screenshot -->
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5zm2-1h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" clip-rule="evenodd"/></svg>
         Amazon
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,4 6,8 9,4"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,4 6,8 9,4"/></svg></span>
     </div>
 
-    <!-- Settings -->
+    <!-- Amazon sub-items -->
     <div class="sb-sub">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Settings
       </span>
     </div>
-
-    <!-- New settings -->
     <div class="sb-sub">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         New settings
       </span>
     </div>
-
-    <!-- Add catalogue templates -->
     <div class="sb-sub">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Add catalogue templates
       </span>
     </div>
-
-    <!-- Reports (has sub-chevron) -->
     <div class="sb-sub">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Reports
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="8,3 4,6 8,9"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,3 4,6 8,9"/></svg></span>
     </div>
-
-    <!-- Feeds -->
     <div class="sb-sub">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Feeds
       </span>
     </div>
-
-    <!-- Freely definable fields -->
     <div class="sb-sub">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Freely definable fields
       </span>
     </div>
-
-    <!-- Category link -->
     <div class="sb-sub">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Category link
       </span>
     </div>
-
-    <!-- Data exchange — bold active parent with chevron down -->
+    <!-- Data exchange — has left chevron -->
     <div class="sb-sub de-parent">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Data exchange
       </span>
-      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,4 6,8 9,4"/></svg></span>
+      <span class="arr"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,3 4,6 8,9"/></svg></span>
     </div>
 
-    <!-- Data export — SELECTED -->
+    <!-- Self-Service — active selected -->
     <div class="sb-sub2 active-item">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Self-Service
       </span>
     </div>
-
-    <!-- Order import -->
     <div class="sb-sub2">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Order import
       </span>
     </div>
-
-    <!-- Shipping confirmation -->
     <div class="sb-sub2">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Shipping confirmation
       </span>
     </div>
-
-    <!-- Reports -->
     <div class="sb-sub2">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         Reports
       </span>
     </div>
-
-    <!-- FBA stock -->
     <div class="sb-sub2">
       <span class="lft">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="10" height="10" rx="1"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="13" rx="1"/></svg>
         FBA stock
       </span>
+    </div>
+
+    <!-- Demo page nav item -->
+    <div style="margin-top:8px; border-top:1px solid #2a2f38; padding-top:4px;">
+      <div class="sbi" onclick="showPage('demo')" id="nav-demo">
+        <span class="lft">
+          <svg viewBox="0 0 20 20" fill="rgb(220,226,229)" style="width:18px;height:18px;flex-shrink:0;">
+            <rect x="2" y="3" width="16" height="11" rx="1.5" fill="none" stroke="rgb(220,226,229)" stroke-width="1.5"/>
+            <line x1="7" y1="17" x2="13" y2="17" stroke="rgb(220,226,229)" stroke-width="1.5"/>
+            <line x1="10" y1="14" x2="10" y2="17" stroke="rgb(220,226,229)" stroke-width="1.5"/>
+          </svg>
+          Demo page
+        </span>
+      </div>
     </div>
 
   </div><!-- /sidebar -->
 
   <!-- ════ MAIN ════ -->
-  <div class="main">
+  <div class="main" style="background:var(--s-secondary); padding:0;">
 
-    <!-- PANEL 1: Self-service -->
-    <div class="panel" id="ss-panel">
-      <div class="ptab-bar">
-        <div class="ptab on">Self-service</div>
-      </div>
-      <div class="pbody">
+    <!-- Self-service page -->
+    <div style="padding:8px; display:flex; flex-direction:column; gap:8px;">
 
-        <!-- Action selector row -->
-        <div class="arow" style="border-top:none; align-items:center;">
-          <div class="albl">Action</div>
-          <div class="aval">
-            <select id="ss-action" onchange="ssActionChange()" style="width:200px;">
-              <option value="">-- Select action --</option>
-              <option value="order">Order Import</option>
-              <option value="document">Document Upload</option>
-              <option value="product">Product Update</option>
-            </select>
-          </div>
+      <!-- Section: Action -->
+      <div class="dp-section">
+        <div class="dp-section-hdr">
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 9,12 15,6"/></svg>
+          Self-service
         </div>
+        <div class="dp-section-body">
 
-        <!-- Input row — label changes based on selection -->
-        <div class="arow" id="ss-input-row" style="display:none; align-items:flex-start;">
-          <div class="albl" style="padding-top:5px;" id="ss-input-label">Identifiers</div>
-          <div class="aval" style="flex-direction:column; align-items:flex-start; gap:6px;">
-            <div style="display:flex; align-items:flex-start; gap:8px;">
-              <textarea id="ss-ids" placeholder="Enter up to 10 values, comma-separated…" style="width:380px; height:64px; font-family:inherit;"></textarea>
-              <div id="ss-allvariants-wrap" style="display:none; align-items:center; gap:5px; padding-top:6px; white-space:nowrap;">
-                <input type="checkbox" id="ss-allvariants">
-                <label for="ss-allvariants" style="font-size:13px; cursor:pointer;">Update all variants</label>
+          <!-- Action dropdown -->
+          <div class="dp-field" style="margin-top:18px;">
+            <div class="dp-field-inner">
+              <label>Action</label>
+              <select id="ss-action" onchange="ssActionChange()" style="font-weight:700;">
+                <option value="">-- Select action --</option>
+                <option value="stock">Stock Update</option>
+                <option value="price">Price Update</option>
+                <option value="product">Product Update (Full)</option>
+                <option value="offer">Offer Update</option>
+                <option value="document">Document Upload</option>
+                <option value="order">Order Import</option>
+              </select>
+            </div>
+            <div class="dp-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5,7 10,13 15,7"/></svg></div>
+          </div>
+
+          <!-- Input field — hidden until action selected -->
+          <div id="ss-input-row" style="display:none;">
+            <div class="dp-field" style="margin-top:18px; align-items:flex-start; padding-top:14px; padding-bottom:10px;">
+              <div class="dp-field-inner">
+                <label id="ss-input-label">Identifiers</label>
+                <textarea id="ss-ids"
+                  placeholder="Enter up to 10 values, comma-separated…"
+                  style="width:100%; border:none; outline:none; background:none; font-size:13px; font-weight:500; color:#0C181F; font-family:inherit; resize:vertical; min-height:64px; padding:0; margin:0; line-height:1.5;"></textarea>
               </div>
             </div>
-            <div style="font-size:11.5px; color:#888;" id="ss-hint">Maximum 10 values, comma-separated.</div>
-          </div>
-        </div>
+            <div id="ss-hint" style="font-size:11px; color:#64757D; margin-top:4px; padding-left:2px;">Maximum 10 values, comma-separated.</div>
 
-        <!-- Throttle + Execute row -->
-        <div class="arow" id="ss-exec-row" style="display:none; border-top:none; align-items:center;">
-          <div class="albl"></div>
-          <div class="aval" style="gap:10px; align-items:center;">
+            <!-- Update all variants checkbox — only for Product Update -->
+            <div id="ss-allvariants-wrap" style="display:none; align-items:center; gap:8px; margin-top:10px;">
+              <input type="checkbox" id="ss-allvariants" style="width:14px;height:14px;cursor:pointer;accent-color:#1D9E75;">
+              <label for="ss-allvariants" style="font-size:13px; color:#0C181F; cursor:pointer;">Update all variants</label>
+            </div>
+          </div>
+
+          <!-- Execute row -->
+          <div id="ss-exec-row" style="display:none; margin-top:6px; align-items:center; gap:14px; flex-wrap:wrap;">
             <button id="ss-exec-btn" onclick="ssExecute()"
-              style="padding:5px 18px; background:#2b3a50; color:#fff; border:1px solid #1a2a3e; border-radius:2px; font-size:13px; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:7px;">
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="3,2 13,8 3,14"/></svg>
+              style="padding:8px 20px; background:#0C181F; color:#DCE2E5; border:none; border-radius:6px; font-size:13px; font-family:inherit; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:8px; transition:opacity .12s;">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3,2 13,8 3,14" fill="#DCE2E5" stroke="none"/></svg>
               Execute
             </button>
-            <span id="ss-throttle-msg" style="font-size:12px; color:#999; display:none;">
+            <span id="ss-throttle-msg" style="font-size:12px; color:#64757D; display:none;">
               ⏳ Next execution available in <strong id="ss-cd">15</strong>s
             </span>
           </div>
-        </div>
 
-        <!-- Output log -->
-        <div id="ss-log-wrap" style="display:none; margin-top:4px;">
-          <div style="border-top:1px solid #e0e0e0; padding-top:10px;">
+          <!-- Execution log — inside same panel -->
+          <div id="ss-log-wrap" style="display:none; border-top:1px solid var(--s-tertiary); margin-top:4px; padding-top:14px;">
+            <div style="font-size:11px; font-weight:500; color:var(--t-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;">Execution log</div>
             <div id="ss-log"
-              style="font-size:12.5px; font-family:'Consolas','Courier New',monospace; line-height:1.9; background:#f8f9fb; border:1px solid #dde2ea; border-radius:2px; padding:10px 14px; min-height:48px; max-height:260px; overflow-y:auto;">
+              style="font-size:13px; font-family:Inter,-apple-system,sans-serif; line-height:1.8; background:#FFFFFF; border:1px solid #D3D1C7; border-radius:6px; padding:14px 16px; min-height:60px; max-height:360px; overflow-y:auto; color:#0C181F;">
             </div>
           </div>
-        </div>
 
+        </div>
       </div>
+
+    </div>
+  </div><!-- /main -->
+
+  <!-- ════ DEMO PAGE ════ -->
+  <div class="demo-page" id="demo-page">
+
+    <!-- Connected banner -->
+    <div class="dp-banner">
+      <div class="dp-banner-left">
+        <svg viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="11" r="10" stroke="#1D9E75" stroke-width="2"/>
+          <polyline points="6.5,11 9.5,14 15.5,8" stroke="#1D9E75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Your account is connected.
+      </div>
+      <div class="dp-banner-right">TEST CONNECTION</div>
     </div>
 
-  </div><!-- /main -->
+    <div class="dp-grid">
+
+      <!-- ══ General (left) ══ -->
+      <div class="dp-section">
+        <div class="dp-section-hdr">
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 9,12 15,6"/></svg>
+          General
+        </div>
+        <div class="dp-section-body">
+
+          <!-- Account* -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Account <span>*</span></label>
+              <input type="text" value="Decathlon">
+            </div>
+          </div>
+
+          <!-- Active toggle ON -->
+          <div class="dp-toggle-row">
+            <svg class="dp-sw on" width="44" height="24" viewBox="0 0 44 24" onclick="this.classList.toggle('on');this.classList.toggle('off')" style="cursor:pointer;flex-shrink:0;">
+              <rect width="44" height="24" rx="12" fill="#1D9E75"/>
+              <circle cx="31" cy="12" r="9" fill="white" filter="drop-shadow(0 1px 3px rgba(0,0,0,.3))"/>
+              <polyline points="27.5,12 30,14.5 34.5,9.5" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Active</span>
+          </div>
+
+          <!-- Decathlon API key -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Decathlon API key</label>
+              <input type="text" value="b84cfa84-406d-42ba-a92e-e4ec95e82ae4">
+            </div>
+            <button class="dp-help">?</button>
+          </div>
+
+          <!-- Client* dropdown -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Client <span>*</span></label>
+              <select><option>Sportstech Brands</option></select>
+            </div>
+            <div class="dp-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5,7 10,13 15,7"/></svg></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══ Orders (right) ══ -->
+      <div class="dp-section">
+        <div class="dp-section-hdr">
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 9,12 15,6"/></svg>
+          Orders
+        </div>
+        <div class="dp-section-body">
+
+          <!-- Order import toggle ON -->
+          <div class="dp-toggle-row">
+            <svg class="dp-sw on" width="44" height="24" viewBox="0 0 44 24" onclick="this.classList.toggle('on');this.classList.toggle('off')" style="cursor:pointer;flex-shrink:0;">
+              <rect width="44" height="24" rx="12" fill="#1D9E75"/>
+              <circle cx="31" cy="12" r="9" fill="white" filter="drop-shadow(0 1px 3px rgba(0,0,0,.3))"/>
+              <polyline points="27.5,12 30,14.5 34.5,9.5" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Order import</span>
+            <button class="dp-help">?</button>
+          </div>
+
+          <!-- Order import start date -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Order import start date</label>
+              <input type="text" value="8/17/2023">
+            </div>
+            <button class="dp-cal" title="Pick date">
+              <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="4" width="18" height="16" rx="1.5"/><line x1="2" y1="9" x2="20" y2="9"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="15" y1="2" x2="15" y2="6"/></svg>
+            </button>
+            <button class="dp-help">?</button>
+          </div>
+
+          <!-- Allow cancellations toggle OFF -->
+          <div class="dp-toggle-row">
+            <svg class="dp-sw off" width="44" height="24" viewBox="0 0 44 24" onclick="this.classList.toggle('on');this.classList.toggle('off')" style="cursor:pointer;flex-shrink:0;">
+              <rect width="44" height="24" rx="12" fill="#9BA9B0"/>
+              <circle cx="13" cy="12" r="9" fill="white" filter="drop-shadow(0 1px 3px rgba(0,0,0,.3))"/>
+            </svg>
+            <span>Allow cancellations of orders with invoice</span>
+            <button class="dp-help">?</button>
+          </div>
+
+          <!-- Auto-cancel dropdown (empty) -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Automatically cancel refunded orders until order status <span>*</span></label>
+              <select><option value=""></option></select>
+            </div>
+            <div class="dp-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5,7 10,13 15,7"/></svg></div>
+          </div>
+
+          <!-- Status for shipped orders -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Status for shipped orders <span>*</span></label>
+              <select><option>[7] 7 | Outgoing items booked</option></select>
+            </div>
+            <div class="dp-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5,7 10,13 15,7"/></svg></div>
+          </div>
+
+          <!-- Status for credit notes -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Status for credit notes <span>*</span></label>
+              <select><option>[11] 11 | [11] Credit note open</option></select>
+            </div>
+            <div class="dp-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5,7 10,13 15,7"/></svg></div>
+          </div>
+
+          <!-- Status for cancelled orders -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Status for cancelled orders <span>*</span></label>
+              <select><option>[8.1] 8.1 | Cancelled on customer request</option></select>
+            </div>
+            <div class="dp-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5,7 10,13 15,7"/></svg></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══ Items (left) ══ -->
+      <div class="dp-section">
+        <div class="dp-section-hdr">
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 9,12 15,6"/></svg>
+          Items
+        </div>
+        <div class="dp-section-body">
+          <div class="dp-toggle-row">
+            <svg class="dp-sw on" width="44" height="24" viewBox="0 0 44 24" onclick="this.classList.toggle('on');this.classList.toggle('off')" style="cursor:pointer;flex-shrink:0;">
+              <rect width="44" height="24" rx="12" fill="#1D9E75"/>
+              <circle cx="31" cy="12" r="9" fill="white" filter="drop-shadow(0 1px 3px rgba(0,0,0,.3))"/>
+              <polyline points="27.5,12 30,14.5 34.5,9.5" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Item export</span>
+            <button class="dp-help">?</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ Offers (right) ══ -->
+      <div class="dp-section">
+        <div class="dp-section-hdr">
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 9,12 15,6"/></svg>
+          Offers
+        </div>
+        <div class="dp-section-body">
+          <div class="dp-toggle-row">
+            <svg class="dp-sw on" width="44" height="24" viewBox="0 0 44 24" onclick="this.classList.toggle('on');this.classList.toggle('off')" style="cursor:pointer;flex-shrink:0;">
+              <rect width="44" height="24" rx="12" fill="#1D9E75"/>
+              <circle cx="31" cy="12" r="9" fill="white" filter="drop-shadow(0 1px 3px rgba(0,0,0,.3))"/>
+              <polyline points="27.5,12 30,14.5 34.5,9.5" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Offer export</span>
+            <button class="dp-help">?</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ Fulfillment by Decathlon (FBD) (left) ══ -->
+      <div class="dp-section">
+        <div class="dp-section-hdr">
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 9,12 15,6"/></svg>
+          Fulfillment by Decathlon (FBD)
+          <button class="dp-help" style="margin-left:6px;">?</button>
+        </div>
+        <div class="dp-section-body">
+          <!-- Activate FBD toggle OFF -->
+          <div class="dp-toggle-row">
+            <svg class="dp-sw off" width="44" height="24" viewBox="0 0 44 24" onclick="this.classList.toggle('on');this.classList.toggle('off')" style="cursor:pointer;flex-shrink:0;">
+              <rect width="44" height="24" rx="12" fill="#9BA9B0"/>
+              <circle cx="13" cy="12" r="9" fill="white" filter="drop-shadow(0 1px 3px rgba(0,0,0,.3))"/>
+            </svg>
+            <span>Activate FBD</span>
+            <button class="dp-help">?</button>
+          </div>
+          <!-- Warehouse dropdown -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Warehouse</label>
+              <select><option value=""></option></select>
+            </div>
+            <div class="dp-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5,7 10,13 15,7"/></svg></div>
+            <button class="dp-help">?</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ Map shipping profiles (right) ══ -->
+      <div class="dp-section">
+        <div class="dp-section-hdr">
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 9,12 15,6"/></svg>
+          Map shipping profiles
+          <div class="dp-section-hdr-actions">
+            <button class="dp-icon-btn" title="Refresh">
+              <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4.5 11a6.5 6.5 0 1 1 1.6 4.3"/><polyline points="1.5,11 4.5,14.5 7.5,11"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="dp-section-body">
+          <!-- Shipping zone dropdown + external link -->
+          <div class="dp-field">
+            <div class="dp-field-inner">
+              <label>Shipping zone</label>
+              <select><option value=""></option></select>
+            </div>
+            <div class="dp-chevron"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5,7 10,13 15,7"/></svg></div>
+            <button class="dp-icon-btn" title="Open external">
+              <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3h6v6"/><line x1="19" y1="3" x2="10" y2="12"/><path d="M10 5H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /dp-grid -->
+  </div><!-- /demo-page -->
+
 </div><!-- /body-layout -->
 
 <!-- MODAL -->
@@ -836,13 +1297,43 @@ input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-colo
   }
 
   /* ══════════════════════════════════════
+     PAGE SWITCHING
+  ══════════════════════════════════════ */
+  function showPage(page) {
+    const mainEl   = document.querySelector('.main');
+    const demoPage = document.getElementById('demo-page');
+    const navDemo  = document.getElementById('nav-demo');
+
+    if (page === 'demo') {
+      mainEl.style.display   = 'none';
+      demoPage.style.display = 'flex';
+      demoPage.style.flexDirection = 'column';
+      navDemo.style.borderLeftColor = '#EDFF6C';
+      navDemo.style.color = '#fff';
+      navDemo.querySelectorAll('svg *').forEach(el => {
+        if (el.hasAttribute('stroke')) el.setAttribute('stroke', '#fff');
+        if (el.hasAttribute('fill') && el.getAttribute('fill') !== 'none') el.setAttribute('fill', '#fff');
+      });
+    } else {
+      mainEl.style.display   = '';
+      demoPage.style.display = 'none';
+      navDemo.style.borderLeftColor = 'transparent';
+      navDemo.style.color = 'rgb(220,226,229)';
+      navDemo.querySelectorAll('svg *').forEach(el => {
+        if (el.hasAttribute('stroke')) el.setAttribute('stroke', 'rgb(220,226,229)');
+        if (el.hasAttribute('fill') && el.getAttribute('fill') !== 'none') el.setAttribute('fill', 'rgb(220,226,229)');
+      });
+    }
+  }
+
+  /* ══════════════════════════════════════
      SELF-SERVICE PANEL
   ══════════════════════════════════════ */
   let ssThrottled = false;
   let ssCdTimer = null;
 
   function ssActionChange() {
-    const action = document.getElementById('ss-action').value;
+    const action   = document.getElementById('ss-action').value;
     const inputRow = document.getElementById('ss-input-row');
     const execRow  = document.getElementById('ss-exec-row');
     const lbl      = document.getElementById('ss-input-label');
@@ -857,25 +1348,36 @@ input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-colo
     }
 
     inputRow.style.display = '';
-    execRow.style.display  = '';
+    execRow.style.display  = 'flex';
     document.getElementById('ss-log-wrap').style.display = 'none';
     document.getElementById('ss-log').innerHTML = '';
+    avWrap.style.display = 'none';
 
-    if (action === 'order') {
-      lbl.textContent         = 'Order ID(s)';
-      ta.placeholder          = 'e.g. 823822, 823901, 824010 — max 10';
-      hint.textContent        = 'Maximum 10 Order IDs, comma-separated.';
-      avWrap.style.display    = 'none';
-    } else if (action === 'document') {
-      lbl.textContent         = 'Document ID(s)';
-      ta.placeholder          = 'e.g. INV-2024-001, CN-2024-042 — max 10';
-      hint.textContent        = 'Maximum 10 invoice or credit note numbers, comma-separated.';
-      avWrap.style.display    = 'none';
+    if (action === 'stock') {
+      lbl.textContent  = 'SKU(s)';
+      ta.placeholder   = 'e.g. SKU-001, SKU-002 — max 50';
+      hint.textContent = 'Maximum 50 SKUs, comma-separated.';
+    } else if (action === 'price') {
+      lbl.textContent  = 'SKU(s)';
+      ta.placeholder   = 'e.g. SKU-001, SKU-002 — max 50';
+      hint.textContent = 'Maximum 50 SKUs, comma-separated.';
     } else if (action === 'product') {
-      lbl.textContent         = 'SKU(s)';
-      ta.placeholder          = 'e.g. SKU-001, SKU-002 — max 10, or leave empty and check "Update all variants"';
-      hint.textContent        = 'Maximum 10 SKUs, comma-separated. Or use "Update all variants".';
-      avWrap.style.display    = 'flex';
+      lbl.textContent      = 'SKU(s)';
+      ta.placeholder       = 'e.g. SKU-001, SKU-002 — max 50, or leave empty and check "Update all variants"';
+      hint.textContent     = 'Maximum 50 SKUs, comma-separated. Or use "Update all variants".';
+      avWrap.style.display = 'flex';
+    } else if (action === 'offer') {
+      lbl.textContent  = 'SKU(s)';
+      ta.placeholder   = 'e.g. SKU-001, SKU-002 — max 50';
+      hint.textContent = 'Maximum 50 SKUs, comma-separated.';
+    } else if (action === 'document') {
+      lbl.textContent  = 'Document ID(s)';
+      ta.placeholder   = 'e.g. INV-2024-001, CN-2024-042 — max 50';
+      hint.textContent = 'Maximum 50 invoice or credit note numbers, comma-separated.';
+    } else if (action === 'order') {
+      lbl.textContent  = 'Order ID(s)';
+      ta.placeholder   = 'e.g. 823822, 823901, 824010 — max 50';
+      hint.textContent = 'Maximum 50 Order IDs, comma-separated.';
     }
   }
 
@@ -884,16 +1386,19 @@ input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-colo
     return raw.split(',')
       .map(s => s.trim())
       .filter(s => s.length > 0)
-      .slice(0, 10);
+      .slice(0, 50);
   }
 
   function ssActionLabel(action, id) {
-    if (action === 'order')    return `Re-importing order: <strong>${id}</strong>`;
+    if (action === 'stock')    return `Pushing stock for SKU: <strong>${id}</strong>`;
+    if (action === 'price')    return `Pushing price for SKU: <strong>${id}</strong>`;
+    if (action === 'offer')    return `Pushing offer data for SKU: <strong>${id}</strong>`;
     if (action === 'document') return `Uploading document: <strong>${id}</strong>`;
+    if (action === 'order')    return `Importing order: <strong>${id}</strong>`;
     if (action === 'product') {
       const all = document.getElementById('ss-allvariants').checked;
-      if (all) return `Transmitting stock, price and product update for <strong>all variants</strong>`;
-      return `Transmitting stock, price and product update for SKU: <strong>${id}</strong>`;
+      if (all) return `Running full product sync for <strong>all variants</strong>`;
+      return `Running full product sync for SKU: <strong>${id}</strong>`;
     }
     return id;
   }
@@ -951,8 +1456,8 @@ input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-colo
         // All done
         setTimeout(() => {
           const finLine = document.createElement('div');
-          finLine.style.cssText = 'color:#1a6632; font-weight:600; margin-top:6px; padding-top:6px; border-top:1px solid #dde2ea;';
-          finLine.textContent = '✔ Execution is finished';
+          finLine.style.cssText = 'margin-top:10px; padding-top:10px; border-top:1px solid #E8E7E2;';
+          finLine.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;background:#141C20;color:#EDFF6C;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;">✔ Execution finished</span>`;
           log.appendChild(finLine);
           log.scrollTop = log.scrollHeight;
         }, 400);
@@ -961,7 +1466,7 @@ input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-colo
 
       const id = ids[i];
       const row = document.createElement('div');
-      row.style.cssText = 'display:flex; align-items:center; gap:8px; padding:1px 0;';
+      row.style.cssText = 'display:flex; align-items:center; gap:10px; padding:4px 0; border-bottom:1px solid #F5F5F3; font-size:13px; color:#3D4E57;';
 
       const labelSpan = document.createElement('span');
       labelSpan.innerHTML = ssActionLabel(action, id);
@@ -983,34 +1488,49 @@ input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-colo
       const fail  = Math.random() < 0.20;
 
       // Realistic Amazon SP-API errors per action type
+      const stockErrors = [
+        `Amazon Answer: InvalidSKU — SKU "${id}" is not active in this seller account's catalog.`,
+        `Amazon Answer: ThrottlingException — SubmitFeed limit exceeded. SKU "${id}" not processed. Retry later.`,
+        `Amazon Answer: QuantityOutOfRange — Stock quantity for SKU "${id}" exceeds the allowed maximum of 999,999 units.`,
+        `Amazon Answer: ServiceUnavailable — SP-API inventory endpoint temporarily unavailable. Retry with backoff.`,
+      ];
+      const priceErrors = [
+        `Amazon Answer: PricingError — Submitted price for SKU "${id}" is below the minimum allowed price (MAP violation).`,
+        `Amazon Answer: InvalidSKU — SKU "${id}" is not listed in this seller account's active catalog.`,
+        `Amazon Answer: ThrottlingException — Calls to SubmitFeed exceeded (1 req/30s). SKU "${id}" not processed.`,
+        `Amazon Answer: PriceOutOfRange — Price submitted for SKU "${id}" exceeds the maximum allowed listing price.`,
+      ];
+      const offerErrors = [
+        `Amazon Answer: InvalidSKU — SKU "${id}" does not exist or is not listed in this seller account.`,
+        `Amazon Answer: ListingNotActive — SKU "${id}" is suppressed. Resolve listing quality issues first.`,
+        `Amazon Answer: BrandNotAuthorized — Brand registry check failed for SKU "${id}". Seller not authorized.`,
+        `Amazon Answer: ThrottlingException — Offer update limit reached for SKU "${id}". Retry after 60s.`,
+      ];
       const orderErrors = [
         `Amazon Answer: InvalidInput — Order ID "${id}" does not exist or does not belong to this seller account.`,
         `Amazon Answer: AccessDenied — You are not authorized to access order "${id}". Check IAM role permissions.`,
         `Amazon Answer: QuotaExceeded — Request rate exceeded. Retry after 30 seconds. (GetOrder throttle: 0.0167 req/s)`,
-        `Amazon Answer: OrderNotImportable — Order "${id}" is already in terminal state (Cancelled). Cannot re-import.`,
+        `Amazon Answer: OrderNotImportable — Order "${id}" is already in terminal state (Cancelled).`,
         `Amazon Answer: InvalidOrderState — Order "${id}" is in status "Pending" and not yet confirmed by Amazon.`,
-        `Amazon Answer: ServiceUnavailable — SP-API endpoint temporarily unavailable. Retry with exponential backoff.`,
       ];
       const documentErrors = [
         `Amazon Answer: InvalidInput — Document number "${id}" has an invalid format. Expected pattern: [A-Z]{2,3}-\\d{4}-\\d{3,6}.`,
-        `Amazon Answer: ContentMD5Missing — The request body's MD5 hash is missing or does not match. Re-upload the document.`,
+        `Amazon Answer: ContentMD5Missing — The request body's MD5 hash is missing or does not match.`,
         `Amazon Answer: DocumentAlreadyExists — A document with identifier "${id}" was already uploaded and accepted.`,
-        `Amazon Answer: InvalidDocumentType — Document type mismatch. Invoice expected but CreditNote schema was detected for "${id}".`,
         `Amazon Answer: EncryptionKeyExpired — The upload URL for document "${id}" has expired. Request a new uploadDestination.`,
-        `Amazon Answer: QuotaExceeded — CreateUploadDestination limit reached (10 req/hr). Try again later.`,
       ];
       const productErrors = [
         `Amazon Answer: InvalidSKU — SKU "${id}" is not listed in this seller account's active catalog.`,
-        `Amazon Answer: PricingError — Submitted price for SKU "${id}" is below the minimum allowed price (MAP violation).`,
         `Amazon Answer: InvalidUPC — The UPC/EAN associated with SKU "${id}" does not match the ASIN in Amazon's catalog.`,
-        `Amazon Answer: QuantityOutOfRange — Stock quantity for SKU "${id}" exceeds the allowed maximum of 999,999 units.`,
-        `Amazon Answer: ListingNotActive — SKU "${id}" exists but the listing is suppressed. Resolve listing quality issues first.`,
-        `Amazon Answer: BrandNotAuthorized — Brand registry check failed for SKU "${id}". Seller is not authorized to update this ASIN.`,
-        `Amazon Answer: ThrottlingException — Calls to SubmitFeed exceeded (1 req/30s). SKU "${id}" not processed. Retry later.`,
-        `Amazon Answer: DataInconsistency — Product type mismatch for SKU "${id}". Submitted schema "LUGGAGE" but ASIN is classified as "BACKPACK".`,
+        `Amazon Answer: ListingNotActive — SKU "${id}" exists but the listing is suppressed.`,
+        `Amazon Answer: DataInconsistency — Product type mismatch for SKU "${id}". Schema mismatch detected.`,
+        `Amazon Answer: ThrottlingException — Calls to SubmitFeed exceeded (1 req/30s). SKU "${id}" not processed.`,
       ];
 
-      const errorPool = action === 'order' ? orderErrors
+      const errorPool = action === 'stock'    ? stockErrors
+                      : action === 'price'    ? priceErrors
+                      : action === 'offer'    ? offerErrors
+                      : action === 'order'    ? orderErrors
                       : action === 'document' ? documentErrors
                       : productErrors;
       const errMsg = errorPool[Math.floor(Math.random() * errorPool.length)];
@@ -1018,13 +1538,13 @@ input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-colo
       setTimeout(() => {
         spinEl.innerHTML = '';
         if (fail) {
-          statusSpan.innerHTML = `<span style="color:#c0392b; font-weight:600;">✗ Failed</span>`;
+          statusSpan.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;background:#FCEBEB;color:#A32D2D;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px;vertical-align:middle;">✗ Failed</span>`;
           const errLine = document.createElement('div');
-          errLine.style.cssText = 'color:#a93226; font-size:11.5px; padding: 2px 0 4px 14px; margin-bottom:2px; font-family:Consolas,"Courier New",monospace; line-height:1.5; border-left: 2px solid #e74c3c; margin-left:4px;';
+          errLine.style.cssText = 'font-size:12px; color:#791F1F; padding:4px 12px 6px 12px; margin:2px 0 6px 0; background:#FCEBEB; border-radius:6px; border-left:3px solid #E24B4A; line-height:1.6;';
           errLine.textContent = errMsg;
           log.insertBefore(errLine, row.nextSibling);
         } else {
-          statusSpan.innerHTML = `<span style="color:#1a6632; font-weight:600;">✓ Done</span>`;
+          statusSpan.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;background:#E1F5EE;color:#0F6E56;font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px;vertical-align:middle;">✓ Done</span>`;
         }
         log.scrollTop = log.scrollHeight;
         i++;
@@ -1038,6 +1558,36 @@ input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-colo
   /* ══════════════════════════════════════
      END SELF-SERVICE
   ══════════════════════════════════════ */
+
+  /* SVG toggle interactivity */
+  document.querySelectorAll('svg.dp-sw').forEach(svg => {
+    svg.addEventListener('click', () => {
+      const isOn = svg.classList.contains('on');
+      if (isOn) {
+        // Switch to OFF
+        svg.classList.replace('on', 'off');
+        svg.querySelector('rect').setAttribute('fill', '#9BA9B0');
+        svg.querySelector('circle').setAttribute('cx', '13');
+        const check = svg.querySelector('polyline');
+        if (check) check.remove();
+      } else {
+        // Switch to ON
+        svg.classList.replace('off', 'on');
+        svg.querySelector('rect').setAttribute('fill', '#1D9E75');
+        svg.querySelector('circle').setAttribute('cx', '31');
+        if (!svg.querySelector('polyline')) {
+          const pl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+          pl.setAttribute('points', '27.5,12 30,14.5 34.5,9.5');
+          pl.setAttribute('fill', 'none');
+          pl.setAttribute('stroke', '#0F6E56');
+          pl.setAttribute('stroke-width', '2');
+          pl.setAttribute('stroke-linecap', 'round');
+          pl.setAttribute('stroke-linejoin', 'round');
+          svg.appendChild(pl);
+        }
+      }
+    });
+  });
 
   let _tt;
   function showToast(msg) {
