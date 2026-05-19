@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listing Processing Log – PlentyOne</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    color: #333;
+    background: #f0f0f0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── TOP NAV ── */
+  .top-nav {
+    background: #1a1f2e;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 4px;
+    gap: 0;
+    flex-shrink: 0;
+  }
+  .top-nav .logo {
+    width: 36px; height: 36px;
+    background: #fff;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 6px 0 4px;
+    flex-shrink: 0;
+    color: #1a1f2e;
+  }
+  .top-nav .logo svg { width: 20px; height: 20px; }
+
+  .nav-item {
+    color: #9da5b4;
+    padding: 0 11px;
+    height: 44px;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color .12s;
+    position: relative;
+  }
+  .nav-item:hover { color: #fff; }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; opacity: .85; }
+
+  .nav-item.active {
+    background: #2d3347;
+    color: #fff;
+    border-top: 2px solid #c8d400;
+    padding-top: 2px;
+  }
+  .nav-item.active svg { opacity: 1; color: #fff; }
+  .nav-item.active:hover { background: #323849; color: #fff; }
+
+  .nav-spacer { flex: 1; }
+
+  .nav-right {
+    display: flex; align-items: center; gap: 0;
+    padding-right: 8px;
+  }
+
+  .nav-search-wrap {
+    position: relative;
+    margin-right: 4px;
+  }
+  .nav-search {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 4px;
+    color: #c5cad4;
+    padding: 0 30px 0 10px;
+    height: 28px; width: 160px; font-size: 12.5px;
+    font-family: inherit;
+    outline: none;
+  }
+  .nav-search::placeholder { color: #6b7280; }
+  .nav-search-wrap .search-icon {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    color: #6b7280; width: 13px; height: 13px; pointer-events: none;
+  }
+
+  .nav-icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 4px; background: transparent; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #9da5b4;
+  }
+  .nav-icon-btn:hover { color: #fff; background: rgba(255,255,255,.07); }
+  .nav-icon-btn svg { width: 16px; height: 16px; }
+
+  .nav-store {
+    display: flex; align-items: center; gap: 5px;
+    color: #9da5b4; font-size: 12.5px; padding: 0 6px;
+    cursor: pointer; white-space: nowrap;
+  }
+  .nav-store svg { width: 14px; height: 14px; }
+  .nav-store:hover { color: #fff; }
+
+  .nav-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #3d5a99;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 11px; font-weight: 600;
+    cursor: pointer; margin-left: 4px;
+    border: 2px solid rgba(255,255,255,.15);
+  }
+
+  /* ── TAB BAR ── */
+  .tab-bar {
+    background: #232938;
+    height: 34px;
+    display: flex;
+    align-items: stretch;
+    flex-shrink: 0;
+  }
+
+  .tab {
+    display: flex; align-items: center; gap: 5px;
+    padding: 0 14px;
+    color: #8a91a0;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .tab:hover { color: #c5cad4; }
+
+  .tab.active {
+    background: #c8d400;
+    color: #1a1f2e;
+    font-weight: 500;
+  }
+  .tab.active:hover { color: #1a1f2e; }
+
+  .tab-dots { font-size: 14px; opacity: .6; line-height: 1; letter-spacing: 0; }
+  .tab-close { font-size: 15px; line-height: 1; opacity: .7; cursor: pointer; padding: 0 1px; }
+  .tab-close:hover { opacity: 1; }
+
+  /* ── MAIN LAYOUT ── */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 250px;
+    background: #2d3444;
+    flex-shrink: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-hamburger {
+    padding: 12px 16px;
+    color: #8a91a0;
+    cursor: pointer;
+    display: flex; align-items: center;
+  }
+  .sidebar-hamburger:hover { color: #fff; }
+
+  .sidebar-section-label {
+    color: #8a91a0;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px 4px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+  }
+  .sidebar-section-label .channel-name {
+    color: #e0e3ea;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .sidebar-section-label svg { color:#8a91a0; }
+
+  .sidebar-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 16px;
+    color: #b0b7c6;
+    font-size: 13px;
+    cursor: pointer;
+    gap: 8px;
+    transition: background .12s;
+  }
+  .sidebar-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+  .sidebar-item.active { background: #e9f000; color: #1e2430; font-weight: 500; }
+  .sidebar-item.active svg { color: #1e2430 !important; }
+  .sidebar-item svg { width:14px; height:14px; color:#6b7280; flex-shrink:0; }
+  .sidebar-item .item-left { display:flex; align-items:center; gap:8px; }
+  .sidebar-item .item-right svg { width:12px; height:12px; color:#6b7280; }
+
+  .sidebar-submenu .sidebar-subitem {
+    padding: 7px 16px 7px 44px;
+    color: #8a91a0;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: background .12s;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sidebar-submenu .sidebar-subitem:hover { background: rgba(255,255,255,.06); color:#d0d5df; }
+  .sidebar-submenu .sidebar-subitem.active { color: #e9f000; font-weight:500; }
+
+  .sidebar-divider { height:1px; background:rgba(255,255,255,.07); margin: 4px 0; }
+
+  .sidebar-add {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    color: #8a91a0;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: auto;
+  }
+  .sidebar-add:hover { color: #d0d5df; }
+
+  /* ── CONTENT ── */
+  .content {
+    flex: 1;
+    background: #f0f2f5;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-header {
+    background: #fff;
+    padding: 16px 24px 14px;
+    border-bottom: 1px solid #e0e3ea;
+  }
+  .page-breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 18px; font-weight: 600; color: #1e2430;
+    margin-bottom: 4px;
+  }
+  .page-breadcrumb .channel { color: #4a7fd4; cursor: pointer; }
+  .page-breadcrumb .channel:hover { text-decoration: underline; }
+  .page-breadcrumb .sep { color: #9ca3af; font-weight: 300; }
+  .page-subtitle { color: #6b7280; font-size: 12.5px; }
+
+  /* ── TABLE PANEL ── */
+  .table-panel {
+    background: #fff;
+    margin: 12px;
+    border: 1px solid #e0e3ea;
+    border-radius: 4px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* ── TOOLBAR ROW 1: Search ── */
+  .toolbar-search {
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+    height: 40px;
+  }
+  .search-wrap {
+    position: relative;
+    width: 220px;
+    border-right: 1px solid #e5e7eb;
+    flex-shrink: 0;
+  }
+  .search-wrap input {
+    width: 100%; height: 100%;
+    padding: 0 10px 0 32px;
+    border: none; outline: none;
+    background: #f3f4f6;
+    font-size: 13px; color: #6b7280;
+    font-family: inherit;
+  }
+  .search-wrap input::placeholder { color: #9ca3af; }
+  .search-wrap svg {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 14px; height: 14px; color: #9ca3af; pointer-events: none;
+  }
+  .toolbar-icon {
+    width: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; background: #fff; color: #6b7280;
+    border: none; flex-shrink: 0;
+  }
+  .toolbar-icon:hover { color: #374151; background: #f9fafb; }
+  .toolbar-icon svg { width: 16px; height: 16px; }
+
+  /* ── TOOLBAR ROW 2: Actions + Pagination ── */
+  .toolbar-actions {
+    padding: 0 12px;
+    display: flex; align-items: center; gap: 4px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+    height: 40px;
+  }
+  .action-plus {
+    font-size: 20px; font-weight: 300; line-height: 1;
+    color: #374151; cursor: pointer; padding: 0 4px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; height: 28px;
+    margin-right: 2px;
+  }
+  .action-plus:hover { color: #111; }
+  .action-btn {
+    width: 28px; height: 28px;
+    border: none; background: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #6b7280;
+    border-radius: 3px;
+  }
+  .action-btn:hover { background: #f3f4f6; color: #374151; }
+  .action-btn svg { width: 16px; height: 16px; }
+
+  .toolbar-spacer { flex: 1; }
+
+  .pagination-info { color: #374151; font-size: 13px; white-space: nowrap; margin-right: 6px; }
+  .per-page-select {
+    border: 1px solid #d1d5db; border-radius: 4px;
+    padding: 3px 22px 3px 8px;
+    font-size: 13px; color: #374151;
+    font-family: inherit;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23374151' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 5px center;
+    -webkit-appearance: none; outline: none; cursor: pointer;
+    height: 28px;
+  }
+  .pagination-count { color: #374151; font-size: 13px; margin: 0 8px; white-space: nowrap; }
+  .page-nav-btn {
+    width: 26px; height: 26px;
+    border: none; background: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #6b7280; border-radius: 3px;
+  }
+  .page-nav-btn:hover { background: #f3f4f6; color: #374151; }
+  .page-nav-btn.disabled { opacity: .35; cursor: default; pointer-events: none; }
+  .page-nav-btn svg { width: 14px; height: 14px; }
+  .page-nav-btn.nav-refresh svg, .page-nav-btn.nav-settings svg { width: 15px; height: 15px; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; flex: 1; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead tr { background: #f9fafb; }
+  thead th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+    font-size: 12px;
+    position: sticky; top: 0; z-index: 1;
+    background: #f9fafb;
+  }
+  tbody tr { border-bottom: 1px solid #f0f2f5; }
+  tbody tr:nth-child(odd)  { background: #ffffff; }
+  tbody tr:nth-child(even) { background: #f7f8fa; }
+  tbody tr:hover { background: #eff6ff !important; cursor: pointer; }
+  tbody td { padding: 9px 12px; color: #374151; white-space: nowrap; vertical-align: middle; }
+
+  /* Update type badges */
+  .badge-status-change {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 500;
+    background: #e0f2fe; color: #0369a1;
+    white-space: nowrap;
+  }
+  .badge-issue-change {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 500;
+    background: #fef3c7; color: #92400e;
+    white-space: nowrap;
+  }
+
+  /* Status pills inside message column */
+  .status-pill {
+    display: inline-flex; align-items: center;
+    padding: 1px 7px; border-radius: 3px;
+    font-size: 11px; font-weight: 500;
+    margin-right: 3px; margin-bottom: 1px;
+  }
+  .status-buyable     { background: #dcfce7; color: #166534; }
+  .status-discoverable{ background: #e0f2fe; color: #075985; }
+  .status-blocked     { background: #fee2e2; color: #991b1b; }
+  .status-deleted     { background: #f3f4f6; color: #6b7280; text-decoration: line-through; }
+
+  /* Issue severity */
+  .severity-error   { color: #dc2626; font-size: 11px; font-weight: 600; }
+  .severity-warning { color: #d97706; font-size: 11px; font-weight: 600; }
+
+  .error-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #dc2626;
+    flex-shrink: 0;
+  }
+
+  .resolved-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 1px 7px; border-radius: 3px;
+    font-size: 11px; font-weight: 500;
+    background: #dcfce7; color: #166534;
+  }
+
+  .issue-message {
+    max-width: 340px;
+    white-space: normal;
+    line-height: 1.4;
+    font-size: 12px;
+    color: #374151;
+  }
+  .issue-meta {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 3px;
+  }
+  .enforcement-badge {
+    background: #fee2e2; color: #991b1b;
+    padding: 1px 6px; border-radius: 3px;
+    font-size: 10.5px; font-weight: 500;
+  }
+  .category-badge {
+    background: #f3f4f6; color: #4b5563;
+    padding: 1px 6px; border-radius: 3px;
+    font-size: 10.5px;
+  }
+
+  .tx-id { font-family: 'SF Mono', 'Fira Mono', monospace; font-size: 11px; color:#6b7280; }
+  .merchant-id { font-family: 'SF Mono', 'Fira Mono', monospace; font-size: 11px; color:#374151; }
+
+  /* Detail popup */
+  .detail-popup {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.14), 0 2px 6px rgba(0,0,0,.08);
+    width: 460px;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .detail-popup.visible { display: block; }
+  .detail-popup-header {
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 9px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .popup-title {
+    font-size: 12px; font-weight: 600; color: #374151;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .popup-title svg { width:13px; height:13px; color:#6b7280; }
+  .detail-popup-close {
+    font-size: 17px; color: #9ca3af; cursor: pointer; line-height: 1;
+    padding: 0 2px; background: none; border: none;
+  }
+  .detail-popup-close:hover { color: #374151; }
+  .detail-popup-body { padding: 10px 12px; max-height: 420px; overflow-y: auto; }
+  .detail-popup-body pre {
+    margin: 0;
+    font-family: 'SF Mono', 'Fira Mono', monospace;
+    font-size: 11.5px;
+    color: #374151;
+    line-height: 1.65;
+    white-space: pre;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 8px 10px;
+    overflow-x: auto;
+  }
+  .k { color: #7c3aed; }
+  .n { color: #2563eb; }
+  .s { color: #059669; }
+
+  .detail-expand-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 3px;
+    background: #f3f4f6; border: 1px solid #d1d5db;
+    cursor: pointer; color: #6b7280; font-size: 13px; line-height: 1;
+    flex-shrink: 0; transition: background .12s;
+    font-family: inherit; padding: 0; margin-left: 5px;
+    vertical-align: middle;
+  }
+  .detail-expand-btn:hover { background: #e5e7eb; color: #374151; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="logo">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+      <circle cx="14" cy="14" r="13" stroke="#1a1f2e" stroke-width="2" fill="none"/>
+      <path d="M9 8h6a4 4 0 010 8H9V8zm0 8v6" stroke="#1a1f2e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+    Item
+  </div>
+  <div class="nav-item active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    Sales channels
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Stock
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    Text
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    Orders
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+    Data
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2"/></svg>
+    CMS
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 00-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/></svg>
+    Plugins
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Processes
+  </div>
+  <div class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    Setup
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-right">
+    <div class="nav-search-wrap">
+      <input class="nav-search" type="text" placeholder="Search">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <button class="nav-icon-btn" title="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </button>
+    <button class="nav-icon-btn" title="Help">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </button>
+    <div class="nav-store">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      62999
+    </div>
+    <div class="nav-avatar">TK</div>
+  </div>
+</nav>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <div class="tab">
+    Dashboard
+    <span class="tab-dots">⋮</span>
+  </div>
+  <div class="tab active">
+    Channel Control Centre
+    <span class="tab-dots">⋮</span>
+    <span class="tab-close">×</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-hamburger">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </div>
+
+    <div class="sidebar-item">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Overview
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">
+      <span class="channel-name">Amazon</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <div class="sidebar-item" onclick="toggleMenu(this)">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Offer listings
+      </div>
+      <div class="item-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+
+    <div class="sidebar-item" onclick="toggleMenu(this)">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Product listings
+      </div>
+      <div class="item-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+
+    <div class="sidebar-item" onclick="toggleMenu(this)">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Settings
+      </div>
+      <div class="item-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+
+    <div class="sidebar-item" onclick="toggleMenu(this)">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        Mapping
+      </div>
+      <div class="item-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+
+    <!-- Process Overview – expanded -->
+    <div class="sidebar-item" id="process-overview-item" onclick="toggleProcessMenu()" style="background:rgba(255,255,255,.05);">
+      <div class="item-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Process Overview
+      </div>
+      <div class="item-right" id="process-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="sidebar-submenu" id="process-submenu">
+      <div class="sidebar-subitem" onclick="navigate(this)">Price &amp; Stock export logs</div>
+      <div class="sidebar-subitem" onclick="navigate(this)">Order Import logs</div>
+      <div class="sidebar-subitem active" onclick="navigate(this)">Listing Processing log</div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-add">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add sales channel
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <div class="page-header">
+      <div class="page-breadcrumb">
+        <span class="channel">Amazon</span>
+        <span class="sep">›</span>
+        <span>Listing Processing log</span>
+      </div>
+      <div class="page-subtitle">Real-time catalogue health notifications from Amazon — status changes and listing issues to diagnose suppressions and lifecycle events.</div>
+    </div>
+
+    <div class="table-panel">
+
+      <!-- Row 1: Search -->
+      <div class="toolbar-search">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search">
+        </div>
+        <div class="toolbar-icon" title="Saved searches">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        </div>
+        <div class="toolbar-icon" title="Filters">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+        </div>
+      </div>
+
+      <!-- Row 2: Actions + Pagination -->
+      <div class="toolbar-actions">
+        <button class="action-plus" title="Add">+</button>
+        <div class="action-btn" title="History">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        </div>
+        <div class="action-btn" title="Export">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 7 12 3 8 7"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M20 21H4"/></svg>
+        </div>
+        <div class="action-btn" title="Help">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="toolbar-spacer"></div>
+        <span class="pagination-info">Results per page</span>
+        <select class="per-page-select"><option>25</option><option>50</option><option>100</option></select>
+        <span class="pagination-count">1-14 of 14</span>
+        <div class="page-nav-btn disabled" title="First"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="11 17 6 12 11 7"/><line x1="6" y1="7" x2="6" y2="17"/></svg></div>
+        <div class="page-nav-btn disabled" title="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="page-nav-btn disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="page-nav-btn disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="page-nav-btn nav-refresh" title="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></div>
+        <div class="page-nav-btn nav-settings" title="Column settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Account</th>
+              <th>SKU</th>
+              <th>Update Type</th>
+              <th>Message</th>
+              <th>Event Time</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- 1: Status Change – BUYABLE + DISCOVERABLE -->
+            <tr onclick="openDetail('d1', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1PA6795UKMFR9</span></td>
+              <td>AB-123-RED</td>
+              <td><span class="badge-status-change">Status Change</span></td>
+              <td>
+                <span class="status-pill status-buyable">BUYABLE</span>
+                <span class="status-pill status-discoverable">DISCOVERABLE</span>
+              </td>
+              <td>2026-05-19 14:22:08</td>
+            </tr>
+
+            <!-- 2: Issue Change – Pricing Error / LISTING_SUPPRESSED -->
+            <tr onclick="openDetail('d2', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1PA6795UKMFR9</span></td>
+              <td>AB-123-RED</td>
+              <td><span class="badge-issue-change">Issue Change</span></td>
+              <td>
+                <div class="issue-message">
+                  <span class="error-dot" style="display:inline-block;margin-right:4px;vertical-align:middle;"></span>
+                  <span class="severity-error">ERROR</span> — Pricing Error: Offer price (29.99) exceeds Fair Pricing Policy limits.
+                  <div class="issue-meta">
+                    <span class="enforcement-badge">LISTING_SUPPRESSED</span>
+                    <span class="category-badge">PRICING</span>
+                  </div>
+                </div>
+                <button class="detail-expand-btn" onclick="event.stopPropagation();var r=this.closest('tr');var m=r.getAttribute('onclick').match(/\'(d\d+)\'/);openDetail(m[1],r)">···</button>
+              </td>
+              <td>2026-05-19 14:22:10</td>
+            </tr>
+
+            <!-- 3: Status Change – BLOCKED -->
+            <tr onclick="openDetail('d3', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1F83G8C2ARO7P</span></td>
+              <td>CB-456-BLU</td>
+              <td><span class="badge-status-change">Status Change</span></td>
+              <td>
+                <span class="status-pill status-blocked">BLOCKED</span>
+              </td>
+              <td>2026-05-19 13:58:44</td>
+            </tr>
+
+            <!-- 4: Issue Change – missing attributes -->
+            <tr onclick="openDetail('d4', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1F83G8C2ARO7P</span></td>
+              <td>CB-456-BLU</td>
+              <td><span class="badge-issue-change">Issue Change</span></td>
+              <td>
+                <div class="issue-message">
+                  <span class="error-dot" style="display:inline-block;margin-right:4px;vertical-align:middle;"></span>
+                  <span class="severity-error">ERROR</span> — Required attribute "bullet_point" is missing from the listing.
+                  <div class="issue-meta">
+                    <span class="enforcement-badge">LISTING_SUPPRESSED</span>
+                    <span class="category-badge">CONTENT</span>
+                  </div>
+                </div>
+                <button class="detail-expand-btn" onclick="event.stopPropagation();var r=this.closest('tr');var m=r.getAttribute('onclick').match(/\'(d\d+)\'/);openDetail(m[1],r)">···</button>
+              </td>
+              <td>2026-05-19 13:59:01</td>
+            </tr>
+
+            <!-- 5: Status Change – BUYABLE + DISCOVERABLE (different SKU) -->
+            <tr onclick="openDetail('d5', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1PA6795UKMFR9</span></td>
+              <td>XZ-789-GRN</td>
+              <td><span class="badge-status-change">Status Change</span></td>
+              <td>
+                <span class="status-pill status-buyable">BUYABLE</span>
+                <span class="status-pill status-discoverable">DISCOVERABLE</span>
+              </td>
+              <td>2026-05-19 13:45:22</td>
+            </tr>
+
+            <!-- 6: Issue Change – RESOLVED (empty issues) -->
+            <tr onclick="openDetail('d6', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1PA6795UKMFR9</span></td>
+              <td>XZ-789-GRN</td>
+              <td><span class="badge-issue-change">Issue Change</span></td>
+              <td><span class="resolved-badge">✓ RESOLVED</span></td>
+              <td>2026-05-19 13:46:05</td>
+            </tr>
+
+            <!-- 7: Issue Change – Image quality warning -->
+            <tr onclick="openDetail('d7', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A13V1IB3VIYZZH</span></td>
+              <td>DK-001-BLK</td>
+              <td><span class="badge-issue-change">Issue Change</span></td>
+              <td>
+                <div class="issue-message">
+                  <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#d97706;margin-right:4px;vertical-align:middle;"></span>
+                  <span class="severity-warning">WARNING</span> — Main image does not meet minimum resolution requirements (500×500 px).
+                  <div class="issue-meta">
+                    <span class="category-badge">IMAGES</span>
+                  </div>
+                </div>
+                <button class="detail-expand-btn" onclick="event.stopPropagation();var r=this.closest('tr');var m=r.getAttribute('onclick').match(/\'(d\d+)\'/);openDetail(m[1],r)">···</button>
+              </td>
+              <td>2026-05-19 13:30:17</td>
+            </tr>
+
+            <!-- 8: Status Change – DELETED -->
+            <tr onclick="openDetail('d8', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A13V1IB3VIYZZH</span></td>
+              <td>LG-990-WHT</td>
+              <td><span class="badge-status-change">Status Change</span></td>
+              <td>
+                <span class="status-pill status-deleted">DELETED</span>
+              </td>
+              <td>2026-05-19 12:55:03</td>
+            </tr>
+
+            <!-- 9: Issue Change – Compliance / ASIN_CREATION_BLOCKED -->
+            <tr onclick="openDetail('d9', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1PA6795UKMFR9</span></td>
+              <td>MX-334-SLV</td>
+              <td><span class="badge-issue-change">Issue Change</span></td>
+              <td>
+                <div class="issue-message">
+                  <span class="error-dot" style="display:inline-block;margin-right:4px;vertical-align:middle;"></span>
+                  <span class="severity-error">ERROR</span> — Product safety declaration is required for this category in the EU marketplace.
+                  <div class="issue-meta">
+                    <span class="enforcement-badge">ASIN_CREATION_BLOCKED</span>
+                    <span class="category-badge">COMPLIANCE</span>
+                  </div>
+                </div>
+                <button class="detail-expand-btn" onclick="event.stopPropagation();var r=this.closest('tr');var m=r.getAttribute('onclick').match(/\'(d\d+)\'/);openDetail(m[1],r)">···</button>
+              </td>
+              <td>2026-05-19 12:40:58</td>
+            </tr>
+
+            <!-- 10: Status Change – BUYABLE only -->
+            <tr onclick="openDetail('d10', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1F83G8C2ARO7P</span></td>
+              <td>PT-007-RED</td>
+              <td><span class="badge-status-change">Status Change</span></td>
+              <td>
+                <span class="status-pill status-buyable">BUYABLE</span>
+              </td>
+              <td>2026-05-19 12:15:30</td>
+            </tr>
+
+            <!-- 11: Issue Change – RESOLVED -->
+            <tr onclick="openDetail('d11', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1F83G8C2ARO7P</span></td>
+              <td>CB-456-BLU</td>
+              <td><span class="badge-issue-change">Issue Change</span></td>
+              <td><span class="resolved-badge">✓ RESOLVED</span></td>
+              <td>2026-05-19 11:58:44</td>
+            </tr>
+
+            <!-- 12: Issue Change – Restricted product -->
+            <tr onclick="openDetail('d12', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A13V1IB3VIYZZH</span></td>
+              <td>RS-112-BRN</td>
+              <td><span class="badge-issue-change">Issue Change</span></td>
+              <td>
+                <div class="issue-message">
+                  <span class="error-dot" style="display:inline-block;margin-right:4px;vertical-align:middle;"></span>
+                  <span class="severity-error">ERROR</span> — Item is restricted from sale on this marketplace without prior approval.
+                  <div class="issue-meta">
+                    <span class="enforcement-badge">LISTING_SUPPRESSED</span>
+                    <span class="category-badge">RESTRICTED</span>
+                  </div>
+                </div>
+                <button class="detail-expand-btn" onclick="event.stopPropagation();var r=this.closest('tr');var m=r.getAttribute('onclick').match(/\'(d\d+)\'/);openDetail(m[1],r)">···</button>
+              </td>
+              <td>2026-05-19 11:22:09</td>
+            </tr>
+
+            <!-- 13: Status Change – BLOCKED + DISCOVERABLE -->
+            <tr onclick="openDetail('d13', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1PA6795UKMFR9</span></td>
+              <td>WQ-555-YLW</td>
+              <td><span class="badge-status-change">Status Change</span></td>
+              <td>
+                <span class="status-pill status-blocked">BLOCKED</span>
+                <span class="status-pill status-discoverable">DISCOVERABLE</span>
+              </td>
+              <td>2026-05-19 10:47:51</td>
+            </tr>
+
+            <!-- 14: Issue Change – VAT warning -->
+            <tr onclick="openDetail('d14', this)">
+              <td><span class="merchant-id">A3DE6SBNEXK5G5</span></td>
+              <td><span class="tx-id">A1PA6795UKMFR9</span></td>
+              <td>WQ-555-YLW</td>
+              <td><span class="badge-issue-change">Issue Change</span></td>
+              <td>
+                <div class="issue-message">
+                  <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#d97706;margin-right:4px;vertical-align:middle;"></span>
+                  <span class="severity-warning">WARNING</span> — VAT invoice number format does not match DE marketplace requirements.
+                  <div class="issue-meta">
+                    <span class="category-badge">TAX</span>
+                  </div>
+                </div>
+                <button class="detail-expand-btn" onclick="event.stopPropagation();var r=this.closest('tr');var m=r.getAttribute('onclick').match(/\'(d\d+)\'/);openDetail(m[1],r)">···</button>
+              </td>
+              <td>2026-05-19 10:48:15</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Detail popup -->
+<div class="detail-popup" id="detailPopup">
+  <div class="detail-popup-header">
+    <div class="popup-title" id="popupTitle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Raw notification payload
+    </div>
+    <button class="detail-popup-close" onclick="closeDetail()">×</button>
+  </div>
+  <div class="detail-popup-body">
+    <pre id="detailPopupContent"></pre>
+  </div>
+</div>
+
+<script>
+  // Raw notification payloads per row
+  const notifications = {
+    d1: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_STATUS_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T14:22:08Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1PA6795UKMFR9", sku:"AB-123-RED", status:["BUYABLE","DISCOVERABLE"] } },
+    d2: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_ISSUES_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T14:22:10Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1PA6795UKMFR9", sku:"AB-123-RED", issues:[{ code:"90001", severity:"ERROR", message:"Pricing Error: Offer price (29.99) exceeds Fair Pricing Policy limits.", categories:["PRICING"], enforcements:[{ action:"LISTING_SUPPRESSED" }] }] } },
+    d3: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_STATUS_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T13:58:44Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1F83G8C2ARO7P", sku:"CB-456-BLU", status:["BLOCKED"] } },
+    d4: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_ISSUES_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T13:59:01Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1F83G8C2ARO7P", sku:"CB-456-BLU", issues:[{ code:"90210", severity:"ERROR", message:"Required attribute \"bullet_point\" is missing from the listing.", categories:["CONTENT"], enforcements:[{ action:"LISTING_SUPPRESSED" }] }] } },
+    d5: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_STATUS_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T13:45:22Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1PA6795UKMFR9", sku:"XZ-789-GRN", status:["BUYABLE","DISCOVERABLE"] } },
+    d6: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_ISSUES_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T13:46:05Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1PA6795UKMFR9", sku:"XZ-789-GRN", issues:[] } },
+    d7: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_ISSUES_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T13:30:17Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A13V1IB3VIYZZH", sku:"DK-001-BLK", issues:[{ code:"90044", severity:"WARNING", message:"Main image does not meet minimum resolution requirements (500×500 px).", categories:["IMAGES"], enforcements:[] }] } },
+    d8: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_STATUS_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T12:55:03Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A13V1IB3VIYZZH", sku:"LG-990-WHT", status:["DELETED"] } },
+    d9: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_ISSUES_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T12:40:58Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1PA6795UKMFR9", sku:"MX-334-SLV", issues:[{ code:"90099", severity:"ERROR", message:"Product safety declaration is required for this category in the EU marketplace.", categories:["COMPLIANCE"], enforcements:[{ action:"ASIN_CREATION_BLOCKED" }] }] } },
+    d10: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_STATUS_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T12:15:30Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1F83G8C2ARO7P", sku:"PT-007-RED", status:["BUYABLE"] } },
+    d11: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_ISSUES_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T11:58:44Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1F83G8C2ARO7P", sku:"CB-456-BLU", issues:[] } },
+    d12: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_ISSUES_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T11:22:09Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A13V1IB3VIYZZH", sku:"RS-112-BRN", issues:[{ code:"90033", severity:"ERROR", message:"Item is restricted from sale on this marketplace without prior approval.", categories:["RESTRICTED"], enforcements:[{ action:"LISTING_SUPPRESSED" }] }] } },
+    d13: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_STATUS_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T10:47:51Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1PA6795UKMFR9", sku:"WQ-555-YLW", status:["BLOCKED","DISCOVERABLE"] } },
+    d14: { notificationVersion:"2020-09-04", notificationType:"LISTINGS_ITEM_ISSUES_CHANGE", payloadVersion:"2020-09-04", eventTime:"2026-05-19T10:48:15Z", payload:{ merchantId:"A3DE6SBNEXK5G5", marketplaceId:"A1PA6795UKMFR9", sku:"WQ-555-YLW", issues:[{ code:"90077", severity:"WARNING", message:"VAT invoice number format does not match DE marketplace requirements.", categories:["TAX"], enforcements:[] }] } },
+  };
+
+  function syntaxHighlight(obj) {
+    const json = JSON.stringify(obj, null, 2);
+    return json.replace(/("[\w_]+")\s*:/g, '<span class="k">$1</span>:')
+               .replace(/:\s*(".*?")/g, ': <span class="s">$1</span>')
+               .replace(/:\s*(\d[\d.]*)/g, ': <span class="n">$1</span>')
+               .replace(/:\s*(true|false|null)/g, ': <span class="n">$1</span>');
+  }
+
+  function openDetail(id, rowEl) {
+    const popup = document.getElementById('detailPopup');
+    document.getElementById('detailPopupContent').innerHTML = syntaxHighlight(notifications[id]);
+
+    const rect = rowEl.getBoundingClientRect();
+    const pw = 460, ph = 460;
+    let top = rect.bottom + 4;
+    let left = rect.left + 80;
+    if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+    if (top + ph > window.innerHeight - 12) top = rect.top - ph - 4;
+
+    popup.style.top = top + 'px';
+    popup.style.left = left + 'px';
+    popup.classList.add('visible');
+  }
+
+  function closeDetail() {
+    document.getElementById('detailPopup').classList.remove('visible');
+  }
+
+  document.addEventListener('click', function(e) {
+    const popup = document.getElementById('detailPopup');
+    if (!popup.contains(e.target) && !e.target.closest('tbody tr')) {
+      popup.classList.remove('visible');
+    }
+  });
+
+  function toggleMenu(el) {
+    const arrow = el.querySelector('.item-right svg');
+    if (arrow) {
+      const isOpen = el.dataset.open === '1';
+      el.dataset.open = isOpen ? '0' : '1';
+      arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
+    }
+  }
+
+  function toggleProcessMenu() {
+    const submenu = document.getElementById('process-submenu');
+    const arrow = document.getElementById('process-arrow').querySelector('svg');
+    const isOpen = submenu.style.display !== 'none';
+    submenu.style.display = isOpen ? 'none' : 'block';
+    arrow.style.transform = isOpen ? 'rotate(-90deg)' : '';
+  }
+
+  function navigate(el) {
+    document.querySelectorAll('.sidebar-subitem').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  document.getElementById('process-submenu').style.display = 'block';
+</script>
+</body>
+</html>
