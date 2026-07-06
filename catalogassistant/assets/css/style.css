@@ -1,0 +1,163 @@
+body {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  color: #333333 !important;
+  background-color: #f3f3f3 !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  padding: 0 !important;
+  direction: ltr !important;
+  overflow-y: hidden;
+}
+
+.loading {
+  opacity: 1;
+  transition: opacity 0.8s ease-in-out;
+  position: fixed;
+  top: calc(50% - 50px);
+  width: 100%;
+  z-index: 100;
+  text-align: center;
+  font-size: 22px;
+}
+
+.loading .loading-text-wrapper {
+  color: #000000;
+  text-align: center;
+}
+
+.loading .loading-text {
+  font-size: 20px;
+}
+
+.dot-one {
+  opacity: 0;
+  -webkit-animation: dot 1.3s infinite;
+  -webkit-animation-delay: 0s;
+  animation: dot 1.3s infinite;
+  animation-delay: 0s;
+  font-size: 22px;
+}
+
+.dot-two {
+  opacity: 0;
+  -webkit-animation: dot 1.3s infinite;
+  -webkit-animation-delay: 0.2s;
+  animation: dot 1.3s infinite;
+  animation-delay: 0.2s;
+  font-size: 22px;
+}
+
+.dot-three {
+  opacity: 0;
+  -webkit-animation: dot 1.3s infinite;
+  -webkit-animation-delay: 0.3s;
+  animation: dot 1.3s infinite;
+  animation-delay: 0.3s;
+  font-size: 22px;
+}
+
+@-webkit-keyframes dot {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dot {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Loading logo animation */
+
+.plenty-logo {
+  width: 60px;
+  height: 60px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  margin: auto;
+}
+
+.plenty-logo svg {
+  width: 100%;
+  height: auto;
+}
+
+.plenty-logo svg .plenty-svg-outline,
+.plenty-logo svg .plenty-svg-letter {
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: plentyLogoAnimation;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
+  fill-opacity: 1;
+  animation-duration: 5s;
+}
+
+.plenty-logo svg .plenty-svg-outline {
+  &:not(.new-color) {
+    fill: var(--color-primary);
+    stroke: var(--color-primary);
+  }
+  &.new-color {
+    fill: #062633;
+    stroke: #062633;
+  }
+}
+
+.plenty-logo svg .plenty-svg-letter {
+  fill: var(--color-bg-secondary);
+}
+
+.plenty-logo .plenty-logo-text {
+  position: absolute;
+  white-space: nowrap;
+  overflow: hidden;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  margin: auto;
+  transform: translate(-10px, 55px);
+  text-align: center;
+  height: 20px;
+  line-height: 20px;
+  width: 85px;
+}
+
+.plenty-logo .plenty-logo-text span:first-child {
+  font-size: var(--font-size-14);
+}
+
+@keyframes plentyLogoAnimation {
+  45% {
+    stroke-dashoffset: 1000;
+  }
+  65% {
+    fill-opacity: 0;
+  }
+}
