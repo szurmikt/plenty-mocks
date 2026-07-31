@@ -122,8 +122,6 @@
       var actionsEl = document.createElement('div');
       actionsEl.className = 'proto-ai-section proto-ai-actions';
       actionsEl.innerHTML =
-        '<button type="button" class="proto-ai-action-btn" id="proto-guide-start-btn">Show me a Step by Step guide</button>' +
-        '<button type="button" class="proto-ai-action-btn" id="proto-ai-verify-btn">Verify the recommended changes I made</button>' +
         '<button type="button" class="proto-ai-action-btn" id="proto-ai-validate-guide-btn">Give me a guide how to validate with real data</button>';
       aiResponse.appendChild(actionsEl);
     }, afterSectionsDelay));
@@ -136,19 +134,6 @@
     sectionEl.innerHTML = (heading ? '<h4>' + heading + '</h4>' : '') + html;
     aiResponse.appendChild(sectionEl);
     return sectionEl;
-  }
-
-  function handleVerifyClick(button) {
-    button.disabled = true;
-    var statusEl = document.createElement('p');
-    statusEl.className = 'proto-ai-status';
-    statusEl.textContent = 'Verifying your mapping changes....';
-    aiResponse.appendChild(statusEl);
-
-    aiTimers.push(setTimeout(function () {
-      if (statusEl.parentNode) statusEl.parentNode.removeChild(statusEl);
-      appendAiSection(null, '<p>✓ All changes <strong class="proto-ai-success">look good</strong>. You can save the catalogue.</p>');
-    }, 1200));
   }
 
   function handleValidateGuideClick(button) {
@@ -164,25 +149,8 @@
     );
   }
 
-  function handleGuideStartClick(button) {
-    button.disabled = true;
-    guideWidgetEl.hidden = false;
-    renderGuideStepper();
-    showStep(0);
-  }
-
   if (aiResponse) {
     aiResponse.addEventListener('click', function (e) {
-      var guideStartBtn = e.target.closest('#proto-guide-start-btn');
-      if (guideStartBtn) {
-        handleGuideStartClick(guideStartBtn);
-        return;
-      }
-      var verifyBtn = e.target.closest('#proto-ai-verify-btn');
-      if (verifyBtn) {
-        handleVerifyClick(verifyBtn);
-        return;
-      }
       var guideBtn = e.target.closest('#proto-ai-validate-guide-btn');
       if (guideBtn) {
         handleValidateGuideClick(guideBtn);
@@ -198,7 +166,6 @@
       aiResponse.innerHTML = '';
     }
     if (aiSuggested) aiSuggested.hidden = false;
-    closeStepper();
   }
 
   function openAiPanel() {
@@ -220,41 +187,7 @@
   if (aiAnalyseBtn) aiAnalyseBtn.addEventListener('click', openAiPanel);
   if (aiCloseBtn) aiCloseBtn.addEventListener('click', closeAiPanel);
 
-  // --- Guide me step by step ---------------------------------------------
-
-  function findMappingRow(labelText) {
-    var labels = document.querySelectorAll('.mapping-label');
-    for (var i = 0; i < labels.length; i++) {
-      if (labels[i].textContent.trim() === labelText) {
-        return labels[i].closest('.mapping-row');
-      }
-    }
-    return null;
-  }
-
-  function findSourceCardField(row, sourceTitle) {
-    if (!row) return null;
-    var cards = row.querySelectorAll('mat-card.source-card');
-    for (var i = 0; i < cards.length; i++) {
-      var titleEl = cards[i].querySelector('.source-value');
-      if (titleEl && titleEl.textContent.trim() === sourceTitle) {
-        return cards[i].querySelector('mat-form-field');
-      }
-    }
-    return null;
-  }
-
-  function findFieldByLabel(row, labelText) {
-    if (!row) return null;
-    var fields = row.querySelectorAll('mat-form-field');
-    for (var i = 0; i < fields.length; i++) {
-      var labelEl = fields[i].querySelector('mat-label');
-      if (labelEl && labelEl.textContent.trim() === labelText) {
-        return fields[i];
-      }
-    }
-    return null;
-  }
+  // --- Accordion panels: general expand/collapse --------------------------
 
   function findPanelByTitle(titleText) {
     var titles = document.querySelectorAll('mat-panel-title');
@@ -291,136 +224,6 @@
 
   var itemDimensionsPanel = findPanelByTitle('item_dimensions');
   if (itemDimensionsPanel) setPanelExpanded(itemDimensionsPanel, false);
-
-  var guideWidgetEl = document.createElement('div');
-  guideWidgetEl.className = 'proto-guide-widget';
-  guideWidgetEl.hidden = true;
-  document.body.appendChild(guideWidgetEl);
-
-  var GUIDE_STEPS = [
-    {
-      rowLabel: 'MFN SKU base*',
-      sourceTitle: 'Own value',
-      text: 'Enter the mandatory variation number here.'
-    },
-    {
-      rowLabel: 'FBA SKU base*',
-      sourceTitle: 'Own value',
-      text: 'Do the same on the FBA side — Amazon needs a variation number on both channels.'
-    },
-    {
-      rowLabels: [
-        'Item Length Unit (item_dimensions.length.unit)',
-        'Item Width Unit (item_dimensions.width.unit)'
-      ],
-      fieldLabel: 'Export as',
-      panelTitle: 'item_dimensions',
-      text: 'Map the unit Amazon expects (e.g. centimeters). The same fix applies to the Item Width Unit row below.'
-    }
-  ];
-
-  var guideStepIndex = 0;
-  var guideHighlightedEls = [];
-  var guideCalloutEls = [];
-  var guideTimers = [];
-
-  function clearGuideTimers() {
-    guideTimers.forEach(function (id) { clearTimeout(id); });
-    guideTimers = [];
-  }
-
-  function clearGuideHighlights() {
-    guideHighlightedEls.forEach(function (el) { el.classList.remove('proto-guide-highlight'); });
-    guideHighlightedEls = [];
-    guideCalloutEls.forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); });
-    guideCalloutEls = [];
-  }
-
-  function buildCallout(text, extraCount) {
-    var el = document.createElement('div');
-    el.className = 'proto-guide-callout';
-    el.innerHTML = '<p style="margin:0">' + text +
-      (extraCount ? ' <em>(+' + extraCount + ' more below)</em>' : '') + '</p>';
-    return el;
-  }
-
-  function updateStepperUi(index) {
-    var labelEl = guideWidgetEl.querySelector('#proto-guide-stepper-label');
-    if (!labelEl) return;
-    var isLastStep = index === GUIDE_STEPS.length - 1;
-    labelEl.textContent = (index + 1) + ' of ' + GUIDE_STEPS.length + ' errors to fix';
-    guideWidgetEl.querySelector('#proto-guide-prev-btn').disabled = index === 0;
-    var nextBtn = guideWidgetEl.querySelector('#proto-guide-next-btn');
-    nextBtn.textContent = isLastStep ? 'Done' : '›';
-    nextBtn.classList.toggle('proto-guide-stepper-done', isLastStep);
-    // "Done" already closes the walkthrough, so the separate × would be a
-    // redundant second close action right next to it — hide it on this step.
-    guideWidgetEl.querySelector('#proto-guide-stepper-close').hidden = isLastStep;
-  }
-
-  function showStep(index) {
-    clearGuideTimers();
-    clearGuideHighlights();
-    guideStepIndex = index;
-
-    var step = GUIDE_STEPS[index];
-    var rowLabels = step.rowLabels || [step.rowLabel];
-    var rows = rowLabels.map(findMappingRow).filter(Boolean);
-    if (!rows.length) { updateStepperUi(index); return; }
-
-    var panel = step.panelTitle ? findPanelByTitle(step.panelTitle) : rows[0].closest('mat-expansion-panel');
-    var alreadyExpanded = !panel || panel.classList.contains('mat-expanded');
-    if (panel && !alreadyExpanded) setPanelExpanded(panel, true);
-
-    var applyHighlights = function () {
-      rows.forEach(function (row, i) {
-        var field = step.sourceTitle
-          ? findSourceCardField(row, step.sourceTitle)
-          : findFieldByLabel(row, step.fieldLabel);
-        var target = field || row;
-        target.classList.add('proto-guide-highlight');
-        guideHighlightedEls.push(target);
-        if (i === 0) {
-          var callout = buildCallout(step.text, rows.length - 1);
-          row.insertAdjacentElement('afterend', callout);
-          guideCalloutEls.push(callout);
-        }
-      });
-      if (guideHighlightedEls[0]) {
-        guideHighlightedEls[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      updateStepperUi(index);
-    };
-
-    if (panel && !alreadyExpanded) {
-      guideTimers.push(setTimeout(applyHighlights, 280));
-    } else {
-      applyHighlights();
-    }
-  }
-
-  function renderGuideStepper() {
-    guideWidgetEl.innerHTML =
-      '<button type="button" class="proto-guide-stepper-nav" id="proto-guide-prev-btn" aria-label="Previous">&lsaquo;</button>' +
-      '<span class="proto-guide-stepper-label" id="proto-guide-stepper-label"></span>' +
-      '<button type="button" class="proto-guide-stepper-nav" id="proto-guide-next-btn" aria-label="Next">&rsaquo;</button>' +
-      '<button type="button" class="proto-guide-stepper-close" id="proto-guide-stepper-close" aria-label="Close guide">&times;</button>';
-    guideWidgetEl.querySelector('#proto-guide-prev-btn').addEventListener('click', function () {
-      if (guideStepIndex > 0) showStep(guideStepIndex - 1);
-    });
-    guideWidgetEl.querySelector('#proto-guide-next-btn').addEventListener('click', function () {
-      if (guideStepIndex < GUIDE_STEPS.length - 1) showStep(guideStepIndex + 1);
-      else closeStepper();
-    });
-    guideWidgetEl.querySelector('#proto-guide-stepper-close').addEventListener('click', closeStepper);
-  }
-
-  function closeStepper() {
-    clearGuideTimers();
-    clearGuideHighlights();
-    guideWidgetEl.hidden = true;
-    guideWidgetEl.innerHTML = '';
-  }
 
   // -------------------------------------------------------------------------
 
