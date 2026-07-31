@@ -196,11 +196,6 @@ a[aria-disabled="true"] {
   font-size: var(--font-size-13, 13px);
 }
 
-.proto-ai-success {
-  color: var(--green-60, #1e8e3e);
-  font-weight: 700;
-}
-
 .proto-ai-actions {
   display: flex;
   flex-direction: column;
@@ -232,7 +227,7 @@ a[aria-disabled="true"] {
   background: var(--color-bg-tertiary, #eef0f2);
 }
 
-/* Guide me step by step */
+/* Accordion panels: general expand/collapse */
 
 mat-expansion-panel:not(.mat-expanded) > .mat-expansion-panel-content-wrapper {
   display: none;
@@ -240,91 +235,4 @@ mat-expansion-panel:not(.mat-expanded) > .mat-expansion-panel-content-wrapper {
 
 .mat-expansion-panel-header {
   cursor: pointer;
-}
-
-/* Fixed top-right, floating above the content — kept clear of the AI drawer
-   (416px wide when open, since this widget is only ever shown while the
-   drawer is open) via a static right offset, not the filter toolbar's flow. */
-.proto-guide-widget {
-  position: fixed;
-  top: calc(var(--navbar-height, 48px) + var(--tabbar-height, 32px) + 140px);
-  right: 440px;
-  z-index: var(--zIndex-9, 900);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--plentyone-blue, #062633);
-  color: #fff;
-  border-radius: 24px;
-  padding: 8px 10px 8px 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  font-size: var(--font-size-13, 13px);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.proto-guide-stepper-nav,
-.proto-guide-stepper-close {
-  background: rgba(255, 255, 255, 0.12);
-  border: none;
-  color: #fff;
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
-}
-
-.proto-guide-stepper-nav.proto-guide-stepper-done {
-  width: auto;
-  height: 30px;
-  border-radius: 15px;
-  padding: 0 14px;
-  font-size: var(--font-size-13, 13px);
-  font-weight: 700;
-}
-
-.proto-guide-stepper-nav:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.proto-guide-stepper-nav:hover:not(:disabled),
-.proto-guide-stepper-close:hover {
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.proto-guide-highlight {
-  outline: 2px solid var(--plentyone-blue, #062633);
-  outline-offset: 2px;
-  background-color: var(--plentyone-lime, #edff6c);
-  border-radius: 6px;
-  transition: outline-color .2s ease, background-color .2s ease;
-}
-
-.proto-guide-callout {
-  position: relative;
-  margin: 6px 0 16px 0;
-  background: var(--plentyone-lime, #edff6c);
-  color: var(--plentyone-blue, #062633);
-  border: 1px solid var(--plentyone-blue, #062633);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: var(--font-size-13, 13px);
-  font-weight: 600;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-}
-
-.proto-guide-callout:before {
-  content: "";
-  position: absolute;
-  top: -7px;
-  left: 24px;
-  width: 12px;
-  height: 12px;
-  background: var(--plentyone-lime, #edff6c);
-  border-left: 1px solid var(--plentyone-blue, #062633);
-  border-top: 1px solid var(--plentyone-blue, #062633);
-  transform: rotate(45deg);
 }
