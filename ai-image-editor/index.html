@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PIM AI Image Editor · Prototype v1.8 (Copy)</title>
+<title>PIM AI Image Editor · Prototype v2.3 (preview area · check-in 19 Nov)</title>
 <!--
   PROTOTYPE v1 · polished M3 version of wireframe v0.2 (option B-lite).
   Built from plentyone-m3-starter.html: Terra light-theme colour tokens, M3 default shape, IBM Plex Sans.
@@ -491,13 +491,15 @@ input[type=range]{accent-color:var(--mat-sys-primary)}
 .rt-m small{display:block;font-size:11px;line-height:14px;color:var(--mat-sys-on-surface-variant)}
 .rt .vcb{margin-top:6px}
 
-/* ===== v1.9.3: generation queue bar in the image overview (Vlad's run chip, as a bar) ===== */
-#qbar{margin:0 24px 8px;border:1px solid var(--mat-sys-outline-variant);border-radius:var(--mat-sys-corner-medium);background:var(--mat-sys-surface)}
+/* ===== v2.0: async generation (Tamas + devs) + review fixes ===== */
+#qbar,#dbar{margin:0 24px 8px;border:1px solid var(--mat-sys-outline-variant);border-radius:var(--mat-sys-corner-medium);background:var(--mat-sys-surface)}
+#qbar[hidden],#dbar[hidden]{display:none}
 .qb-h{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px}
 .qb-t{flex:1;min-width:0}.qb-t b{display:block;font-weight:500;color:var(--mat-sys-on-surface)}.qb-t small{display:block;font-size:12px;line-height:16px;color:var(--mat-sys-on-surface-variant)}
 .qspin{color:var(--mat-sys-primary);animation:qspin 1.2s linear infinite}
 @keyframes qspin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.qspin{animation:none}}
+.qerr{color:var(--mat-sys-error)}
 .qlist{list-style:none;margin:0;padding:0 16px 4px;border-top:1px solid var(--mat-sys-outline-variant)}
 .qlist[hidden]{display:none}
 .qlist li{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--mat-sys-outline-variant)}
@@ -505,31 +507,215 @@ input[type=range]{accent-color:var(--mat-sys-primary)}
 .qth{width:48px;height:48px;flex:0 0 48px;border:1px solid var(--mat-sys-outline-variant);border-radius:var(--mat-sys-corner-small);overflow:hidden;background:var(--mat-sys-surface)}
 .qth img{width:100%;height:100%;object-fit:contain;display:block}
 .qm{flex:1;min-width:0}.qm b{display:block;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.qm small{display:block;font-size:12px;line-height:16px;color:var(--mat-sys-on-surface-variant)}
+.qm small.e{color:var(--mat-sys-on-error-container)}
 .qs{font-size:12px;color:var(--mat-sys-on-surface-variant);white-space:nowrap}
+.qs.e{color:var(--mat-sys-error);font-weight:500}
+.qa{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.qa .btn{height:32px;padding:0 12px}
+.dbar{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;flex-wrap:wrap}
+.dbar .ms{color:var(--mat-sys-primary)}
+.btn-tonal{background:var(--mat-sys-secondary-container);color:var(--mat-sys-on-secondary-container)}
+.btn-tonal:hover{box-shadow:0 1px 2px rgba(0,0,0,.3),0 1px 3px 1px rgba(0,0,0,.15)}
+.imgcard-l{display:flex;flex-direction:column;gap:8px}
+.ebtn{width:100%;height:36px;padding:0 12px}
+.ebtn .ms{font-size:18px}
+.draftrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px 10px 16px;background:var(--mat-sys-secondary-container);color:var(--mat-sys-on-secondary-container);border-bottom:1px solid var(--mat-sys-outline-variant)}
+.draftrow .dt{flex:1;min-width:200px}.draftrow .dt b{display:block;font-weight:500}.draftrow .dt small{display:block;font-size:12px;line-height:16px}
+.draftrow .btn{height:36px}
+.draftrow .btn-text{color:var(--mat-sys-on-secondary-container)}
+.badge.draft{background:var(--mat-sys-tertiary-container);color:var(--mat-sys-on-tertiary-container)}
+.ofh{font-size:12px;line-height:16px;color:var(--mat-sys-on-surface-variant);margin-top:4px}
+.ofh.err{color:var(--mat-sys-error);font-weight:500}
+.of input[aria-invalid=true]{border-color:var(--mat-sys-error);border-width:2px}
+.of select:disabled{color:color-mix(in srgb,var(--mat-sys-on-surface) 60%,transparent);border-style:dashed}
+.bellw{position:relative}
+.bdg{position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--mat-sys-error);color:var(--mat-sys-on-error);font-size:11px;font-weight:700;line-height:16px;text-align:center}
+.bdg[hidden]{display:none}
+.notifpop{position:absolute;right:52px;top:0;width:320px;background:var(--mat-sys-surface);color:var(--mat-sys-on-surface);border-radius:var(--mat-sys-corner-medium);box-shadow:0 2px 6px 2px rgba(0,0,0,.15),0 1px 2px rgba(0,0,0,.3);z-index:50;padding:8px 0}
+.notifpop[hidden]{display:none}
+.np-h{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 8px 16px}
+.np-h b{font-size:16px;font-weight:500}
+.np-l{list-style:none;margin:0;padding:0}
+.np-i{display:flex;gap:12px;width:100%;text-align:left;border:0;background:transparent;padding:10px 16px;color:inherit}
+.np-i:hover{background:color-mix(in srgb,var(--mat-sys-on-surface) 8%,transparent)}
+.np-i .ms{color:var(--mat-sys-primary);margin-top:2px}.np-i.e .ms{color:var(--mat-sys-error)}
+.np-i b{display:block;font-weight:500}.np-i small{display:block;font-size:12px;line-height:16px;color:var(--mat-sys-on-surface-variant)}
+.np-i.unread b::after{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mat-sys-primary);margin-left:8px;vertical-align:1px}
+.np-empty{padding:8px 16px 12px;color:var(--mat-sys-on-surface-variant);font-size:13px}
+.zdlg{width:min(760px,94vw)}
+.zimg{aspect-ratio:1;max-height:62vh;margin:0 auto 16px;border:1px solid var(--mat-sys-outline-variant);border-radius:var(--mat-sys-corner-small);overflow:hidden;background:var(--mat-sys-surface-dim)}
+.zimg img{width:100%;height:100%;object-fit:contain;display:block}
+.dlg .acts .sp{flex:1}
+#showAll[hidden],#zEdit[hidden]{display:none}
+.imgcard-h .url .badge{flex:0 0 auto;white-space:nowrap;margin-left:4px}
+.imgcard-h .url span:first-child{min-width:0}
+.stbox{padding:10px 12px;border-radius:var(--mat-sys-corner-small);background:var(--mat-sys-secondary-container);color:var(--mat-sys-on-secondary-container);margin-bottom:12px}
+.stbox b{display:block;font-weight:500}.stbox small{display:block;font-size:12px;line-height:16px;margin-top:2px}
+.stbox .linkbtn{font-size:13px;margin-top:6px;color:var(--mat-sys-on-secondary-container)}
+/* v2.2: in-editor generation mode hides everything that only exists for background jobs */
+body.gsync #qbar,body.gsync #dbar,body.gsync .bdg{display:none!important}
+/* ===== v2.1: compare = side by side (replaces the wipe slider) ===== */
+.frame.sbs{aspect-ratio:auto!important;width:100%;max-width:1200px;border:0;background:transparent;overflow:visible;display:flex;gap:16px;align-items:stretch}
+.sbs-f{flex:1 1 0;min-width:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.sbs-c{display:flex;align-items:center;gap:6px;font-size:12px;line-height:16px;color:var(--mat-sys-on-surface-variant);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbs-c b{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:var(--mat-sys-corner-extra-small);font-size:11px;font-weight:500;background:var(--mat-sys-inverse-surface);color:var(--mat-sys-inverse-on-surface)}
+.sbs-f.sbs-a .sbs-c b{background:var(--mat-sys-primary);color:var(--mat-sys-on-primary)}
+.sbs-box{flex:1;min-height:0;container-type:size;display:flex;align-items:flex-start;justify-content:center}
+.sbs-pic{position:relative;aspect-ratio:var(--ar);width:min(100cqw,calc(100cqh * var(--r)));border:1px solid var(--mat-sys-outline-variant);background:var(--mat-sys-surface);overflow:hidden}
+.sbs-pic .ext-note{bottom:8px}
+@media (max-width:640px){.frame.sbs{flex-direction:column}.sbs-f{min-height:240px}}
+
+/* ===== v2.3: check-in 19 Nov (Ron + Tamas) ===== */
+.shell.pl{height:100vh}
+/* v2.3.1: Tasks = docked side panel (matches current PlentyONE) */
+.shell.pl.tasks-open{grid-template-columns:72px minmax(0,1fr) 380px 64px}
+.shell.pl.exp.tasks-open{grid-template-columns:264px minmax(0,1fr) 380px 64px}
+.tpanel{background:var(--mat-sys-background);border-radius:24px;margin:12px 0 12px 12px;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.tpanel[hidden]{display:none}
+.tp-h{display:flex;align-items:center;gap:4px;padding:8px 8px 8px 16px;border-bottom:1px solid var(--mat-sys-outline-variant)}
+.tp-h h2{flex:1;margin:0;font-size:16px;line-height:24px;font-weight:400;color:var(--mat-sys-on-surface)}
+.tp-h h2:focus{outline:none}
+.tp-b{flex:1;overflow:auto;padding:8px 0}
+.tp-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--mat-sys-on-surface);text-align:center;padding:24px}
+.tp-empty .ms{font-size:56px;width:56px;height:56px;color:var(--mat-sys-on-surface)}
+.tp-g{font-size:12px;font-weight:500;letter-spacing:.2px;color:var(--mat-sys-on-surface-variant);padding:12px 16px 4px;margin:0}
+.tp-l{list-style:none;margin:0;padding:0 8px}
+.tp-i{display:flex;gap:12px;align-items:flex-start;padding:10px 8px;border-radius:var(--mat-sys-corner-medium)}
+.tp-i+.tp-i{border-top:1px solid var(--mat-sys-outline-variant);border-radius:0}
+.tp-i .qth{width:40px;height:40px;flex:0 0 40px}
+.tp-t{flex:1;min-width:0}
+.tp-t b{display:block;font-weight:500;font-size:13px;line-height:18px}
+.tp-t small{display:block;font-size:12px;line-height:16px;color:var(--mat-sys-on-surface-variant);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-s{display:flex;align-items:center;gap:6px;font-size:12px;line-height:16px;margin-top:4px;color:var(--mat-sys-on-surface-variant)}
+.tp-s .ms{font-size:16px}
+.tp-s.e{color:var(--mat-sys-error)}.tp-s.ok{color:#1b5e20}
+.tp-bar{height:4px;border-radius:2px;background:var(--mat-sys-outline-variant);overflow:hidden;margin-top:6px}
+.tp-bar i{display:block;height:100%;width:40%;background:var(--mat-sys-primary);animation:tpb 1.4s ease-in-out infinite}
+@keyframes tpb{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+@media (prefers-reduced-motion:reduce){.tp-bar i{animation:none;width:100%;opacity:.4}}
+.tp-a{display:flex;gap:4px;margin-top:4px}
+.tp-a .btn{height:32px;padding:0 10px;font-size:13px}
+.plrail #tasksBtn[aria-expanded=true]{background:var(--mat-sys-tertiary);color:var(--mat-sys-on-tertiary)}
+@media (max-width:1100px){.shell.pl.tasks-open{grid-template-columns:72px minmax(0,1fr) 320px 64px}}
+@media (max-width:900px){.shell.pl.tasks-open{grid-template-columns:56px 1fr}.tpanel{position:fixed;inset:12px 12px 12px auto;width:min(380px,calc(100vw - 24px));z-index:70;box-shadow:0 4px 12px rgba(0,0,0,.35)}}
+
+.pc{position:fixed;left:84px;bottom:64px;z-index:95;max-width:min(1100px,calc(100vw - 100px));border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.35);display:none;padding:10px 14px}
+body.pcopen .pc{display:flex}
+.pc .tag{margin-left:0;flex-basis:100%}
+#pcT{position:fixed;left:84px;bottom:16px;z-index:96;width:40px;height:40px;border-radius:50%;border:0;background:var(--mat-sys-inverse-surface);color:var(--mat-sys-inverse-on-surface);display:grid;place-items:center;opacity:0;transition:opacity .15s}
+#pcT:hover,#pcT:focus-visible,body.pcopen #pcT{opacity:1}
+@media (prefers-reduced-motion:reduce){#pcT{transition:none}}
+.plbody{background:transparent;border:0;padding:0;border-radius:0}
+.vsw button{display:inline-flex;align-items:center;gap:6px}
+.vsw .ms{font-size:18px}
+.plpanel-tools .vsw{margin-left:16px}
+.pv{margin:0 24px 16px;border:1px solid var(--mat-sys-outline-variant);border-radius:var(--mat-sys-corner-medium);background:var(--mat-sys-surface)}
+.pv[hidden]{display:none}
+.pv-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 12px 12px 16px;border-bottom:1px solid var(--mat-sys-outline-variant);background:var(--mat-sys-surface-container-high);border-radius:var(--mat-sys-corner-medium) var(--mat-sys-corner-medium) 0 0}
+.pv-h>.ms{color:var(--mat-sys-primary)}
+.pv-t{font-size:16px;line-height:24px;font-weight:500;margin:0;color:var(--mat-sys-on-surface)}
+.pv-h .qb-t{min-width:240px}
+.pv-n{font-size:13px;font-weight:500}
+.pv-b{padding:4px 16px 8px}
+.pg{padding:10px 0;border-bottom:1px solid var(--mat-sys-outline-variant)}
+.pg:last-child{border-bottom:0}
+.pg-h{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px}
+.gg-th{width:32px;height:32px;flex:0 0 32px;border:1px solid var(--mat-sys-outline-variant);border-radius:4px;overflow:hidden;background:var(--mat-sys-surface);display:block}
+.gg-th img{width:100%;height:100%;object-fit:cover;display:block}
+.pg-h b{font-weight:500}.pg-h small{color:var(--mat-sys-on-surface-variant)}
+.pgl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.pt{position:relative;border:1px solid var(--mat-sys-outline-variant);border-radius:var(--mat-sys-corner-medium);padding:6px;background:var(--mat-sys-surface)}
+.pt.sel{border:2px solid var(--mat-sys-primary);padding:5px;background:var(--mat-sys-secondary-container)}
+.pt-sel{position:absolute;top:10px;left:10px;z-index:1;background:var(--mat-sys-surface);border-radius:4px;padding:2px;display:flex}
+.pt-sel input{margin:0}
+.pt-b{display:block;width:100%;padding:0;border:0;background:transparent;border-radius:var(--mat-sys-corner-small);overflow:hidden}
+.pt-th{display:block;aspect-ratio:1;background:var(--mat-sys-surface-dim);border-radius:var(--mat-sys-corner-small);overflow:hidden}
+.pt-th img{width:100%;height:100%;object-fit:contain;display:block}
+.pt-b:hover .pt-th{outline:2px solid var(--mat-sys-primary);outline-offset:-2px}
+.pt-l{display:block;font-size:12px;line-height:16px;font-weight:500;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-s{display:flex;align-items:center;gap:6px;font-size:11px;line-height:16px;color:var(--mat-sys-on-surface-variant);margin-top:2px}
+.pt.proc .pt-th{display:grid;place-items:center;background:repeating-linear-gradient(45deg,var(--mat-sys-surface-variant) 0 6px,var(--mat-sys-surface-dim) 6px 12px)}
+.pt.proc .pt-th .ms{font-size:28px}
+.pt.fail .pt-th{display:grid;place-items:center;background:var(--mat-sys-error-container)}
+.pt.fail .pt-th .ms{color:var(--mat-sys-error);font-size:28px}
+.pt.arch .pt-th img{filter:grayscale(1);opacity:.7}
+.pt .btn{height:28px;padding:0 8px;font-size:12px;margin-top:4px}
+.pv-f{display:flex;align-items:center;gap:8px;padding:4px 12px 10px}
+.pchip{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 8px;border-radius:var(--mat-sys-corner-extra-small);font-size:11px;font-weight:500;white-space:nowrap}
+.pchip.s-preview{background:var(--mat-sys-tertiary-container);color:var(--mat-sys-on-tertiary-container)}
+.pchip.s-live{background:#d7f0d9;color:#1b5e20}
+.pchip.s-archived{background:var(--mat-sys-surface-variant);color:var(--mat-sys-on-surface-variant)}
+.pchip.s-original{background:var(--mat-sys-secondary-container);color:var(--mat-sys-on-secondary-container)}
+.liveh{display:flex;align-items:center;gap:8px;margin:4px 24px 0;font-size:16px;font-weight:500;color:var(--mat-sys-on-surface)}
+.liveh small{font-size:13px;font-weight:400;color:var(--mat-sys-on-surface-variant)}
+.kids{grid-column:1/-1;border-top:1px solid var(--mat-sys-outline-variant);padding:4px 12px 8px}
+.kidsT{height:36px;padding:0 8px}
+.kidl{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.kid{display:block;width:100%;padding:4px;border:1px solid var(--mat-sys-outline-variant);border-radius:var(--mat-sys-corner-small);background:var(--mat-sys-surface);text-align:left}
+.kid:hover{border-color:var(--mat-sys-primary)}
+.kid-th{display:block;aspect-ratio:1;overflow:hidden;border-radius:4px;background:var(--mat-sys-surface-dim);margin-bottom:4px}
+.kid-th img{width:100%;height:100%;object-fit:contain;display:block}
+.plcards.tbl{display:block;padding:8px 24px 24px}
+.tblw{overflow-x:auto;border:1px solid var(--mat-sys-outline-variant);border-radius:var(--mat-sys-corner-medium);background:var(--mat-sys-surface)}
+.itbl{width:100%;border-collapse:collapse;font-size:13px}
+.itbl th{text-align:left;font-weight:500;color:var(--mat-sys-on-surface-variant);padding:10px 12px;border-bottom:1px solid var(--mat-sys-outline-variant);white-space:nowrap;background:var(--mat-sys-surface-container-high)}
+.itbl td{padding:6px 12px;border-bottom:1px solid var(--mat-sys-outline-variant);vertical-align:middle}
+.itbl tr.child td{background:var(--mat-sys-surface-container-low)}
+.itbl tr.child.arch td{color:var(--mat-sys-on-surface-variant)}
+.itbl .c-sel{width:40px}
+.tthumb{display:flex;align-items:center;gap:6px}
+.tthumb .th{width:48px;height:48px;flex:0 0 48px;border:1px solid var(--mat-sys-outline-variant);border-radius:4px;overflow:hidden;background:var(--mat-sys-surface-dim)}
+.tthumb .th img{width:100%;height:100%;object-fit:contain;display:block}
+.tthumb .ind{width:28px;flex:0 0 28px;color:var(--mat-sys-on-surface-variant);text-align:center}
+.tthumb .icon-btn{width:28px;height:28px;flex:0 0 28px}
+.itbl .fcell{max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.itbl .btn{height:32px;padding:0 10px;font-size:13px}
+.rvdlg{width:min(860px,96vw);padding:16px 20px 20px}
+.rv-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rv-h h2{flex:1;margin:0}
+.rv-b{display:flex;align-items:center;gap:8px}
+.rv-img{flex:1;aspect-ratio:4/3;max-height:58vh;border:1px solid var(--mat-sys-outline-variant);border-radius:var(--mat-sys-corner-small);overflow:hidden;background:var(--mat-sys-surface-dim);position:relative}
+.rv-img img{width:100%;height:100%;object-fit:contain;display:block}
+.rv-img .lbl{position:absolute;top:8px;left:8px;padding:2px 8px;font-size:11px;font-weight:500;background:var(--mat-sys-inverse-surface);color:var(--mat-sys-inverse-on-surface);border-radius:var(--mat-sys-corner-extra-small)}
+.rv-m{display:flex;align-items:center;gap:12px;margin:12px 0 16px 48px;font-size:13px}
+.rv-m .th{width:40px;height:40px;border-radius:4px;overflow:hidden;border:1px solid var(--mat-sys-outline-variant)}
+.rv-m .th img{width:100%;height:100%;object-fit:cover;display:block}
+.rv-m b{display:block;font-weight:500}.rv-m small{display:block;color:var(--mat-sys-on-surface-variant)}
+.tk-i{display:flex;gap:12px;align-items:center;padding:8px 16px}
+.tk-i .qth{width:40px;height:40px;flex:0 0 40px}
+.tk-i b{display:block;font-weight:500;font-size:13px}.tk-i small{display:block;font-size:12px;color:var(--mat-sys-on-surface-variant)}
+.tk-i .e{color:var(--mat-sys-error)}
+.v .pchip{margin-top:2px}
+.v.ghost .th{display:grid;place-items:center}
+@media (max-width:900px){.pc{left:8px;max-width:calc(100vw - 16px)}#pcT{left:8px}}
 </style>
 </head>
 <body>
-<div class="pc" role="region" aria-label="Prototype controls (not part of the design)">
-  <strong>Prototype v1.9 · async generation</strong>
+<button id="pcT" aria-expanded="false" aria-controls="pc" aria-label="Prototype controls" title="Prototype controls"><span class="ms" aria-hidden="true" data-icon="tune"></span></button>
+<div class="pc" id="pc" role="region" aria-label="Prototype controls (not part of the design)">
+  <strong>Prototype v2.3 · preview area</strong>
   <label>Jump to state <select id="jump">
-    <option value="list">1 · Image list (entry)</option>
-    <option value="start">2 · Editor opened, no tool</option>
-    <option value="tool">3 · Tool + preset chosen</option>
-    <option value="gen">4 · Generation started (async)</option>
-    <option value="queue">4b · Queue bar in overview (3 generating)</option>
-    <option value="result">5 · Result, compare</option>
-    <option value="fail">6 · Generation failed</option>
-    <option value="limit">7 · Limit reached</option>
-    <option value="recolor">8 · Recolor: required check</option>
-    <option value="savedin">9a · Saved in one click (v0.2)</option>
-    <option value="save">9b · Change details before saving</option>
-    <option value="saved">10 · Saved, back in list</option>
-    <option value="many">5b · Many results (12) · strip</option>
-    <option value="manyall">5c · Many results (12) · All results grid</option>
-    <option value="close">11 · Close with unsaved</option>
-    <option value="noperm">12 · No permission</option>
-    <option value="noflag">13 · Account without flag</option>
+    <option value="list">1 · Image page (nothing generated yet)</option>
+    <option value="zoom">1b · Thumbnail click = preview (zoom)</option>
+    <option value="prev">2 · AI previews waiting (+1 processing)</option>
+    <option value="review">2b · Review popover: accept / reject</option>
+    <option value="bulk">2c · Bulk: 3 previews selected</option>
+    <option value="arch">2d · Archived (rejected) shown, restore</option>
+    <option value="table">3 · Table view: parent → children</option>
+    <option value="kids">3b · Cards: click parent → children below</option>
+    <option value="start">4 · Editor opened, no tool</option>
+    <option value="tool">5 · Tool + preset chosen</option>
+    <option value="gen">6 · Generation started: "feel free to leave"</option>
+    <option value="carousel">6b · Stayed in editor: carousel fills</option>
+    <option value="tasksempty">7 · Tasks side panel: empty (as today)</option>
+    <option value="queue">7a · Tasks side panel: running + finished</option>
+    <option value="sigfail">7b · Content credentials failed</option>
+    <option value="notif">8 · Ready while elsewhere (bell)</option>
+    <option value="limit">9 · No tokens left</option>
+    <option value="noperm">10 · No permission</option>
+    <option value="noflag">11 · Account without flag</option>
   </select></label>
+  
   <label>Cost display <select id="costMode"><option value="tokens">Tokens (Ron, default)</option><option value="paid">€ per result (BRD)</option><option value="free">Free quota (call)</option></select></label>
   <label>Header <select id="hdrMode"><option value="pattern">Back link + title (pattern)</option><option value="compact">Chevron bar (Ron's experiment)</option></select></label>
   <label>Language <select id="lang"><option value="en">EN</option><option value="de">DE (long strings)</option></select></label>
@@ -576,6 +762,7 @@ input[type=range]{accent-color:var(--mat-sys-primary)}
         <div class="plpanel-h"><h2 data-t="details">Details</h2><button class="icon-btn" aria-label="Collapse details" aria-expanded="true" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="expand_less"></span></button></div>
         <div class="plpanel-tools">
           <label class="check" data-mat="mat-checkbox"><input type="checkbox"> <span><span data-t="allImages">All images EN</span> (<span id="imgCount">4</span>)</span></label>
+          <div class="seg vsw" role="group" aria-label="Layout" data-mat="mat-button-toggle-group"><button id="lvCards" aria-pressed="true" data-action="layout-cards"><span class="ms" aria-hidden="true" data-icon="view_agenda"></span>Cards</button><button id="lvTable" aria-pressed="false" data-action="layout-table"><span class="ms" aria-hidden="true" data-icon="table_rows"></span>Table</button></div>
           <span class="sp"></span>
           <button class="icon-btn" aria-label="Upload images" title="Upload" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="upload"></span></button>
           <button class="icon-btn" aria-label="Sync images" title="Sync" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="sync"></span></button>
@@ -583,20 +770,27 @@ input[type=range]{accent-color:var(--mat-sys-primary)}
           <button class="icon-btn" aria-label="Sort images" title="Sort" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="swap_vert"></span></button>
         </div>
         <div id="qbar" hidden role="region" aria-label="Image generation queue" data-object="generation-queue" data-mat="NEW: queue bar (mat-card outlined + mat-icon-button expand) · expands to mat-list"></div>
+        <div id="dbar" hidden role="region" aria-label="AI drafts" data-object="ai-drafts" data-mat="summary bar (mat-card outlined + mat-button ×2)"></div>
+        <section id="prev" class="pv" hidden aria-labelledby="prevH" data-object="ai-previews" data-mat="LOCAL PATTERN: staging area (mat-card outlined) · groups by source · thumbnail tiles + mat-checkbox"></section>
+        <h3 class="liveh" id="liveH"></h3>
         <div class="plcards" id="grid"></div>
-        <div class="anno" style="margin:0 24px 16px"><b>Prototype v1.4:</b> list screen rebuilt to match the current PlentyONE item UI (dark icon nav, sheet, back link, item header, tabs, Details panel, image cards). The editor opens from the image thumbnail, where today's zoom pop-up opens.</div>
+        <div class="anno" style="margin:0 24px 16px"><b>v2.3 · check-in 19 Nov:</b> AI results land in "AI previews" (not live) and need Accept before they join the live images. Reject archives. Normal uploads are unchanged (decided: Ron + Tamas). Parent → children: cards ("AI images from this image") and table rows.</div>
       </div>
     </section>
   </main>
+  <aside class="tpanel" id="tasksPanel" hidden aria-labelledby="tpH" data-object="tasks-panel" data-mat="existing PlentyONE side panel (docked sheet) — Tasks">
+    <div class="tp-h"><h2 id="tpH" tabindex="-1">Tasks</h2><button class="icon-btn" id="tpClear" aria-label="Clear finished tasks" title="Clear finished tasks" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="playlist_remove"></span></button><button class="icon-btn" id="tpClose" aria-label="Close tasks" title="Close" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="close"></span></button></div>
+    <div class="tp-b" id="tpBody"></div>
+  </aside>
   <nav class="plrail" aria-label="Tools" data-mat="right rail">
     <button class="icon-btn" aria-label="Search"><span class="ms" aria-hidden="true" data-icon="search"></span></button>
     <button class="icon-btn" aria-label="AI assistant"><span class="ms" aria-hidden="true" data-icon="auto_awesome"></span></button>
-    <button class="icon-btn" aria-label="Tasks"><span class="ms" aria-hidden="true" data-icon="checklist"></span></button>
+    <div class="bellw"><button class="icon-btn" id="tasksBtn" aria-label="Tasks" aria-expanded="false" aria-controls="tasksPanel" data-object="tasks" data-mat="mat-icon-button + mat-badge (existing Tasks side panel)"><span class="ms" aria-hidden="true" data-icon="checklist"></span><span class="bdg" id="taskBdg" hidden aria-hidden="true"></span></button></div>
     <button class="icon-btn" aria-label="Recently opened"><span class="ms" aria-hidden="true" data-icon="history"></span></button>
     <hr aria-hidden="true">
     <button class="icon-btn" aria-label="Security"><span class="ms" aria-hidden="true" data-icon="shield"></span></button>
     <button class="icon-btn" aria-label="Performance"><span class="ms" aria-hidden="true" data-icon="trending_up"></span></button>
-    <button class="icon-btn" aria-label="Notifications"><span class="ms" aria-hidden="true" data-icon="notifications"></span></button>
+    <div class="bellw"><button class="icon-btn" id="bellBtn" aria-label="Notifications" aria-haspopup="true" aria-expanded="false" aria-controls="notifPop" data-object="notifications" data-mat="mat-icon-button + mat-badge"><span class="ms" aria-hidden="true" data-icon="notifications"></span><span class="bdg" id="bellBdg" hidden aria-hidden="true"></span></button><div class="notifpop" id="notifPop" hidden role="region" aria-label="Notifications" data-mat="notification panel (mat-menu style)"></div></div>
     <button class="icon-btn" aria-label="Product updates"><span class="ms" aria-hidden="true" data-icon="rss_feed"></span></button>
     <span class="sp"></span>
     <span class="pldev" role="img" aria-label="Development system">DEV</span>
@@ -632,7 +826,7 @@ input[type=range]{accent-color:var(--mat-sys-primary)}
         <span class="sp"></span>
         <div class="tokw" id="tokW"><button class="tok" id="tokBtn" aria-expanded="false" aria-controls="tokPop" data-object="token-balance" data-id="tokens-account" data-action="show-token-balance" data-mat="NEW: token indicator (button) + rich tooltip — M3 rich tooltip isn't in Angular Material → CDK overlay"></button><div class="tokpop" id="tokPop" role="region" aria-label="Token balance"></div></div>
       </div>
-      <div class="canvas"><div class="rgrid" id="rgrid" hidden data-object="result-grid" data-mat="LOCAL PATTERN: result grid (mat-card outlined + mat-checkbox), grouped by run"></div><div class="frame" id="frame" data-object="image-version" data-mat="NEW: compare-slider (built on mat-slider) — business case: drives save rate"></div></div>
+      <div class="canvas"><div class="rgrid" id="rgrid" hidden data-object="result-grid" data-mat="LOCAL PATTERN: result grid (mat-card outlined + mat-checkbox), grouped by run"></div><div class="frame" id="frame" data-object="image-version" data-mat="Compare = side by side: 2 images + labels (Before · Original / After · result), no custom component. Replaces the compare slider (v2.1)"></div></div>
       <div class="strip" data-object="version-strip" data-mat="LOCAL PATTERN: result strip (mat-card outlined + mat-checkbox)">
         <div class="strip-h"><b data-t="versions">Versions</b><span id="stripHint"></span><span class="sp"></span><button class="btn btn-text linkbtn" id="showAll" hidden data-action="show-all-results" data-mat="mat-button"></button></div>
         <ul class="vlist" id="vlist" aria-label="Results"></ul>
@@ -655,6 +849,16 @@ input[type=range]{accent-color:var(--mat-sys-primary)}
   <div class="anno" style="margin:-8px 0 16px"><b>N2 open (Tamas):</b> BRD has no top-ups in Phase 1. Until decided, "Get more" leads to the account manager.</div>
   <div class="acts"><button class="btn btn-text" id="tokClose" data-mat="mat-button"></button><button class="btn btn-filled" id="tokContact" data-mat="mat-flat-button"></button></div>
 </div></div>
+<div class="scrim" id="zoomScrim"><div class="dlg zdlg" data-mat="mat-dialog (preview — today's zoom)" role="dialog" aria-modal="true" aria-labelledby="zH">
+  <h2 id="zH"></h2><div class="zimg" id="zImg"></div>
+  <div class="acts"><button class="btn btn-text" id="zClose" data-mat="mat-button"></button><span class="sp"></span><button class="btn btn-filled" id="zEdit" data-action="open-editor" data-mat="mat-flat-button"></button></div>
+</div></div>
+<div class="scrim" id="rvScrim"><div class="dlg rvdlg" data-mat="mat-dialog (large) — review" role="dialog" aria-modal="true" aria-labelledby="rvH">
+  <div class="rv-h"><h2 id="rvH"></h2><button class="icon-btn" id="rvX" aria-label="Close" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="close"></span></button></div>
+  <div class="rv-b"><button class="icon-btn" id="rvPrev" aria-label="Previous preview" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="chevron_left"></span></button><div class="rv-img" id="rvImg"></div><button class="icon-btn" id="rvNext" aria-label="Next preview" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="chevron_right"></span></button></div>
+  <div class="rv-m" id="rvMeta"></div>
+  <div class="acts"><button class="btn btn-text" id="rvOrig" aria-pressed="false" data-mat="mat-button (toggle)"></button><span class="sp"></span><button class="btn btn-outlined" id="rvRej" data-action="reject-preview" data-mat="mat-stroked-button"></button><button class="btn btn-filled" id="rvAcc" data-action="accept-preview" data-mat="mat-flat-button"></button></div>
+</div></div>
 <div class="sr-only" aria-live="polite" id="live"></div>
 
 <script>
@@ -662,7 +866,7 @@ input[type=range]{accent-color:var(--mat-sys-primary)}
 const T = {
  en:{images:"Images",upload:"Upload",editor:"Image editor",single:"Single",compare:"Compare",versions:"Results",details:"Details",allImages:"All images EN",
   save0:"Save selected",saveN:n=>`Save ${n} selected`,position:"Position",original:"Original",
-  stripEmpty:"Generated images go to the image overview. The original never changes.",stripN:(m,g)=>`${g} result${g>1?"s":""} · ${m} selected. Results you don't save are removed when you close.`,res:"Result",saveThis:"Save this result",sel:"Select to save",savedSt:"Saved · position 5",unsavedSt:"Not saved",selSt:"Selected",failedSt:"Failed",unchSt:"Unchanged",genSt:"Generating…",before:"Before",after:"After",
+  stripEmpty:"Generated images arrive in the image overview as drafts. The original never changes.",stripN:(m,g)=>`${g} result${g>1?"s":""} · ${m} selected. Results you don't save are removed when you close.`,res:"Result",saveThis:"Save this result",sel:"Select to save",savedSt:"Saved · position 5",unsavedSt:"Not saved",selSt:"Selected",failedSt:"Failed",unchSt:"Unchanged",genSt:"Generating…",before:"Before",after:"After",
   q:"What should this image become?",qLead:"Each tool edits a copy. You see the cost before anything is generated.",
   tools:{bg:["Clean background","Remove the background, place the product on white, a colour or transparent"],
    expand:["Fit to a format","Change the ratio. AI extends the scene instead of cutting the product"],
@@ -695,7 +899,7 @@ const T = {
  },
  de:{images:"Bilder",upload:"Hochladen",editor:"Bildeditor",single:"Einzeln",compare:"Vergleichen",versions:"Ergebnisse",details:"Details",allImages:"Alle Bilder EN",
   save0:"Auswahl speichern",saveN:n=>`${n} ausgewählte speichern`,position:"Position",original:"Original",
-  stripEmpty:"Generierte Bilder landen in der Bildübersicht. Das Original bleibt immer unverändert.",stripN:(m,g)=>`${g} Ergebnis${g>1?"se":""} · ${m} ausgewählt. Nicht gespeicherte Ergebnisse werden beim Schließen entfernt.`,res:"Ergebnis",saveThis:"Dieses Ergebnis speichern",sel:"Zum Speichern auswählen",savedSt:"Gespeichert · Position 5",unsavedSt:"Nicht gespeichert",selSt:"Ausgewählt",failedSt:"Fehlgeschlagen",unchSt:"Unverändert",genSt:"Wird generiert…",before:"Vorher",after:"Nachher",
+  stripEmpty:"Generierte Bilder landen als Entwurf in der Bildübersicht. Das Original bleibt immer unverändert.",stripN:(m,g)=>`${g} Ergebnis${g>1?"se":""} · ${m} ausgewählt. Nicht gespeicherte Ergebnisse werden beim Schließen entfernt.`,res:"Ergebnis",saveThis:"Dieses Ergebnis speichern",sel:"Zum Speichern auswählen",savedSt:"Gespeichert · Position 5",unsavedSt:"Nicht gespeichert",selSt:"Ausgewählt",failedSt:"Fehlgeschlagen",unchSt:"Unverändert",genSt:"Wird generiert…",before:"Vorher",after:"Nachher",
   q:"Was soll aus diesem Bild werden?",qLead:"Jedes Werkzeug bearbeitet eine Kopie. Sie sehen die Kosten, bevor etwas generiert wird.",
   tools:{bg:["Freistellen und Hintergrund","Hintergrund entfernen und Produkt auf Weiß, eine Farbe oder transparent stellen"],
    expand:["An Format anpassen","Seitenverhältnis ändern. Die KI erweitert die Szene, statt das Produkt abzuschneiden"],
@@ -764,58 +968,92 @@ function snack(msg,action){const s=$("#snack");s.querySelectorAll("button:not(#s
 
 const vName=v=>v.state==="ai"?(S.lang==="de"?"KI-Bild":"AI image"):v.n===0?t("original"):`${t("res")} ${v.n}`;
 function versionsBase(){const im=S.img;
- if(im.ai&&im.src)return [{n:0,label:t("original"),svg:im.src.svg,state:"original",keep:false},{n:1,label:im.label||t("res"),svg:im.svg,state:"ai",keep:false,tool:im.tool,run:1,rp:im.rp,checker:im.checker,ratio:im.ratio}];
+ if(im.ai&&im.src)return [{n:0,label:t("original"),svg:im.src.svg,state:"original",keep:false},{n:1,label:im.label||t("res"),svg:im.svg,state:"ai",keep:false,tool:im.tool,run:1,rp:im.rp,checker:im.checker,ratio:im.ratio,wide:im.wide,rk:im.rk}];
  return [{n:0,label:t("original"),svg:S.img.svg,state:"original",keep:false}]}
 
 /* ---------- Render: list ---------- */
+function altFor(rp){const de=S.lang==="de",p=de?"2-in-1 Multi-Skate in Schwarz":"2-in-1 multi-skate in black";if(!rp)return p;
+ if(rp.k==="bg"){if(rp.bgMode==="transparent")return de?`${p}, freigestellt`:`${p}, cut out`;
+  if(rp.bgMode==="colour"){if(rp.hex)return de?`${p} auf farbigem Hintergrund`:`${p} on a coloured background`;const en=["white","light grey","light blue","beige","anthracite"],dg=["weißem","hellgrauem","hellblauem","beigem","anthrazitfarbenem"];const i=rp.swatch??1;return de?`${p} auf ${dg[i]} Hintergrund`:`${p} on a ${en[i]} background`}
+  return de?`${p} auf weißem Hintergrund`:`${p} on a white background`}
+ if(rp.k==="expand")return de?`${p} mit Eiskufe, Bild im Format ${rp.ratio}`:`${p} with ice blade, ${rp.ratio} image`;
+ if(rp.k==="retouch")return de?`${p} mit Eiskufe`:`${p} with ice blade`;
+ if(rp.k==="stage"){if(rp.preset===4){const t0=String(rp.prompt||"").trim();return t0?`${p}, ${t0.charAt(0).toLowerCase()+t0.slice(1)}`:p}
+  return `${p} ${(de?["auf einer Eisbahn im Winter","auf einem sonnigen Parkweg","auf einem Betonboden im Studio","auf einer Straße in der Stadt zur goldenen Stunde"]:["on an outdoor ice rink in winter","on a sunny park path","on a concrete studio floor","on a city street at golden hour"])[rp.preset]||""}`}
+ if(rp.k==="recolor")return de?"2-in-1 Multi-Skate in Eisblau":"2-in-1 multi-skate in ice blue";
+ return p}
+function allImgs(){return [...IMAGES,...(S.aiImgs||[])]}
+function findImg(id){return allImgs().find(i=>i.id==id)}
 function renderList(){
- const L=T[S.lang];
+ const L=T[S.lang],de=S.lang==="de";
  document.querySelectorAll("[data-t]").forEach(el=>{const v=L[el.dataset.t];if(typeof v==="string")el.textContent=v});
- const imgs=[...IMAGES,...(S.aiImgs||[])]; if(S.newTile) imgs.push({id:9,file:"MS-2IN1-Schwarz-0_ai-1.jpg",pos:5,svg:pic(S.lastKey||"bg-white"),ai:true,dim:"2048 x 2048 px | 1.1 MB"});
+ const imgs=allImgs();
  const dims={1:"1024 x 1024 px | 970 KB",2:"1024 x 1024 px | 422 KB",3:"2048 x 2048 px | 1 MB",4:"1024 x 1024 px | 610 KB"};
- $("#imgCount").textContent=imgs.length;renderQueue();
- const de=S.lang==="de";
- $("#grid").innerHTML=imgs.map(im=>`<article class="imgcard ${im.isNew||(im.id===9&&S.newTile)?"new":""}" data-object="image" data-id="img-4743-${im.pos}" data-state="${im.ai?"saved-ai":"original"}" data-mat="mat-card (outlined)">
+ $("#imgCount").textContent=imgs.length;renderQueue();renderDrafts();renderBell();
+ $("#grid").innerHTML=imgs.map(im=>{const draft=im.ai&&im.status==="draft",kept=im.ai&&im.status==="kept";
+  const alt=im.ai?(im.altEdited??altFor(im.rp)):"";
+  const chip=im.ai?`<span class="badge ${draft?"draft":""}" data-mat="mat-chip (static)"><span class="ms" aria-hidden="true" data-icon="auto_awesome"></span>${draft?(de?"KI · Entwurf":"AI · Draft"):(de?"KI":"AI")}</span>`:"";
+  const avail=!im.ai?`<select id="av${im.id}"><option>${de?"Alle ausgewählt":"All selected"}</option><option>Webshop</option><option>Amazon</option><option>eBay</option></select>`
+   :draft?`<select id="av${im.id}" disabled aria-describedby="avh${im.id}"><option>${de?"Nicht veröffentlicht (Entwurf)":"Not published (draft)"}</option></select>`
+   :`<select id="av${im.id}" data-ai-avail="${im.id}" aria-describedby="avh${im.id}">${[["none",de?"Noch keine Kanäle":"No channels yet"],["all",de?"Alle Kanäle":"All channels"],["web","Webshop"],["amz","Amazon"],["ebay","eBay"]].map(([v,l])=>`<option value="${v}" ${(im.avail||"none")===v?"selected":""}>${l}</option>`).join("")}</select>`;
+  const availHint=draft?(de?"Entwürfe sind auf keinem Kanal. Erst nach „Behalten“ wählbar.":"Drafts aren't on any channel. You can choose channels after keeping it.")
+   :kept&&(im.avail||"none")==="none"?(de?"KI-Bilder starten ohne Kanal. Wählen Sie, wo es erscheinen soll.":"AI images start on no channel. Choose where it should appear."):"";
+  return `<article class="imgcard ${im.isNew?"new":""}" data-object="image" data-id="img-4743-${im.pos}" data-state="${draft?"ai-draft":kept?"ai-kept":"original"}" data-mat="mat-card (outlined)">
    <div class="imgcard-h"><label class="check" data-mat="mat-checkbox"><input type="checkbox" aria-label="${de?"Bild auswählen":"Select image"} ${im.file}"></label>
     <div class="t"><div class="url"><span>https://cdn02.plentymarkets.com/…/${im.file}</span><button class="icon-btn sm" aria-label="${de?"URL kopieren":"Copy URL"}" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="content_copy"></span></button>
-     ${im.ai?`<span class="badge" data-mat="mat-chip (static)"><span class="ms" aria-hidden="true" data-icon="auto_awesome"></span>AI</span>`:""}</div>
+     ${chip}</div>
      <small>${im.dim||dims[im.id]}</small></div>
     <button class="icon-btn" aria-label="${de?"Mit Varianten verknüpfen":"Link to variations"}" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="link"></span></button>
     <button class="icon-btn" aria-label="${de?"Weitere Aktionen":"More actions"}" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="more_vert"></span></button></div>
+   ${draft?`<div class="draftrow" role="group" aria-label="${de?"KI-Entwurf":"AI draft"} ${im.file}" data-object="ai-draft" data-id="draft-${im.id}" data-state="draft">
+     <span class="ms" aria-hidden="true" data-icon="edit_note"></span><span class="dt"><b>${de?"Entwurf · nicht veröffentlicht":"Draft · not published"}</b><small>${de?`Mit dem Original vergleichen, dann behalten oder verwerfen. ${im.label}`:`Compare it with the original, then keep or discard it. ${im.label}`}</small></span>
+     <button class="btn btn-text" data-act="review" data-img="${im.id}" data-action="review-draft" data-mat="mat-button"><span class="ms" aria-hidden="true" data-icon="compare"></span>${de?"Vergleichen":"Compare"}</button>
+     <button class="btn btn-outlined" data-act="discard" data-img="${im.id}" data-action="discard-draft" data-mat="mat-stroked-button">${de?"Verwerfen":"Discard"}</button>
+     <button class="btn btn-filled" data-act="keep" data-img="${im.id}" data-action="keep-draft" data-mat="mat-flat-button">${de?"Behalten":"Keep"}</button></div>`:""}
    <div class="imgcard-b">
-    <button class="tile" data-action="open-editor" data-img="${im.id}" data-mat="image thumbnail (opens editor — replaces zoom pop-up)">${im.svg}<span class="sr-only">${im.file} · ${de?"Im Bildeditor öffnen":"Open in image editor"}</span>${im.ai?`<span class="hint" aria-hidden="true"><span class="ms" data-icon="auto_awesome"></span>AI</span>`:""}</button>
+    <div class="imgcard-l">
+     <button class="tile" data-act="preview" data-img="${im.id}" aria-label="${de?"Vorschau":"Preview"} ${im.file}" data-action="preview" data-mat="image thumbnail (opens preview — today's zoom)">${im.svg}</button>
+     ${S.noflag||draft?"":`<button class="btn btn-tonal ebtn" data-act="edit" data-img="${im.id}" aria-label="${de?"Mit KI bearbeiten":"Edit with AI"}: ${im.file}" data-action="open-editor" data-mat="mat-flat-button (tonal) + icon"><span class="ms" aria-hidden="true" data-icon="auto_awesome"></span>${de?"Mit KI bearbeiten":"Edit with AI"}</button>`}
+    </div>
     <div class="ofs">
      <div class="of" data-mat="mat-form-field (outline)"><label for="nm${im.id}">Name - EN</label><input id="nm${im.id}"></div>
-     <div class="of" data-mat="mat-form-field (outline)"><label for="ps${im.id}">${de?"Position":"Position"}</label><input id="ps${im.id}" value="${im.pos-1}" inputmode="numeric"></div>
-     <div class="of full" data-mat="mat-form-field (outline)"><label for="al${im.id}">${de?"Alternativtext - EN":"Alternative text - EN"}</label><input id="al${im.id}" value="${im.ai?(de?"2-in-1 Multi-Skate in Schwarz auf weißem Hintergrund":"2-in-1 multi-skate in black on white"):""}"></div>
-     <div class="of full" data-mat="mat-form-field (outline) + mat-select"><label for="av${im.id}">${de?"Verfügbarkeit":"Availability"}</label><select id="av${im.id}"><option>${de?"Alle ausgewählt":"All selected"}</option><option>Webshop</option><option>Amazon</option><option>eBay</option></select></div>
+     <div class="of" data-mat="mat-form-field (outline)"><label for="ps${im.id}">Position</label><input id="ps${im.id}" value="${im.pos-1}" inputmode="numeric" ${im.ai?`data-ai-pos="${im.id}" aria-describedby="psh${im.id}"`:""}>${im.ai?`<div class="ofh" id="psh${im.id}">${de?"Position 0 (Hauptbild) braucht ein echtes Foto.":"Position 0 (main image) needs a real photo."}</div>`:""}</div>
+     <div class="of full" data-mat="mat-form-field (outline)"><label for="al${im.id}">${de?"Alternativtext - EN":"Alternative text - EN"}</label><input id="al${im.id}" value="${alt}" ${im.ai?`data-ai-alt="${im.id}" aria-describedby="alh${im.id}"`:""}>${im.ai&&im.altEdited==null?`<div class="ofh" id="alh${im.id}"><span class="ms" aria-hidden="true" data-icon="auto_awesome" style="font-size:14px"></span> ${de?"Aus der Bearbeitung vorgeschlagen. Bitte prüfen.":"Suggested from the edit. Please check it."}</div>`:""}</div>
+     <div class="of full" data-mat="mat-form-field (outline) + mat-select"><label for="av${im.id}">${de?"Verfügbarkeit":"Availability"}</label>${avail}${availHint?`<div class="ofh" id="avh${im.id}">${availHint}</div>`:""}</div>
     </div>
-   </div></article>`).join("");
- $("#grid").querySelectorAll(".tile").forEach(b=>b.onclick=()=>{const im=[...IMAGES,...(S.aiImgs||[])].find(i=>i.id==b.dataset.img)||IMAGES[0];openEditor(im)});
+   </div></article>`}).join("");
+ const G=$("#grid");
+ G.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{const im=findImg(b.dataset.img);if(!im)return;const a=b.dataset.act;
+  if(a==="preview")openZoom(im);else if(a==="edit"||a==="review")openEditor(im);else if(a==="keep")keepAI(im.id);else if(a==="discard")discardAI(im.id)});
+ G.querySelectorAll("[data-ai-pos]").forEach(inp=>inp.oninput=()=>{const id=inp.dataset.aiPos,h=$("#psh"+id),bad=inp.value.trim()==="0";inp.setAttribute("aria-invalid",bad);
+  h.classList.toggle("err",bad);h.textContent=bad?(de?"KI-Bilder können nicht Hauptbild sein. Amazon verlangt dort ein echtes Foto.":"AI images can't be the main image. Amazon requires a real photo there."):(de?"Position 0 (Hauptbild) braucht ein echtes Foto.":"Position 0 (main image) needs a real photo.")});
+ G.querySelectorAll("[data-ai-alt]").forEach(inp=>inp.oninput=()=>{const im=findImg(inp.dataset.aiAlt);im.altEdited=inp.value;const h=$("#alh"+im.id);if(h)h.remove()});
+ G.querySelectorAll("[data-ai-avail]").forEach(sel=>sel.onchange=()=>{const im=findImg(sel.dataset.aiAvail);im.avail=sel.value;const h=$("#avh"+im.id);if(h&&sel.value!=="none")h.remove()});
 }
 /* ---------- Editor ---------- */
-function openEditor(im){S.started=null;(S.aiImgs||[]).forEach(a=>a.isNew=false);S.returnTo=im.id;S.lastSaved=null;S.img=im;S.screen="editor";S.tool=null;S.versions=versionsBase();S.cur=S.versions.length-1;S.view="single";S.gen=null;S.fail=false;S.zoom=1;
+function openEditor(im){S.started=null;S.lockUntil=0;(S.aiImgs||[]).forEach(a=>{if(a.id===im.id)a.isNew=false});S.returnTo=im.id;S.img=im;S.screen="editor";S.tool=null;S.versions=versionsBase();S.cur=S.versions.length-1;S.view=im.ai?"compare":"single";S.gen=null;S.fail=false;S.zoom=1;S.cmp=50;
  $("#ed").classList.add("open");$(".plsheet").classList.add("editing");$(".plsheet").scrollTop=0;renderEditor();
  try{history.replaceState(null,"","#edit-image-"+im.id)}catch(e){}
  setTimeout(()=>$("#edTitle").focus(),0)}
-function closeEditor(force){const unsaved=S.versions.filter(v=>v.n>0&&v.state==="unsaved").length;
- if(!force&&unsaved&&!S.saved){return askClose(unsaved)}
- $("#ed").classList.remove("open");$(".plsheet").classList.remove("editing");try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}S.screen="list";S.saved=false;if(S.versions.some(v=>v.state==="saved"))S.newTile=true;renderList();
- const back=document.querySelector(S.newTile?".imgcard.new .tile":`.tile[data-img="${S.returnTo}"]`)||document.querySelector(".tile");if(back)back.focus()}
+function closeEditor(){
+ $("#ed").classList.remove("open");$(".plsheet").classList.remove("editing");try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}S.screen="list";S.started=null;renderList();
+ const back=document.querySelector(`[data-act="edit"][data-img="${S.returnTo}"]`)||document.querySelector(`[data-act="review"][data-img="${S.returnTo}"]`)||document.querySelector(".draftrow [data-act=review]")||document.querySelector(".tile");if(back)back.focus()}
 function askClose(n){$("#dlgH").textContent=t("closeH");$("#dlgP").textContent=T[S.lang].closeP(n);
  $("#dlgKeep").textContent=t("keep");$("#dlgDiscard").textContent=t("discard");$("#dlgSave").textContent=t("saveClose");
  $("#scrim").classList.add("open");$("#dlgKeep").focus()}
 $("#dlgKeep").onclick=()=>{$("#scrim").classList.remove("open");$("#edClose").focus()};
 $("#dlgDiscard").onclick=()=>{$("#scrim").classList.remove("open");closeEditor(true)};
 $("#dlgSave").onclick=()=>{$("#scrim").classList.remove("open");S.versions.forEach(v=>{if(v.n>0&&v.state==="unsaved")v.keep=true});S.saving=true;renderEditor()};
-$("#edClose").onclick=e=>{e.preventDefault();closeEditor(false)};
+$("#edClose").onclick=e=>{e.preventDefault();closeEditor()};
 window.addEventListener("hashchange",()=>{if($("#ed").classList.contains("open")&&!location.hash.startsWith("#edit-image"))closeEditor(false)});
 const FOC='button:not([disabled]),[href],input:not([disabled]),select,textarea,summary,[tabindex]:not([tabindex="-1"])';
 function trap(root,e){const f=[...root.querySelectorAll(FOC)].filter(el=>el.offsetParent!==null);if(!f.length)return;const a=f[0],z=f[f.length-1];
  if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}}
-document.addEventListener("keydown",e=>{if(e.key==="Tab"){if($("#scrim").classList.contains("open"))trap($("#scrim .dlg"),e);else if($("#tokScrim").classList.contains("open"))trap($("#tokScrim .dlg"),e);}});
+document.addEventListener("keydown",e=>{if(e.key==="Tab"){if($("#scrim").classList.contains("open"))trap($("#scrim .dlg"),e);else if($("#tokScrim").classList.contains("open"))trap($("#tokScrim .dlg"),e);else if($("#zoomScrim").classList.contains("open"))trap($("#zoomScrim .dlg"),e);}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){if($("#scrim").classList.contains("open")){$("#scrim").classList.remove("open");$("#edClose").focus()}
  else if($("#tokScrim").classList.contains("open")){$("#tokScrim").classList.remove("open");$("#tokBtn").focus()}
+ else if($("#zoomScrim").classList.contains("open")){$("#zClose").click()}
+ else if(!$("#notifPop").hidden){bellShow(false);$("#bellBtn").focus()}
  else if($("#tokPop").classList.contains("show")){tokShow(false);tokPinned=false;$("#tokBtn").focus()}}});
 
 function renderEditor(){
@@ -829,13 +1067,13 @@ function renderEditor(){
  /* v0.2 C1: header save only for saving several selected results at once */
  $("#saveBtn").disabled=S.noperm||S.noflag||S.saving;
  $("#saveLbl").textContent=marked>1?L.saveN(marked):L.save0;
- $("#saveBtn").style.display=(marked>=1&&!S.noflag)?"":"none";
+ $("#saveBtn").style.display="none"; /* v2.0: no in-editor saving — results arrive as drafts in the overview */
  // view toggle
  const hasCmp=S.cur>0&&S.versions[S.cur].state!=="failed";
  /* v0.2 C11: view toggle only appears once a result exists */
  const anyRes=S.versions.some(v=>v.n>0);
  $("#ed").classList.toggle("vall",S.view==="all");
- $(".seg").style.display=anyRes&&!S.img.ai?"":"none"; if(!anyRes&&S.view==="all")S.view="single"; if(!hasCmp&&S.view==="compare")S.view="single";
+ $(".seg").style.display=S.img.ai?"":"none"; $("#vAll").style.display="none"; if(S.view==="all")S.view="single"; if(!hasCmp&&S.view==="compare")S.view="single";
  $("#vCmp").disabled=!hasCmp; $("#vAll").setAttribute("aria-pressed",S.view==="all"); $("#vAll").textContent=S.lang==="de"?"Alle":"All";
  $("#vSingle").setAttribute("aria-pressed",S.view==="single");$("#vCmp").setAttribute("aria-pressed",S.view==="compare");
  $("#vSingle").textContent=L.single;$("#vCmp").textContent=L.compare;
@@ -845,23 +1083,24 @@ function renderEditor(){
  renderTools();renderTok();renderFrame();renderStrip();renderPanel();
 }
 function renderFrame(){
- const all=S.view==="all";$("#frame").hidden=all;$("#rgrid").hidden=!all;$(".ed .strip").hidden=all||!(S.img.ai&&S.img.src);$(".ed .canvas").classList.toggle("all",all);
+ const all=S.view==="all";$("#frame").hidden=all;$("#rgrid").hidden=!all;$(".ed .strip").hidden=all;$(".ed .canvas").classList.toggle("all",all);
  if(all){renderGrid();renderZoom();return}
  const f=$("#frame"),v=S.versions[S.cur];f.dataset.id=`ver-v${v.n}`;f.dataset.state=v.state;
  f.style.aspectRatio=v.ratio||"1 / 1";f.classList.toggle("checker",!!v.checker&&S.view!=="compare");
+ const sbs=S.view==="compare"&&S.cur>0;f.classList.toggle("sbs",sbs);f.setAttribute("aria-label",sbs?(S.lang==="de"?"Vorher und nachher nebeneinander":"Before and after, side by side"):"");
+ const em=r=>r==="3x4"?`<span class="ext-mark h" style="top:0"></span><span class="ext-mark h" style="bottom:0"></span>`:`<span class="ext-mark" style="left:0;width:${r==="16x9"?21.9:12.5}%"></span><span class="ext-mark" style="right:0;width:${r==="16x9"?21.9:12.5}%"></span>`;
  let h="";
  if(S.view==="compare"&&S.cur>0){
-  h=`<div style="position:absolute;inset:0">${S.versions[0].svg}</div>
-   <div class="after ${v.checker?"checker":""}" style="clip-path:inset(0 0 0 ${S.cmp}%)">${v.svg}</div>
-   <div class="cmp-line" style="left:${S.cmp}%"></div>
-   <span class="lbl" style="left:8px">${t("before")}<span class="lx"> · ${t("original")}</span></span><span class="lbl" style="right:8px">${t("after")}<span class="lx"> · ${vName(v)}</span></span>
-   <label class="sr-only" for="cmpR">Comparison position</label><input type="range" id="cmpR" class="cmp-range" min="0" max="100" value="${S.cmp}" aria-valuetext="${100-S.cmp}% of the result shown" data-mat="mat-slider">`;
+  /* v2.1: side by side, each image in its own ratio — a wipe slider needs identical size and registration, which AI expand / staging don't give */
+  const o=S.versions[0],arn=r=>{const p=String(r||"1 / 1").split("/").map(Number);return p[0]/(p[1]||1)};
+  const pane=(w,cls,lbl,sub,extra)=>`<figure class="sbs-f ${cls}"><figcaption class="sbs-c"><b>${lbl}</b><span>${sub}</span></figcaption><div class="sbs-box"><div class="sbs-pic ${w.checker?"checker":""}" style="--ar:${w.ratio||"1 / 1"};--r:${arn(w.ratio)}">${w.svg}${extra||""}</div></div></figure>`;
+  const ext=v.wide?`${em(v.rk||"4x3")}<span class="ext-note">${S.lang==="de"?"Von der KI erweiterter Bereich":"AI-extended area"}</span>`:"";
+  h=pane(o,"sbs-b",t("before"),t("original"))+pane(v,"sbs-a",t("after"),vName(v),ext);
  } else h=v.svg;
- const em=r=>r==="3x4"?`<span class="ext-mark h" style="top:0"></span><span class="ext-mark h" style="bottom:0"></span>`:`<span class="ext-mark" style="left:0;width:${r==="16x9"?21.9:12.5}%"></span><span class="ext-mark" style="right:0;width:${r==="16x9"?21.9:12.5}%"></span>`;
  const preview=S.tool==="expand"&&!S.gen&&v.n===0&&S.ratio!=="1:1";
  if(preview){const rk={"4:3":"4x3","16:9":"16x9","3:4":"3x4"}[S.ratio];f.style.aspectRatio=S.ratio.replace(":"," / ");
   h=`<div style="position:absolute;inset:0;background:var(--mat-sys-surface-dim)"><div style="position:absolute;inset:${rk==="3x4"?"12.5% 0":"0 "+(rk==="16x9"?21.9:12.5)+"%"}">${v.svg}</div></div>${em(rk)}<span class="ext-note">${S.lang==="de"?"Vorschau: Die KI füllt die markierten Bereiche":"Preview: AI fills the marked areas"}</span>`}
- if(v.wide) h+=`${em(v.rk||"4x3")}<span class="ext-note">${S.lang==="de"?"Von der KI erweiterter Bereich · vor dem Speichern prüfen":"AI-extended area · check before saving"}</span>`;
+ if(v.wide&&!sbs) h+=`${em(v.rk||"4x3")}<span class="ext-note">${S.lang==="de"?"Von der KI erweiterter Bereich · vor dem Speichern prüfen":"AI-extended area · check before saving"}</span>`;
  if(S.gen){h+=`<div class="progress" role="status" data-mat="mat-progress-bar (determinate)"><span class="ms" aria-hidden="true" style="font-size:32px" data-icon="auto_awesome"></span>
    <div id="genStep">${T[S.lang].gen[0]}…</div><div class="bar"><i id="genBar"></i></div>
    <button class="btn btn-outlined" id="cancelGen">${t("cancel")}</button>
@@ -870,8 +1109,8 @@ function renderFrame(){
  const r=$("#cmpR"); if(r) r.oninput=e=>{S.cmp=+e.target.value;e.target.setAttribute("aria-valuetext",(100-S.cmp)+"% of the result shown");f.querySelector(".after").style.clipPath=`inset(0 0 0 ${S.cmp}%)`;f.querySelector(".cmp-line").style.left=S.cmp+"%"};
  const c=$("#cancelGen"); if(c) c.onclick=cancelGen;
 }
-function vStateTxt(v){const L=T[S.lang];return v.state==="ai"?(S.lang==="de"?"Mit Original verknüpft":"Linked to original"):v.n===0?L.unchSt:v.state==="failed"?L.failedSt:v.state==="saved"?L.savedSt:v.keep?L.selSt:L.unsavedSt}
-function vDs(v){return v.state==="ai"?"ai":v.n===0?"original":v.state==="failed"?"failed":v.state==="saved"?"saved":v.keep?"selected":"unsaved"}
+function vStateTxt(v){const L=T[S.lang];return v.n===0?L.unchSt:v.state==="failed"?L.failedSt:v.state==="saved"?L.savedSt:v.keep?L.selSt:L.unsavedSt}
+function vDs(v){return v.n===0?"original":v.state==="failed"?"failed":v.state==="saved"?"saved":v.keep?"selected":"unsaved"}
 function runLabel(v){if(!v||!v.rp)return "";const de=S.lang==="de",L=T[S.lang],r=v.rp,tn=L.tools[r.k][0];
  if(r.k==="bg")return `${tn} · ${{white:de?"Weiß":"White",transparent:"Transparent",colour:r.hex||(de?"Farbe":"Colour")}[r.bgMode]}`;
  if(r.k==="expand")return `${tn} · ${r.ratio}`;
@@ -883,26 +1122,12 @@ function keepChange(i,checked,el){const L=T[S.lang],v=S.versions[i];
  v.keep=checked;renderEditor();live(`${vName(v)} ${v.keep?L.selSt:L.unsavedSt}`);
  const n=document.querySelector(`input[data-i="${i}"]`);if(n)n.focus()}
 function renderStrip(){
- const L=T[S.lang],de=S.lang==="de";const gen=S.versions.filter(v=>v.n>0&&v.state!=="failed").length,m=S.versions.filter(v=>v.keep&&v.state!=="saved").length;
- $("#stripHint").textContent=S.img.ai&&S.img.src?(de?`Erstellt aus ${S.img.src.file}. Klicken Sie, um zwischen Original und KI-Bild zu wechseln.`:`Created from ${S.img.src.file}. Click to switch between the original and the AI image.`):gen?L.stripN(m,gen):L.stripEmpty;
- const cnt={};S.versions.forEach(v=>{if(v.n>0)cnt[v.run]=(cnt[v.run]||0)+1});
- let prev=null;
- let h=S.versions.map((v,i)=>{
-  const first=v.n>0&&v.run!==prev;if(v.n>0)prev=v.run;
-  const ai=S.img.ai&&S.img.src;const rl=ai||v.n===0?"":first?runLabel(v):"";
-  const cb=v.n>0&&v.state!=="failed"&&v.state!=="saved"&&v.state!=="ai"?`<label class="vcb" data-mat="mat-checkbox"><input type="checkbox" data-i="${i}" ${v.keep?"checked":""} data-action="select-to-save"> ${L.sel}</label>`:"";
-  const st=ai?(v.n===0?"":(runLabel(v)||v.label)):v.n===0?`<span class="ms" aria-hidden="true" style="font-size:14px" data-icon="lock"></span> ${L.unchSt}`:vStateTxt(v);
-  return `<li class="v ${v.state==="failed"?"ghost":""} ${first?"g1":""}" data-object="image-version" data-id="ver-v${v.n}" data-state="${vDs(v)}" data-run="${v.run||0}">
-    <span class="vrl" aria-hidden="true">${rl?`<span style="max-width:${cnt[v.run]*130-14}px">${rl}</span>`:"&nbsp;"}</span>
-    <button class="vsel" data-i="${i}" aria-current="${i===S.cur}">
-     <span class="th">${v.state==="failed"?"":v.svg}</span><span class="nm">${vName(v)}${v.n&&!ai?" · "+v.label:""}</span><span class="st">${st}</span>${v.n?`<span class="sr-only"> · ${runLabel(v)}</span>`:""}</button>${cb}</li>`}).join("");
- if(S.gen) h+=`<li class="v ghost" data-object="image-version" data-state="generating"><span class="vrl">&nbsp;</span><span class="vsel" style="cursor:default"><span class="th"></span><span class="nm">${t("res")} ${S.versions.length}</span><span class="st">${L.genSt}</span></span></li>`;
- const vl=$("#vlist");vl.innerHTML=h;
+ const de=S.lang==="de",vl=$("#vlist");$("#showAll").hidden=true;
+ if(!S.img.ai){vl.innerHTML="";$("#stripHint").textContent=T[S.lang].stripEmpty;return}
+ $("#stripHint").textContent=de?`Erstellt aus ${S.img.src.file}. Klicken zum Wechseln oder „Vergleichen“ für Vorher/Nachher.`:`Created from ${S.img.src.file}. Click to switch, or use Compare for before/after.`;
+ vl.innerHTML=S.versions.map((v,i)=>`<li class="v" data-object="image-version" data-id="ver-v${v.n}" data-state="${v.n===0?"original":"ai"}"><span class="vrl" aria-hidden="true">&nbsp;</span>
+   <button class="vsel" data-i="${i}" aria-current="${i===S.cur}"><span class="th">${v.svg}</span><span class="nm">${vName(v)}</span><span class="st">${v.n===0?(de?"Quelle":"Source"):(runLabel(v)||v.label)}</span></button></li>`).join("");
  vl.querySelectorAll(".vsel[data-i]").forEach(el=>el.onclick=()=>{S.cur=+el.dataset.i;if(S.cur===0)S.view="single";renderEditor()});
- vl.querySelectorAll(".vcb input").forEach(el=>el.onchange=()=>keepChange(+el.dataset.i,el.checked,el));
- const cur=vl.querySelector(".vsel[aria-current=true]");if(cur&&S.cur>0){const l=cur.closest("li");const x=l.offsetLeft-vl.clientWidth/2+l.offsetWidth/2;vl.scrollLeft=Math.max(0,x)}
- const sa=$("#showAll");const over=vl.scrollWidth>vl.clientWidth+4;sa.hidden=!(gen>=2&&(over||gen>=6));
- sa.textContent=de?`Alle ${gen} anzeigen`:`Show all ${gen}`;
 }
 function renderGrid(){
  const L=T[S.lang],de=S.lang==="de";const gen=S.versions.filter(v=>v.n>0&&v.state!=="failed").length,m=S.versions.filter(v=>v.keep&&v.state!=="saved").length;
@@ -962,14 +1187,20 @@ function renderPanel(){
   $("#backEdit").onclick=()=>{S.saving=false;renderEditor()};
   $("#confirmSave").onclick=()=>{S.versions.forEach(v=>{if(v.keep&&v.state!=="saved"){v.state="saved";v.keep=false;S.lastKey=v.key}});S.saving=false;S.saved=true;S.newTile=true;closeEditor(true);snack(L.saved(1),{label:L.undo,fn:()=>{S.newTile=false;renderList()}})};
   return}
- if(!S.tool){const dd=S.lang==="de";
-  const dm={1:["1024 × 1024 px","970 KB"],2:["1024 × 1024 px","422 KB"],3:["2048 × 2048 px","1 MB"],4:["1024 × 1024 px","610 KB"]}[S.img.id]||["1024 × 1024 px",""];
-  B.innerHTML=`<h3>${S.img.ai?(dd?"KI-Bilddetails":"AI image details"):(dd?"Bilddetails":"Image details")}</h3><p class="lead">${dd?"Wählen Sie links ein Werkzeug. Sie bearbeiten eine Kopie, das Original bleibt unverändert.":"Pick a tool on the left. You edit a copy; the original never changes."}</p>
+ if(!S.tool){const dd=S.lang==="de",im=S.img,draft=im.ai&&im.status==="draft";
+  const dm={1:["1024 × 1024 px","970 KB"],2:["1024 × 1024 px","422 KB"],3:["2048 × 2048 px","1 MB"],4:["1024 × 1024 px","610 KB"]}[im.id]||[(im.dim||"2048 x 2048 px | 1.1 MB").split("|")[0].trim(),(im.dim||"").split("|")[1]||""];
+  const availTxt=!im.ai?(dd?"Alle Kanäle":"All channels"):draft?(dd?"Nicht live (Vorschau)":"Not live (preview)"):im.status==="arch"?(dd?"Archiviert":"Archived"):({none:dd?"Noch keine Kanäle":"No channels yet",all:dd?"Alle Kanäle":"All channels",web:"Webshop",amz:"Amazon",ebay:"eBay"})[im.avail||"none"];
+  B.innerHTML=`<h3>${im.ai?(dd?"KI-Bilddetails":"AI image details"):(dd?"Bilddetails":"Image details")}</h3>
+   ${draft?`<div class="note-box strong" role="status"><span class="ms" aria-hidden="true" data-icon="edit_note"></span><div><b>${dd?"Vorschau · noch nicht live":"Preview · not live yet"}</b><br>${dd?"Mit dem Original vergleichen, dann annehmen oder ablehnen. Angenommene Bilder kommen zu den Live-Bildern (noch ohne Kanal), abgelehnte ins Archiv.":"Compare it with the original, then accept or reject it. Accepted images join the live images (no channel yet); rejected ones are archived."}</div></div>`
+    :`<p class="lead">${im.ai?(dd?"Wählen Sie links ein Werkzeug, um dieses KI-Bild weiter zu bearbeiten.":"Pick a tool on the left to edit this AI image further."):(dd?"Wählen Sie links ein Werkzeug. Sie bearbeiten eine Kopie, das Original bleibt unverändert.":"Pick a tool on the left. You edit a copy; the original never changes.")}</p>`}
    ${S.noperm?`<div class="note-box strong" role="status"><span class="ms" aria-hidden="true" data-icon="lock"></span><div>${L.noperm}<br><button class="btn btn-text" style="padding:0;height:28px">${L.copyReq}</button></div></div>`:""}
-   ${S.img.id===3?`<div class="note-box"><span class="ms" aria-hidden="true" data-icon="info"></span><span>${dd?"Dieses Bild enthält Text. „Retuschieren“ kann ihn entfernen.":"This image contains text. “Retouch and improve” can remove it."}</span></div>`:""}
-   <div class="save-sum" data-object="image" data-id="img-4743-${S.img.pos}" data-state="original"><div><span>${dd?"Datei":"File"}</span><b class="fn">${S.img.file}</b></div><div><span>${dd?"Größe":"Size"}</span><b>${dm[0]} · ${dm[1]}</b></div><div><span>${L.position}</span><b>${S.img.pos}</b></div><div><span>${dd?"Verfügbar in":"Available in"}</span><b>${dd?"Alle Kanäle":"All channels"}</b></div></div>${S.img.ai?c2paBlock():""}
-   <div class="anno"><b>v1.7 · Flow Studio pattern:</b> the right panel follows the selection. No tool selected = the image's details, like Flow Studio shows the flow's properties.</div>`;
-  F.innerHTML="";return}
+   ${im.id===3?`<div class="note-box"><span class="ms" aria-hidden="true" data-icon="info"></span><span>${dd?"Dieses Bild enthält Text. „Retuschieren“ kann ihn entfernen.":"This image contains text. “Retouch and improve” can remove it."}</span></div>`:""}
+   <div class="save-sum" data-object="image" data-id="img-4743-${im.pos}" data-state="${draft?"ai-draft":im.ai?"ai-kept":"original"}"><div><span>${dd?"Datei":"File"}</span><b class="fn">${im.file}</b></div><div><span>${dd?"Größe":"Size"}</span><b>${dm[0]}${dm[1]?" · "+dm[1]:""}</b></div><div><span>${L.position}</span><b>${im.pos}</b></div><div><span>${dd?"Verfügbar in":"Available in"}</span><b>${availTxt}</b></div></div>${im.ai?c2paBlock():""}
+   <div class="anno"><b>v2.3:</b> accept / reject here or on the image page (preview area). Use the carousel below for before + afters; Single shows one image large on small screens (Tamas, Ron).</div>`;
+  F.innerHTML=draft?`<div class="frow"><button class="btn btn-outlined" id="edDiscard" data-action="discard-draft" data-mat="mat-stroked-button" style="margin-left:0">${dd?"Ablehnen":"Reject"}</button><button class="btn btn-filled" id="edKeep" data-action="accept-preview" data-mat="mat-flat-button"><span class="ms" aria-hidden="true" data-icon="check"></span>${dd?"Annehmen":"Accept"}</button></div>`:"";
+  const ek=$("#edKeep");if(ek)ek.onclick=()=>keepAI(im.id,true);
+  const ed=$("#edDiscard");if(ed)ed.onclick=()=>discardAI(im.id,true);
+  return}
  const k=S.tool,ps=presetsFor(k),de=S.lang==="de",cv=S.versions[S.cur];
  const tg=(name,items,cur,attr)=>`<div class="tgl" role="group" aria-label="${name}" data-mat="mat-button-toggle-group">${items.map(([val,label,icon])=>`<button class="tgo" aria-pressed="${cur===val}" data-${attr}="${val}">${cur===val?`<span class="ms" aria-hidden="true" data-icon="check"></span>`:icon?`<span class="ms" aria-hidden="true" data-icon="${icon}"></span>`:""}${label}</button>`).join("")}</div>`;
  const note=(icon,txt)=>`<div class="tnote"><span class="ms" aria-hidden="true" data-icon="${icon}"></span><span>${txt}</span></div>`;
@@ -1027,17 +1258,13 @@ function renderPanel(){
   <details class="more" data-mat="mat-expansion-panel"><summary>${L.more}</summary><div class="in">${opts}</div></details>
   ${notes}
   <div class="anno"><b>v1.5 scope:</b> deferred to M2 and hidden — custom px, upscale quality, "remove something", reference image${S.recolorOn?"":", Recolor tool (switch in the top bar)"}. Smooth fabric only shows for apparel items.</div>`;
- const last=S.versions.some(v=>v.n>0&&v.tool===k);
- const canSave=cv&&cv.n>0&&cv.state==="unsaved"&&!S.gen&&!S.noperm;
- const recBlock=cv&&cv.tool==="recolor"&&!S.recolorOk;
  const noop=k==="expand"&&S.ratio==="1:1";
- /* Footer (Tamas' pattern): price left, Generate right; after a result, "Save this result" is the main action */
- F.innerHTML=S.started?startedRow():`${S.limit?costBlock():""}<div class="frow">${S.limit?"":costLine()}<button class="btn ${canSave?"btn-outlined":"btn-filled"}" data-mat="${canSave?"mat-stroked-button":"mat-flat-button"}" id="genBtn" data-object="generation" data-action="generate" ${S.limit||S.noperm||S.gen||noop||(S.cost==="tokens"&&S.tok<toolCost(k)*(k==="stage"?S.cnt:1))||(k==="stage"&&!String(S.prompt||"").trim())||(k==="bg"&&S.bgMode==="colour"&&S.swatch===5&&!/^#[0-9a-f]{6}$/i.test(S.hex))?"disabled":""}>
-   <span class="ms" aria-hidden="true" data-icon="auto_awesome"></span>${S.fail?L.tryAgain:last?L.generateAgain:L.generate}</button></div>
-   ${canSave?`<button class="btn btn-filled btn-block" data-mat="mat-flat-button" id="saveThis" data-object="image-version" data-id="ver-v${cv.n}" data-action="save" ${recBlock?"disabled":""} style="margin-top:10px">
-   <span class="ms" aria-hidden="true" data-icon="add_photo_alternate"></span>${L.saveThis}</button>`:""}`;
- const st=$("#saveThis"); if(st) st.onclick=()=>saveOne(S.cur);
- const go=$("#goOverview"); if(go) go.onclick=()=>closeEditor(false);
+ const locked=S.lockUntil&&Date.now()<S.lockUntil;
+ const dis=S.limit||S.noperm||locked||noop||(S.cost==="tokens"&&S.tok<toolCost(k)*(k==="stage"?S.cnt:1))||(k==="stage"&&!String(S.prompt||"").trim())||(k==="bg"&&S.bgMode==="colour"&&S.swatch===5&&!/^#[0-9a-f]{6}$/i.test(S.hex));
+ /* v2.0 (High 2): after Generate the status shows above, and Generate stays available ("Generate again") after a 2-second lock */
+ F.innerHTML=`${S.started?startedRow():""}${S.limit?costBlock():""}<div class="frow">${S.limit?"":costLine()}<button class="btn btn-filled" data-mat="mat-flat-button" id="genBtn" data-object="generation" data-action="generate" ${dis?"disabled":""}>
+   <span class="ms" aria-hidden="true" data-icon="auto_awesome"></span>${S.started?L.generateAgain:L.generate}</button></div>`;
+ const go=$("#goOverview"); if(go) go.onclick=()=>closeEditor();
  const lm=$("#limMore"); if(lm) lm.onclick=openGetMore;
  const cd=$("#chgDetails"); if(cd) cd.onclick=()=>{const v=S.versions[S.lastSaved];v.state="unsaved";v.keep=true;S.lastSaved=null;S.saving=true;renderEditor();setTimeout(()=>$("#backEdit")&&$("#backEdit").focus(),0)};
  B.querySelectorAll("[data-bgm]").forEach(b=>b.onclick=()=>{S.bgMode=b.dataset.bgm;renderPanel()});
@@ -1060,50 +1287,101 @@ function renderPanel(){
    const g=$("#genBtn");if(g){const dis=S.limit||S.noperm||S.gen||!pt.value.trim()||(S.cost==="tokens"&&S.tok<toolCost("stage")*S.cnt);g.disabled=dis}}}
  const prr=$("#prReset"); if(prr) prr.onclick=()=>{S.preset=S.base;S.base=null;renderPanel();const n=$("#pr");if(n)n.focus()};
  const ro=$("#recOk"); if(ro) ro.onchange=e=>{S.recolorOk=e.target.checked;renderPanel()};
- const gb=$("#genBtn"); if(gb) gb.onclick=startGen;
+ $("#genBtn").onclick=startGen;
 }
 
 function saveOne(i){const L=T[S.lang],v=S.versions[i];S.lastKey=v.key;v.state="saved";v.keep=false;S.newTile=true;S.anySaved=true;S.lastSaved=i;renderEditor();
  snack(L.savedOne(vName(v)),{label:L.undo,fn:()=>{v.state="unsaved";S.newTile=S.versions.some(x=>x.state==="saved");renderEditor()}});
  S.lastSaved=i;renderPanel();live(L.savedOne(vName(v)))}
 /* ---------- Generation flow ---------- */
-/* ---------- v1.9 (Tamas): generation is asynchronous. Generate starts a background job; the result lands in the image overview, not in the editor. ---------- */
+/* ---------- v2.0: asynchronous generation (Tamas + devs), queue, drafts, notifications ---------- */
+function jobCost(k){return toolCost(k)*(k==="stage"?Math.min(S.cnt,2):1)}
+function makeItems(im,k,o){S.img=im;S.tool=k;Object.assign(S,o||{});S.versions=versionsBase();const b=S.versions.length;addResult(true);return S.versions.splice(b)}
+function queueJob(job,ms){S.queue=S.queue||[];S.jobSeq=(S.jobSeq||0)+1;job.id=S.jobSeq;job.state=job.state||"active";S.queue.push(job);if(ms!=null){job.t=setTimeout(()=>finishJob(job),ms);S.jobT=S.jobT||[];S.jobT.push(job.t)}return job}
 function startGen(){
  const L=T[S.lang],de=S.lang==="de",k=S.tool;if(!k)return;
  S.fail=false;const before=S.versions.length,cur=S.cur;addResult(true);const made=S.versions.splice(before);S.cur=cur;
- const job={label:runLabel(made[0])||L.tools[k][0],items:made,src:S.img.src||S.img,file:S.img.file,thumb:S.img.svg};
- S.queue=S.queue||[];S.queue.push(job);
- /* Prototype only: on the first Generate, two other runs are added that stay in the queue, so the bar remains visible after this job finishes. */
- if(!S.bgSeeded){S.bgSeeded=true;S.queue.push({label:L.tools.retouch[0],file:IMAGES[2].file,thumb:IMAGES[2].svg,stay:true},{label:`${L.tools.expand[0]} · 16:9`,file:IMAGES[3].file,thumb:IMAGES[3].svg,stay:true})}
- S.started={label:job.label,n:made.length};
- S.jobT=S.jobT||[];S.jobT.push(setTimeout(()=>finishJob(job),3000));
+ const src=S.img.src||S.img;
+ const job=queueJob({label:runLabel(made[0])||L.tools[k][0],items:made,src,file:S.img.file,thumb:S.img.svg,cost:jobCost(k)},3500);
+ S.started={label:job.label,ready:false};S.lockUntil=Date.now()+2000;setTimeout(()=>{if($("#ed").classList.contains("open")&&S.tool)renderPanel()},2050);
  renderEditor();
  const g=$("#startedBox");if(g)g.focus();
- live(de?"Bildgenerierung gestartet. Das Bild erscheint in der Bildübersicht, sobald es fertig ist.":"Image generation started. The image will appear in the image overview when it's ready.");
+ live(de?"Bildgenerierung gestartet. Das Bild kommt als Entwurf in die Bildübersicht.":"Image generation started. The image will arrive in the image overview as a draft.");
 }
+function toDrafts(job){S.aiImgs=S.aiImgs||[];const base=(job.src.file||"image").replace(/\.[a-z]+$/i,"");const out=[];
+ job.items.forEach(v=>{S.aiSeq=(S.aiSeq||0)+1;const n=S.aiSeq;const a={id:100+n,file:`${base}_ai-${n}.${v.checker?"png":"jpg"}`,pos:IMAGES.length+S.aiImgs.length+1,svg:v.svg,src:job.src,label:job.label,tool:v.tool,rp:v.rp,checker:v.checker,ratio:v.ratio,wide:v.wide,rk:v.rk,ai:true,status:"draft",isNew:true,created:new Date(),dim:v.ratio?"2048 x 1536 px | 1.2 MB":"2048 x 2048 px | 1.1 MB"};S.aiImgs.push(a);out.push(a)});return out}
 function finishJob(job){
- const de=S.lang==="de";S.queue=(S.queue||[]).filter(q=>q!==job);S.aiImgs=S.aiImgs||[];S.aiImgs.forEach(a=>a.isNew=false);
- const base=(job.file||S.img.file).replace(/\.[a-z]+$/i,"");
- job.items.forEach(v=>{const n=S.aiImgs.length+1;S.aiImgs.push({id:100+n,file:`${base}_ai-${n}.${v.checker?"png":"jpg"}`,pos:IMAGES.length+n,svg:v.svg,src:job.src,label:job.label,tool:v.tool,rp:v.rp,checker:v.checker,ratio:v.ratio,ai:true,isNew:true,created:new Date(),dim:v.ratio?"2048 x 1536 px | 1.2 MB":"2048 x 2048 px | 1.1 MB"})});
+ if(!(S.queue||[]).includes(job))return;const de=S.lang==="de";const away=$("#ed").classList.contains("open");
+ if(job.sigFail){job.state="failed";S.tok=Math.min(S.tokMax,S.tok+job.cost);S.qOpen=true;
+  const msg=de?`Bild nicht geliefert: Inhaltsnachweis konnte nicht angehängt werden. ${job.cost} Tokens zurückerstattet.`:`Image not delivered: content credentials couldn't be attached. ${job.cost} tokens refunded.`;
+  addNote({icon:"error",err:true,title:de?"Bild nicht geliefert":"Image not delivered",sub:`${job.label} · ${job.file}`});
+  if(away){renderTok()}else renderList();snack(msg);live(msg);return}
+ S.queue=S.queue.filter(q=>q!==job);const made=toDrafts(job);
  if(S.started&&S.started.label===job.label)S.started.ready=true;
- const msg=job.items.length>1?(de?`${job.items.length} neue KI-Bilder sind fertig: ${job.label}`:`${job.items.length} new AI images are ready: ${job.label}`):(de?`Neues KI-Bild ist fertig: ${job.label}`:`New AI image is ready: ${job.label}`);
- if($("#ed").classList.contains("open")){renderPanel()}
- else{renderList();snack(msg);const c=document.querySelector(".imgcard.new");if(c)c.scrollIntoView({block:"nearest",behavior:"smooth"})}
+ const n=made.length;const msg=n>1?(de?`${n} neue KI-Vorschauen sind fertig: ${job.label}`:`${n} new AI previews are ready: ${job.label}`):(de?`Neue KI-Vorschau ist fertig: ${job.label}`:`New AI preview is ready: ${job.label}`);
+ if(away){addNote({icon:"auto_awesome",title:n>1?(de?`${n} KI-Vorschauen fertig`:`${n} AI previews ready`):(de?"KI-Vorschau fertig":"AI preview ready"),sub:`2-in-1 Multi-Skate (4743) · ${job.label}`,draft:made[0].id});
+  if(S.tool)renderPanel();snack(msg,{label:de?"Ansehen":"View",fn:()=>{selectInEditor(made[0].id)}})}
+ else{renderList();snack(msg);focusDraft(made[0].id,true)}
  live(msg);
 }
+function focusDraft(id,noFocus){const c=document.querySelector(`[data-act="review"][data-img="${id}"]`);if(c){c.closest(".imgcard").scrollIntoView({block:"nearest",behavior:"smooth"});if(!noFocus)c.focus()}}
+function cancelJob(id){const de=S.lang==="de",j=(S.queue||[]).find(q=>q.id===id);if(!j)return;clearTimeout(j.t);S.queue=S.queue.filter(q=>q!==j);S.tok=Math.min(S.tokMax,S.tok+j.cost);
+ renderList();const m=de?`Abgebrochen: ${j.label}. ${j.cost} Tokens zurück.`:`Cancelled: ${j.label}. ${j.cost} tokens back.`;snack(m);live(m);const q=$("#qToggle");if(q)q.focus()}
+function retryJob(id){const j=(S.queue||[]).find(q=>q.id===id);if(!j)return;if(S.cost==="tokens"&&S.tok<j.cost)return;S.tok-=j.cost;j.state="active";j.sigFail=false;j.t=setTimeout(()=>finishJob(j),3500);(S.jobT=S.jobT||[]).push(j.t);renderList();live(S.lang==="de"?"Erneut gestartet":"Started again")}
+function dismissJob(id){S.queue=(S.queue||[]).filter(q=>q.id!==id);renderList()}
 function renderQueue(){const q=S.queue||[],el=$("#qbar"),de=S.lang==="de";if(!el)return;
  if(!q.length){el.innerHTML="";el.hidden=true;S.qOpen=false;return}
- el.hidden=false;const n=q.length;
- el.innerHTML=`<div class="qb-h"><span class="ms qspin" aria-hidden="true" data-icon="progress_activity"></span>
-  <div class="qb-t" role="status"><b>${de?`${n} ${n>1?"Bilder werden":"Bild wird"} generiert`:`${n} image${n>1?"s":""} generating`}</b><small>${de?"Fertige Bilder erscheinen unten in der Liste.":"Finished images appear in the list below."}</small></div>
+ el.hidden=false;const act=q.filter(j=>j.state!=="failed"),fail=q.filter(j=>j.state==="failed");const n=act.length;
+ const head=n?`<span class="ms qspin" aria-hidden="true" data-icon="progress_activity"></span>`:`<span class="ms qerr" aria-hidden="true" data-icon="error"></span>`;
+ const ttl=n?(de?`${n} ${n>1?"Bilder werden":"Bild wird"} generiert`:`${n} image${n>1?"s":""} generating`):(de?`${fail.length} ${fail.length>1?"Bilder":"Bild"} nicht geliefert`:`${fail.length} image${fail.length>1?"s":""} not delivered`);
+ const sub=fail.length&&n?(de?`${fail.length} fehlgeschlagen · Tokens zurückerstattet`:`${fail.length} failed · tokens refunded`):n?(de?"Fertige Bilder erscheinen unten als Entwurf. Wartende Aufträge können Sie abbrechen.":"Finished images appear below as drafts. You can cancel jobs that are still queued."):(de?"Tokens wurden zurückerstattet.":"Tokens were refunded.");
+ el.innerHTML=`<div class="qb-h">${head}<div class="qb-t" role="status"><b>${ttl}</b><small>${sub}</small></div>
   <button class="icon-btn" id="qToggle" aria-expanded="${!!S.qOpen}" aria-controls="qList" aria-label="${S.qOpen?(de?"Warteschlange ausblenden":"Hide queue"):(de?"Warteschlange anzeigen":"Show queue")}" title="${S.qOpen?(de?"Ausblenden":"Hide"):(de?"Anzeigen":"Show")}" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="${S.qOpen?"expand_less":"expand_more"}"></span></button></div>
-  <ul class="qlist" id="qList" ${S.qOpen?"":"hidden"} data-mat="mat-list (thumbnail + 2 lines + status)">${q.map((j,i)=>`<li data-object="generation" data-state="${i===0?"generating":"queued"}"><span class="qth">${j.thumb}</span><span class="qm"><b>${j.file}</b><small>${j.label}</small></span><span class="qs">${i===0?(de?"Wird generiert…":"Generating…"):(de?"In Warteschlange":"In queue")}</span></li>`).join("")}</ul>`;
- $("#qToggle").onclick=()=>{S.qOpen=!S.qOpen;renderQueue();$("#qToggle").focus()}}
+  <ul class="qlist" id="qList" ${S.qOpen?"":"hidden"} data-mat="mat-list (thumbnail + 2 lines + status + actions)">${q.map(j=>{const st=j.state==="failed"?"failed":act.indexOf(j)===0?"generating":"queued";
+   return `<li data-object="generation" data-id="job-${j.id}" data-state="${st}"><span class="qth">${j.thumb}</span><span class="qm"><b>${j.file}</b><small>${j.label}</small>${st==="failed"?`<small class="e">${de?"Inhaltsnachweis (C2PA) konnte nicht angehängt werden, daher wurde das Bild nicht geliefert. Tokens zurückerstattet.":"Content credentials (C2PA) couldn't be attached, so the image wasn't delivered. Tokens refunded."}</small>`:""}</span>
+    <span class="qs ${st==="failed"?"e":""}">${st==="failed"?(de?"Nicht geliefert":"Not delivered"):st==="generating"?(de?"Wird generiert…":"Generating…"):(de?"In Warteschlange":"In queue")}</span>
+    <span class="qa">${st==="queued"?`<button class="btn btn-text" data-qa="cancel" data-j="${j.id}" aria-label="${de?"Abbrechen":"Cancel"}: ${j.label}, ${j.file}" data-action="cancel-generation" data-mat="mat-button">${de?"Abbrechen":"Cancel"}</button>`:""}
+    ${st==="failed"?`<button class="btn btn-text" data-qa="dismiss" data-j="${j.id}" data-action="dismiss" data-mat="mat-button">${de?"Ausblenden":"Dismiss"}</button><button class="btn btn-outlined" data-qa="retry" data-j="${j.id}" data-action="retry-generation" data-mat="mat-stroked-button">${de?"Erneut versuchen":"Try again"}</button>`:""}</span></li>`}).join("")}</ul>
+  ${n?`<div class="anno" style="margin:0 16px 8px"><b>v2.0 · High 3:</b> queued jobs can be cancelled (tokens back). A running job can't be cancelled: the Photoroom call is already made. Open (devs): one job at a time or parallel?</div>`:""}`;
+ $("#qToggle").onclick=()=>{S.qOpen=!S.qOpen;renderQueue();$("#qToggle").focus()};
+ el.querySelectorAll("[data-qa]").forEach(b=>b.onclick=()=>{const id=+b.dataset.j;({cancel:cancelJob,retry:retryJob,dismiss:dismissJob})[b.dataset.qa](id)})}
+function renderDrafts(){const el=$("#dbar"),de=S.lang==="de",d=(S.aiImgs||[]).filter(a=>a.status==="draft");if(!el)return;
+ if(!d.length){el.hidden=true;el.innerHTML="";return}el.hidden=false;
+ el.innerHTML=`<div class="dbar"><span class="ms" aria-hidden="true" data-icon="edit_note"></span><div class="qb-t"><b>${de?`${d.length} KI-${d.length>1?"Entwürfe":"Entwurf"} zu prüfen`:`${d.length} AI draft${d.length>1?"s":""} to review`}</b><small>${de?"Entwürfe sind auf keinem Kanal. Behalten Sie, was Sie brauchen, und verwerfen Sie den Rest.":"Drafts aren't on any channel. Keep what you need and discard the rest."}</small></div>
+  <button class="btn btn-text" id="dAllDiscard" data-action="discard-all-drafts" data-mat="mat-button">${de?"Alle verwerfen":"Discard all"}</button><button class="btn btn-outlined" id="dAllKeep" data-action="keep-all-drafts" data-mat="mat-stroked-button">${de?"Alle behalten":"Keep all"}</button></div>
+  <div class="anno" style="margin:0 16px 8px"><b>v2.0 · Must 1 + 3:</b> new AI images are drafts: not on any channel, Keep / Discard per card or all at once. Keep rate replaces the old save rate (metric). Discarding doesn't refund tokens.</div>`;
+ $("#dAllKeep").onclick=()=>{d.forEach(a=>{a.status="kept";a.isNew=false});renderList();const m=de?`${d.length} KI-Bilder behalten. Sie sind noch auf keinem Kanal.`:`${d.length} AI images kept. They're not on any channel yet.`;snack(m);live(m)};
+ $("#dAllDiscard").onclick=()=>{const before=[...S.aiImgs];S.aiImgs=S.aiImgs.filter(a=>a.status!=="draft");renderList();const m=de?`${d.length} Entwürfe verworfen.`:`${d.length} drafts discarded.`;snack(m,{label:t("undo"),fn:()=>{S.aiImgs=before;renderList()}});live(m)}}
+function keepAI(id,fromEd){const de=S.lang==="de",a=findImg(id);if(!a)return;a.status="kept";a.isNew=false;
+ const m=de?"Behalten. Es ist noch auf keinem Kanal – wählen Sie unter „Verfügbarkeit“, wo es erscheinen soll.":"Kept. It's not on any channel yet. Choose where it appears under Availability.";
+ if(fromEd){renderEditor()}else{renderList();const s=$("#av"+id);if(s)s.focus()}snack(m);live(m)}
+function discardAI(id,fromEd){const de=S.lang==="de",i=(S.aiImgs||[]).findIndex(a=>a.id===id);if(i<0)return;const a=S.aiImgs[i];S.aiImgs.splice(i,1);
+ if(fromEd)closeEditor();else renderList();
+ const m=de?"KI-Entwurf verworfen. Tokens werden nicht erstattet.":"AI draft discarded. Tokens aren't refunded.";snack(m,{label:t("undo"),fn:()=>{S.aiImgs.splice(i,0,a);renderList()}});live(m)}
+function addNote(n){S.notes=S.notes||[];n.id=(S.noteSeq=(S.noteSeq||0)+1);n.unread=true;S.notes.unshift(n);renderBell()}
+function renderBell(){const de=S.lang==="de",u=(S.notes||[]).filter(n=>n.unread).length,b=$("#bellBdg");b.hidden=!u;b.textContent=u;
+ $("#bellBtn").setAttribute("aria-label",(de?"Benachrichtigungen":"Notifications")+(u?(de?`, ${u} neu`:`, ${u} new`):""));
+ const P=$("#notifPop");const L=S.notes||[];
+ P.innerHTML=`<div class="np-h"><b>${de?"Benachrichtigungen":"Notifications"}</b>${u?`<button class="btn btn-text" id="npRead" style="height:32px">${de?"Alle gelesen":"Mark all read"}</button>`:""}</div>
+  ${L.length?`<ul class="np-l">${L.map(n=>`<li><button class="np-i ${n.unread?"unread":""} ${n.err?"e":""}" data-note="${n.id}" data-object="notification" data-state="${n.unread?"unread":"read"}"><span class="ms" aria-hidden="true" data-icon="${n.icon}"></span><span><b>${n.title}</b><small>${n.sub}</small></span></button></li>`).join("")}</ul>`:`<div class="np-empty">${de?"Keine neuen Benachrichtigungen.":"No new notifications."}</div>`}
+  <div class="anno" style="margin:4px 12px 4px"><b>v2.0 · Medium 2:</b> finished or failed jobs also land here when you're not on the image overview (another tab, another item, the editor).</div>`;
+ const r=$("#npRead");if(r)r.onclick=()=>{S.notes.forEach(n=>n.unread=false);renderBell();$("#bellBtn").focus()};
+ P.querySelectorAll("[data-note]").forEach(x=>x.onclick=()=>{const n=S.notes.find(y=>y.id==x.dataset.note);n.unread=false;bellShow(false);
+  if($("#ed").classList.contains("open"))closeEditor();else renderList();if(n.draft)focusDraft(n.draft);else{S.qOpen=true;renderQueue();const q=$("#qToggle");if(q)q.focus()}})}
+function bellShow(v){$("#notifPop").hidden=!v;$("#bellBtn").setAttribute("aria-expanded",v)}
+$("#bellBtn").onclick=()=>{const open=$("#notifPop").hidden;renderBell();bellShow(open);if(open){const f=$("#notifPop button");if(f)f.focus()}};
+document.addEventListener("click",e=>{if(!$("#notifPop").hidden&&!e.target.closest(".bellw"))bellShow(false)});
+function openZoom(im){const de=S.lang==="de",draft=im.ai&&im.status==="draft";S.zoomImg=im;
+ $("#zH").textContent=im.file;$("#zImg").innerHTML=im.svg;$("#zClose").textContent=de?"Schließen":"Close";
+ const z=$("#zEdit");z.hidden=S.noflag;z.innerHTML=`<span class="ms" aria-hidden="true" data-icon="${draft?"compare":"auto_awesome"}"></span>${draft?(de?"Vergleichen":"Compare"):(de?"Mit KI bearbeiten":"Edit with AI")}`;
+ $("#zoomScrim").classList.add("open");$("#zClose").focus()}
+$("#zClose").onclick=()=>{$("#zoomScrim").classList.remove("open");const b=document.querySelector(`.tile[data-img="${S.zoomImg.id}"]`);if(b)b.focus()};
+$("#zEdit").onclick=()=>{$("#zoomScrim").classList.remove("open");openEditor(S.zoomImg)};
 function c2paBlock(){const de=S.lang==="de",im=S.img,d=im.created||new Date();
  const ts=d.toLocaleString(de?"de-DE":"en-GB",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
  return `<h3 style="margin-top:20px"><span class="ms" aria-hidden="true" data-icon="verified"></span>${de?"Inhaltsnachweis (C2PA)":"Content credentials (C2PA)"}</h3>
   <p class="lead">${de?"Signierte Metadaten in der Bilddatei. Jeder C2PA-Prüfer kann sie lesen.":"Signed metadata embedded in the image file. Any C2PA verifier can read it."}</p>
-  <div class="save-sum" data-object="c2pa-manifest" data-state="attached" data-mat="key-value list (read-only)">
+  <div class="save-sum" data-object="c2pa-manifest" data-id="c2pa-${im.id}" data-state="attached" data-mat="key-value list (read-only)">
    <div><span>Status</span><b>${de?"Angehängt · signiert":"Attached · signed"}</b></div>
    <div><span>${de?"KI-generiert":"AI-generated"}</span><b>${de?"Ja":"Yes"}</b></div>
    <div><span>${de?"Werkzeug":"Tool"}</span><b>PlentyONE AI Image Editor (Photoroom)</b></div>
@@ -1112,24 +1390,13 @@ function c2paBlock(){const de=S.lang==="de",im=S.img,d=im.created||new Date();
    <div><span>${de?"Quellbild":"Source image"}</span><b class="fn">${im.src?im.src.file:"–"}</b></div>
   </div>
   <div class="note-box"><span class="ms" aria-hidden="true" data-icon="lock"></span><span>${de?"Wird jedem KI-Bild immer beigefügt und kann nicht abgeschaltet werden.":"Always attached to every AI image. It can't be switched off."}</span></div>
-  <div class="anno"><b>Legal · C2PA:</b> every generative output carries a signed manifest before it is stored or delivered. Not configurable by settings or merchants. If the manifest can't be attached, the image is not delivered (failure state not shown in the prototype yet). Signer / issuer wording: confirm with Photoroom.</div>`}
-function startedRow(){if(!S.started)return "";const de=S.lang==="de",r=S.started.ready;
- return `<div class="cline" id="startedBox" tabindex="-1" role="status" data-object="generation" data-state="${r?"ready":"started"}" data-mat="plain text status (replaces Generate button) — async job"><b>${r?(de?"Ihr Bild ist fertig.":"Your image is ready."):(de?"Bildgenerierung gestartet.":"Image generation started.")}</b>${r?"":`<small>${de?"Sie finden Ihr Bild in der Bildübersicht, sobald es fertig ist.":"You'll find your image in the image overview once it's done."}</small>`}
-  <button class="btn btn-text linkbtn" id="goOverview" style="font-size:14px;margin-top:8px" data-mat="mat-button" data-action="back-to-overview">${de?"Zurück zur Bildübersicht":"Back to image overview"}</button></div>
-  <div class="anno"><b>v1.9 · async (Tamas):</b> after Generate, the button is replaced by this text so it can't be clicked twice. The result lands in the item's image list (prototype: after ~3 s). Picking another tool brings Generate back.</div>`}
-function startGenLegacy(failIt){
- const L=T[S.lang];S.fail=false;S.gen={step:0};renderEditor();live(L.gen[0]);
- let i=0;clearInterval(S.timer);
- S.timer=setInterval(()=>{i++;const steps=L.gen;
-  if(i<steps.length){const st=$("#genStep"),b=$("#genBar");if(st)st.textContent=steps[i]+"…";if(b)b.style.width=(i/steps.length*100)+"%"}
-  else{clearInterval(S.timer);S.gen=null;
-   if(failIt===true){S.fail=true;S.versions.push({n:S.versions.length,label:L.tools[S.tool][0],state:"failed",svg:"",tool:S.tool});S.cur=S.versions.length-1;renderEditor();live(L.failH);return}
-   addResult();}
- },700);
-}
+  <div class="anno"><b>Legal · C2PA:</b> if the manifest can't be attached, the image isn't delivered: see state 4c (queue row "Not delivered", tokens refunded, bell). Signer / issuer wording: confirm with Photoroom.</div>`}
+function startedRow(){const de=S.lang==="de",r=S.started.ready;
+ return `<div class="stbox" id="startedBox" tabindex="-1" role="status" data-object="generation" data-state="${r?"ready":"started"}" data-mat="status note (async job)"><b>${r?(de?"Ihr Bild ist fertig.":"Your image is ready."):(de?"Bildgenerierung gestartet.":"Image generation started.")}</b><small>${r?(de?"Es liegt als Entwurf in der Bildübersicht.":"It's waiting as a draft in the image overview."):(de?"Es kommt als Entwurf in die Bildübersicht. Sie können währenddessen erneut generieren.":"It will arrive in the image overview as a draft. You can generate again in the meantime.")}</small>
+  <button class="btn btn-text linkbtn" id="goOverview" data-mat="mat-button" data-action="back-to-overview">${de?"Zurück zur Bildübersicht":"Back to image overview"}</button></div>`}
 function addResult(quiet){
  const L=T[S.lang],k=S.tool;
- S.run=(S.run||0)+1;const rp={k,bgMode:S.bgMode,hex:S.swatch===5?S.hex:null,ratio:S.ratio,preset:S.preset,prompt:S.prompt};
+ S.run=(S.run||0)+1;const rp={k,bgMode:S.bgMode,swatch:S.swatch,hex:S.swatch===5?S.hex:null,ratio:S.ratio,preset:S.preset,prompt:S.prompt};
  const mk=(o)=>({n:S.versions.length,label:L.tools[k][0],state:"unsaved",keep:false,tool:k,run:S.run,rp,...o});
  const p=S.preset, src=S.img.id===2?2:1;
  if(k==="bg"){const key=S.bgMode==="transparent"?"bg-transparent":S.bgMode==="colour"?(S.swatch===2||S.swatch===5?"bg-brand":"bg-grey"):"bg-white";S.versions.push(mk({svg:pic(key),key,checker:key==="bg-transparent"}))}
@@ -1150,8 +1417,8 @@ function fmt(n){return n.toLocaleString(S.lang==="de"?"de-DE":"en-US")}
 function tokTxt(n){return S.lang==="de"?`${fmt(n)} ${n===1?"Token":"Tokens"}`:`${fmt(n)} token${n===1?"":"s"}`}
 function renderTools(){
  const L=T[S.lang],de=S.lang==="de";
- $("#toolsH").textContent=de?"Werkzeuge":"Tools";$("#toolsLead").textContent=L.q;
- $("#tlist").innerHTML=TOOL_ORDER.filter(k=>k!=="recolor"||S.recolorOn).map(k=>`<li><button class="titem" data-k="${k}" aria-current="${S.tool===k}" ${S.noperm||S.saving?"disabled":""} title="${L.tools[k][0]}" data-object="tool" data-id="tool-${k}" data-state="${S.noperm?"disabled":S.tool===k?"selected":"idle"}" data-action="select-tool" data-mat="mat-nav-list item (icon + 2 lines)">
+ $("#toolsH").textContent=de?"Werkzeuge":"Tools";$("#toolsLead").textContent=S.img.ai&&S.img.status==="draft"?(de?"Behalten oder verwerfen Sie zuerst den Entwurf.":"Keep or discard this draft first."):L.q;
+ $("#tlist").innerHTML=TOOL_ORDER.filter(k=>k!=="recolor"||S.recolorOn).map(k=>`<li><button class="titem" data-k="${k}" aria-current="${S.tool===k}" ${S.noperm||S.saving||(S.img.ai&&S.img.status==="draft")?"disabled":""} title="${L.tools[k][0]}" data-object="tool" data-id="tool-${k}" data-state="${S.noperm?"disabled":S.tool===k?"selected":"idle"}" data-action="select-tool" data-mat="mat-nav-list item (icon + 2 lines)">
   <span class="ms" aria-hidden="true" data-icon="${TOOL_ICON[k]}"></span><span class="tt"><b>${L.tools[k][0]}</b><small>${L.tools[k][1]}</small></span><span class="ms chev" aria-hidden="true" data-icon="chevron_right"></span></button></li>`).join("");
  $("#tlist").querySelectorAll(".titem").forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(S.tool!==k){S.tool=k;S.preset=0;S.base=null;S.fail=false;S.recolorOk=false;S.started=null}
    renderEditor();const n=document.querySelector(`.titem[data-k="${k}"]`);if(n)n.focus();live(`${L.tools[k][0]} ${de?"ausgewählt":"selected"}`)});
@@ -1190,41 +1457,274 @@ $("#zFit").onclick=()=>{S.zoom=1;renderZoom();live(S.lang==="de"?"An Ansicht ang
 $("#hdrMode").onchange=e=>{S.hdr=e.target.value;if($("#ed").classList.contains("open"))renderEditor()};
 
 /* ---------- Jump to state (prototype control) ---------- */
-function reset(){clearInterval(S.timer);(S.jobT||[]).forEach(clearTimeout);S.jobT=[];S.aiImgs=[];S.started=null;S.queue=[];S.qOpen=false;S.bgSeeded=false;$("#snack").classList.remove("show");Object.assign(S,{bgMode:"white",swatch:1,ratio:"4:3",lastSaved:null,tool:null,gen:null,fail:false,limit:false,noperm:false,noflag:false,saving:false,saved:false,recolorOk:false,newTile:false,tok:1200,zoom:1,cnt:2,preset:0,base:null,prompt:"",view:"single"});$("#scrim").classList.remove("open");$("#tokScrim").classList.remove("open")}
+function reset(){clearInterval(S.timer);(S.jobT||[]).forEach(clearTimeout);S.jobT=[];S.aiImgs=[];S.started=null;S.queue=[];S.qOpen=false;S.notes=[];S.lockUntil=0;$("#snack").classList.remove("show");bellShow(false);
+ Object.assign(S,{bgMode:"white",swatch:1,ratio:"4:3",lastSaved:null,tool:null,gen:null,fail:false,limit:false,noperm:false,noflag:false,saving:false,saved:false,recolorOk:false,newTile:false,tok:1200,zoom:1,cnt:2,preset:0,base:null,prompt:"",view:"single"});
+ ["#scrim","#tokScrim","#zoomScrim"].forEach(x=>$(x).classList.remove("open"))}
+function seedDrafts(){const a=makeItems(IMAGES[0],"stage",{preset:0,cnt:2});const j1={label:runLabel(a[0]),items:a,src:IMAGES[0],file:IMAGES[0].file};
+ const b=makeItems(IMAGES[1],"bg",{bgMode:"white"});const j2={label:runLabel(b[0]),items:b,src:IMAGES[1],file:IMAGES[1].file};
+ S.tool=null;S.preset=0;S.bgMode="white";return [...toDrafts(j1),...toDrafts(j2)]}
 function jump(s){
  reset();
- if(s==="list"){closeEditor(true);return}
- if(s==="queue"){closeEditor(true);const seed=[[IMAGES[0],"bg",{bgMode:"white"},8000],[IMAGES[1],"expand",{ratio:"4:3"},14000],[IMAGES[0],"stage",{preset:0,cnt:1},20000]];
-  seed.forEach(([im,k,o,ms])=>{S.img=im;S.tool=k;Object.assign(S,o);S.versions=versionsBase();const before=S.versions.length;addResult(true);const made=S.versions.splice(before);
-   const job={label:runLabel(made[0]),items:made,src:im,file:im.file,thumb:im.svg};S.queue.push(job);S.jobT.push(setTimeout(()=>finishJob(job),ms))});
-  S.tool=null;S.img=IMAGES[0];renderList();return}
- if(s==="saved"){S.newTile=true;closeEditor(true);snack(T[S.lang].saved(1),{label:t("undo"),fn:()=>{S.newTile=false;renderList()}});return}
+ if(s==="list"){closeEditor();return}
+ if(s==="zoom"){closeEditor();openZoom(IMAGES[0]);return}
+ if(s==="queue"||s==="sigfail"){closeEditor();
+  const seed=s==="queue"?[[IMAGES[0],"bg",{bgMode:"white"},9000],[IMAGES[1],"expand",{ratio:"4:3"},16000],[IMAGES[0],"stage",{preset:0,cnt:1},24000]]:[[IMAGES[1],"stage",{preset:1,cnt:1},null,true],[IMAGES[0],"bg",{bgMode:"white"},12000]];
+  seed.forEach(([im,k,o,ms,f])=>{const made=makeItems(im,k,o);const j=queueJob({label:runLabel(made[0]),items:made,src:im,file:im.file,thumb:im.svg,cost:jobCost(k)},ms);if(f){j.state="failed";j.sigFail=true;S.tok+=j.cost;addNote({icon:"error",err:true,title:S.lang==="de"?"Bild nicht geliefert":"Image not delivered",sub:`${j.label} · ${j.file}`})}});
+  S.tool=null;S.img=IMAGES[0];S.preset=0;S.bgMode="white";S.qOpen=true;renderList();return}
+ if(s==="drafts"){seedDrafts();closeEditor();return}
+ if(s==="review"){const d=seedDrafts();openEditor(d[0]);return}
+ if(s==="kept"){const d=seedDrafts();d.forEach(a=>{a.status="kept";a.isNew=false});S.aiImgs=[d[2]];closeEditor();const x=$("#av"+d[2].id);if(x)x.focus();return}
  openEditor(IMAGES[0]);
- const L=T[S.lang];
  if(s==="start"){return}
  if(s==="noperm"){S.noperm=true;renderEditor();return}
  if(s==="noflag"){S.noflag=true;renderEditor();return}
- if(s==="recolor"){S.recolorOn=true;$("#recolorT").checked=true}
- S.tool=s==="recolor"?"recolor":"bg";
+ S.tool="bg";
  if(s==="tool"){renderEditor();return}
- if(s==="many"||s==="manyall"){const runs=[["bg",{bgMode:"white"}],["expand",{ratio:"4:3"}],["bg",{bgMode:"transparent"}],["stage",{preset:0,cnt:2}],["retouch",{}],["expand",{ratio:"16:9"}],["stage",{preset:1,cnt:2}],["bg",{bgMode:"colour",swatch:2}],["stage",{preset:3,cnt:2}]];
-  let used=0;runs.forEach(([k,o])=>{S.tool=k;Object.assign(S,o);addResult(true);used+=toolCost(k)*(k==="stage"?2:1)});
-  S.tok=1200-used;S.versions[1].state="saved";S.versions[4].keep=true;S.versions[7].keep=true;S.tool="stage";S.preset=3;S.cnt=2;S.bgMode="white";S.ratio="4:3";S.swatch=1;
-  S.cur=S.versions.length-1;S.view=s==="manyall"?"all":"compare";renderEditor();return}
  if(s==="gen"){startGen();return}
- if(s==="fail"){S.fail=true;S.versions.push({n:1,label:L.tools.bg[0],state:"failed",svg:"",tool:"bg"});S.cur=1;renderEditor();return}
- addResult();
- if(s!=="result")$("#snack").classList.remove("show");
- if(s==="result"){return}
  if(s==="limit"){S.limit=true;S.tok=0;renderEditor();return}
- if(s==="recolor"){S.view="compare";renderEditor();return}
- if(s==="save"){S.versions[1].keep=true;S.saving=true;renderEditor();return}
- if(s==="savedin"){saveOne(1);return}
- if(s==="close"){askClose(1);return}
+ if(s==="notif"){S.tool="stage";renderEditor();const d=seedDrafts();S.img=IMAGES[0];S.versions=versionsBase();S.cur=0;S.tool="stage";
+  addNote({icon:"auto_awesome",title:S.lang==="de"?"2 KI-Vorschauen fertig":"2 AI previews ready",sub:`2-in-1 Multi-Skate (4743) · ${d[0].label}`,draft:d[0].id});
+  addNote({icon:"auto_awesome",title:S.lang==="de"?"KI-Vorschau fertig":"AI preview ready",sub:`2-in-1 Multi-Skate (4743) · ${d[2].label}`,draft:d[2].id});
+  renderEditor();renderBell();bellShow(true);return}
 }
+
+/* ===== v2.3: check-in 19 Nov (Ron + Tamas) — preview area, accept/reject, table view, parent → children, Tasks, carousel back ===== */
+S.ovView="cards";S.psel=new Set();S.kids={};S.tkids={};S.showArch=false;
+function stOf(a){return a.status==="kept"?"live":a.status==="arch"?"archived":"preview"}
+function stTxt(a){const de=S.lang==="de";if(!a.ai)return "Original";return a.status==="kept"?"Live":a.status==="arch"?(de?"Archiviert":"Archived"):(de?"Vorschau":"Preview")}
+function liveImgs(){const k=(S.aiImgs||[]).filter(a=>a.status==="kept").sort((a,b)=>(a.keptAt||0)-(b.keptAt||0));k.forEach((a,i)=>a.pos=IMAGES.length+i+1);return [...IMAGES,...k]}
+function kidsOf(src){return (S.aiImgs||[]).filter(a=>a.src&&a.src.id===src.id).sort((a,b)=>b.created-a.created)}
+function availTxt(im){const de=S.lang==="de";if(!im.ai)return de?"Alle Kanäle":"All channels";if(im.status==="draft")return de?"Nicht live":"Not live";if(im.status==="arch")return de?"Archiviert":"Archived";return ({none:de?"Noch keine Kanäle":"No channels yet",all:de?"Alle Kanäle":"All channels",web:"Webshop",amz:"Amazon",ebay:"eBay"})[im.avail||"none"]}
+function cardHtml(im){const de=S.lang==="de",kids=im.ai?[]:kidsOf(im).filter(a=>a.status!=="arch"||S.showArch),open=!!S.kids[im.id];
+  const dims={1:"1024 x 1024 px | 970 KB",2:"1024 x 1024 px | 422 KB",3:"2048 x 2048 px | 1 MB",4:"1024 x 1024 px | 610 KB"};
+  const alt=im.ai?(im.altEdited??altFor(im.rp)):"";
+  const avail=!im.ai?`<select id="av${im.id}"><option>${de?"Alle ausgewählt":"All selected"}</option><option>Webshop</option><option>Amazon</option><option>eBay</option></select>`
+   :`<select id="av${im.id}" data-ai-avail="${im.id}" aria-describedby="avh${im.id}">${[["none",de?"Noch keine Kanäle":"No channels yet"],["all",de?"Alle Kanäle":"All channels"],["web","Webshop"],["amz","Amazon"],["ebay","eBay"]].map(([v,l])=>`<option value="${v}" ${(im.avail||"none")===v?"selected":""}>${l}</option>`).join("")}</select>`;
+  const availHint=im.ai&&(im.avail||"none")==="none"?(de?"Angenommen, aber noch auf keinem Kanal. Wählen Sie, wo es erscheinen soll.":"Accepted, but not on any channel yet. Choose where it should appear."):"";
+  return `<article class="imgcard ${im.isNew?"new":""}" data-object="image" data-id="img-4743-${im.pos}" data-state="${im.ai?"ai-live":"original"}" data-mat="mat-card (outlined)">
+   <div class="imgcard-h"><label class="check" data-mat="mat-checkbox"><input type="checkbox" aria-label="${de?"Bild auswählen":"Select image"} ${im.file}"></label>
+    <div class="t"><div class="url"><span>https://cdn02.plentymarkets.com/…/${im.file}</span><button class="icon-btn sm" aria-label="${de?"URL kopieren":"Copy URL"}" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="content_copy"></span></button>
+     ${im.ai?`<span class="badge" data-mat="mat-chip (static)"><span class="ms" aria-hidden="true" data-icon="auto_awesome"></span>${de?"KI":"AI"}</span>`:""}</div>
+     <small>${im.dim||dims[im.id]}${im.ai?` · ${de?"aus":"from"} ${im.src.file}`:""}</small></div>
+    <button class="icon-btn" aria-label="${de?"Mit Varianten verknüpfen":"Link to variations"}" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="link"></span></button>
+    <button class="icon-btn" aria-label="${de?"Weitere Aktionen":"More actions"}" data-mat="mat-icon-button"><span class="ms" aria-hidden="true" data-icon="more_vert"></span></button></div>
+   <div class="imgcard-b">
+    <div class="imgcard-l">
+     <button class="tile" data-act="preview" data-img="${im.id}" aria-label="${de?"Vorschau":"Preview"} ${im.file}" data-action="preview" data-mat="image thumbnail (opens preview — today's zoom)">${im.svg}</button>
+     ${S.noflag?"":`<button class="btn btn-tonal ebtn" data-act="edit" data-img="${im.id}" aria-label="${de?"Mit KI bearbeiten":"Edit with AI"}: ${im.file}" data-action="open-editor" data-mat="mat-flat-button (tonal) + icon"><span class="ms" aria-hidden="true" data-icon="auto_awesome"></span>${de?"Mit KI bearbeiten":"Edit with AI"}</button>`}
+    </div>
+    <div class="ofs">
+     <div class="of" data-mat="mat-form-field (outline)"><label for="nm${im.id}">Name - EN</label><input id="nm${im.id}"></div>
+     <div class="of" data-mat="mat-form-field (outline)"><label for="ps${im.id}">Position</label><input id="ps${im.id}" value="${im.pos-1}" inputmode="numeric" ${im.ai?`data-ai-pos="${im.id}" aria-describedby="psh${im.id}"`:""}>${im.ai?`<div class="ofh" id="psh${im.id}">${de?"Position 0 (Hauptbild) braucht ein echtes Foto.":"Position 0 (main image) needs a real photo."}</div>`:""}</div>
+     <div class="of full" data-mat="mat-form-field (outline)"><label for="al${im.id}">${de?"Alternativtext - EN":"Alternative text - EN"}</label><input id="al${im.id}" value="${alt}" ${im.ai?`data-ai-alt="${im.id}" aria-describedby="alh${im.id}"`:""}>${im.ai&&im.altEdited==null?`<div class="ofh" id="alh${im.id}"><span class="ms" aria-hidden="true" data-icon="auto_awesome" style="font-size:14px"></span> ${de?"Aus der Bearbeitung vorgeschlagen. Bitte prüfen.":"Suggested from the edit. Please check it."}</div>`:""}</div>
+     <div class="of full" data-mat="mat-form-field (outline) + mat-select"><label for="av${im.id}">${de?"Verfügbarkeit":"Availability"}</label>${avail}${availHint?`<div class="ofh" id="avh${im.id}">${availHint}</div>`:""}</div>
+    </div>
+    ${kids.length?`<div class="kids" data-object="children" data-id="kids-${im.id}"><button class="btn btn-text kidsT" data-kid="${im.id}" aria-expanded="${open}" aria-controls="kids${im.id}" data-action="toggle-children" data-mat="mat-button + expand icon"><span class="ms" aria-hidden="true" data-icon="${open?"expand_less":"expand_more"}"></span>${de?`KI-Bilder aus diesem Bild · ${kids.length}`:`AI images from this image · ${kids.length}`}</button>
+     ${open?`<ul class="kidl" id="kids${im.id}">${kids.map(a=>`<li><button class="kid" data-kv="${a.id}" aria-label="${stTxt(a)}: ${a.label}" data-object="ai-image" data-id="ai-${a.id}" data-state="${stOf(a)}"><span class="kid-th">${a.svg}</span><span class="pchip s-${stOf(a)}" aria-hidden="true">${stTxt(a)}</span></button></li>`).join("")}</ul>`:""}</div>`:""}
+   </div></article>`}
+function rowHtml(im,lvl,nk,open){const de=S.lang==="de",ai=!!im.ai,st=ai?stOf(im):"original";
+ const act=ai&&im.status==="draft"?`<button class="btn btn-outlined" data-tr="${im.id}" data-action="review-preview" data-mat="mat-stroked-button">${de?"Prüfen":"Review"}</button>`
+  :ai&&im.status==="arch"?`<button class="btn btn-text" data-trs="${im.id}" data-action="restore-preview" data-mat="mat-button">${de?"Wiederherstellen":"Restore"}</button>`
+  :S.noflag?"":`<button class="btn btn-text" data-te="${im.id}" aria-label="${de?"Mit KI bearbeiten":"Edit with AI"}: ${im.file}" data-action="open-editor" data-mat="mat-button"><span class="ms" aria-hidden="true" data-icon="auto_awesome"></span>${de?"Mit KI bearbeiten":"Edit with AI"}</button>`;
+ return `<tr class="${lvl?"child":"parent"} ${st==="archived"?"arch":""}" data-object="image" data-id="${ai?"ai-"+im.id:"img-4743-"+im.pos}" data-state="${st}">
+  <td class="c-sel"><input type="checkbox" data-ts="${im.id}" ${S.psel.has(im.id)?"checked":""} aria-label="${de?"Auswählen":"Select"} ${im.file}" data-mat="mat-checkbox"></td>
+  <td><div class="tthumb">${lvl?`<span class="ind" aria-hidden="true">└</span>`:nk?`<button class="icon-btn" data-tx="${im.id}" aria-expanded="${open}" aria-label="${open?(de?"KI-Bilder ausblenden":"Hide AI images"):(de?"KI-Bilder anzeigen":"Show AI images")} (${nk}): ${im.file}"><span class="ms" aria-hidden="true" data-icon="${open?"expand_more":"chevron_right"}"></span></button>`:`<span class="ind"></span>`}<span class="th">${im.svg}</span></div></td>
+  <td class="fcell">${im.file}${!lvl&&nk?` <small style="color:var(--mat-sys-on-surface-variant)">· ${nk} ${de?"KI":"AI"}</small>`:""}</td>
+  <td><span class="pchip s-${st}">${stTxt(im)}</span></td>
+  <td>${ai?im.label:"–"}</td>
+  <td>${!ai||im.status==="kept"?im.pos-1:"–"}</td>
+  <td>${availTxt(im)}</td>
+  <td>${act}</td></tr>`}
+function tableHtml(){const de=S.lang==="de",rows=[];
+ IMAGES.forEach(o=>{const kids=kidsOf(o).filter(a=>a.status!=="arch"||S.showArch);const open=S.tkids[o.id]!==false;rows.push(rowHtml(o,0,kids.length,open));if(open)kids.forEach(a=>rows.push(rowHtml(a,1)))});
+ return `<div class="tblw"><table class="itbl" data-mat="mat-table + mat-checkbox (tree rows)"><caption class="sr-only">${de?"Bilder von Artikel 4743, nach Quellbild gruppiert":"Images of item 4743, grouped by source image"}</caption>
+  <thead><tr><th scope="col" class="c-sel"><span class="sr-only">${de?"Auswahl":"Select"}</span></th><th scope="col">${de?"Bild":"Image"}</th><th scope="col">${de?"Datei":"File"}</th><th scope="col">Status</th><th scope="col">${de?"Funktion":"Feature"}</th><th scope="col">Position</th><th scope="col">${de?"Verfügbarkeit":"Availability"}</th><th scope="col"><span class="sr-only">${de?"Aktionen":"Actions"}</span></th></tr></thead>
+  <tbody>${rows.join("")}</tbody></table></div>
+  <div class="anno" style="margin-top:8px"><b>v2.3 · Ron:</b> table view next to cards. Parents expand to their AI children (Tamas: the backend keeps the source ID chain). Select previews on the left, then Accept / Reject in the preview area above.</div>`}
+function renderViewSw(){const t=S.ovView==="table";$("#lvCards").setAttribute("aria-pressed",!t);$("#lvTable").setAttribute("aria-pressed",t);
+ const de=S.lang==="de";$("#lvCards").lastChild.textContent=de?"Karten":"Cards";$("#lvTable").lastChild.textContent=de?"Tabelle":"Table"}
+$("#lvCards").onclick=()=>{S.ovView="cards";renderList();$("#lvCards").focus()};
+$("#lvTable").onclick=()=>{S.ovView="table";renderList();$("#lvTable").focus()};
+function selPrev(){return [...S.psel].filter(id=>{const a=findImg(id);return a&&a.status==="draft"})}
+function renderPrev(){const el=$("#prev"),de=S.lang==="de",all=S.aiImgs||[];
+ const prev=all.filter(a=>a.status==="draft"),arch=all.filter(a=>a.status==="arch"),jobs=S.queue||[],act=jobs.filter(j=>j.state!=="failed");
+ if(!prev.length&&!jobs.length&&!arch.length){el.hidden=true;el.innerHTML="";return}el.hidden=false;
+ const sel=selPrev();
+ const groups=IMAGES.map(src=>({src,jobs:jobs.filter(j=>j.src.id===src.id),prev:prev.filter(a=>a.src.id===src.id).sort((a,b)=>b.created-a.created),arch:S.showArch?arch.filter(a=>a.src.id===src.id):[]})).filter(g=>g.jobs.length||g.prev.length||g.arch.length);
+ const tile=a=>`<li class="pt ${S.psel.has(a.id)?"sel":""}" data-object="ai-image" data-id="ai-${a.id}" data-state="preview"><label class="pt-sel"><input type="checkbox" data-ps="${a.id}" ${S.psel.has(a.id)?"checked":""} aria-label="${de?"Auswählen":"Select"}: ${a.label}" data-mat="mat-checkbox"></label>
+   <button class="pt-b" data-pv="${a.id}" aria-label="${de?"Prüfen":"Review"}: ${a.label}" data-action="review-preview"><span class="pt-th ${a.checker?"checker":""}">${a.svg}</span></button><span class="pt-l" title="${a.label}">${a.label}</span><span class="pt-s"><span class="pchip s-preview">${stTxt(a)}</span></span></li>`;
+ const jtile=j=>{const st=j.state==="failed"?"failed":act.indexOf(j)===0?"generating":"queued";
+  return `<li class="pt ${st==="failed"?"fail":"proc"}" data-object="generation" data-id="job-${j.id}" data-state="${st}"><span class="pt-th">${st==="failed"?`<span class="ms" aria-hidden="true" data-icon="error"></span>`:`<span class="ms ${st==="generating"?"qspin":""}" aria-hidden="true" data-icon="${st==="generating"?"progress_activity":"schedule"}"></span>`}</span>
+   <span class="pt-l" title="${j.label}">${j.label}</span><span class="pt-s">${st==="failed"?(de?"Nicht geliefert · Tokens erstattet":"Not delivered · tokens refunded"):st==="generating"?(de?"Wird verarbeitet…":"Processing…"):(de?"In Warteschlange":"In queue")}</span>
+   ${st==="queued"?`<button class="btn btn-text" data-qc="${j.id}" aria-label="${de?"Abbrechen":"Cancel"}: ${j.label}" data-action="cancel-generation">${de?"Abbrechen":"Cancel"}</button>`:st==="failed"?`<button class="btn btn-text" data-qr="${j.id}" data-action="retry-generation">${de?"Erneut versuchen":"Try again"}</button>`:""}</li>`};
+ const atile=a=>`<li class="pt arch" data-object="ai-image" data-id="ai-${a.id}" data-state="archived"><span class="pt-th">${a.svg}</span><span class="pt-l">${a.label}</span><span class="pt-s"><span class="pchip s-archived">${stTxt(a)}</span></span><button class="btn btn-text" data-pr="${a.id}" data-action="restore-preview">${de?"Wiederherstellen":"Restore"}</button></li>`;
+ el.innerHTML=`<div class="pv-h"><span class="ms" aria-hidden="true" data-icon="preview"></span><div class="qb-t"><h3 class="pv-t" id="prevH">${de?"KI-Vorschauen · noch nicht live":"AI previews · not live yet"}</h3><small>${[prev.length?(de?`${prev.length} zu prüfen`:`${prev.length} to review`):"",act.length?(de?`${act.length} in Arbeit`:`${act.length} processing`):""].filter(Boolean).join(" · ")}${prev.length||act.length?". ":""}${de?"Annehmen bringt ein Bild zu den Live-Bildern unten, Ablehnen archiviert es.":"Accept moves an image into the live images below. Reject archives it."}${act.length?(de?" Sie können die Seite verlassen, während Bilder verarbeitet werden.":" You can leave this page while images are processing."):""}</small></div>
+   ${sel.length?`<span class="pv-n" role="status">${de?`${sel.length} ausgewählt`:`${sel.length} selected`}</span><button class="btn btn-text" id="pvClr">${de?"Auswahl aufheben":"Clear"}</button><button class="btn btn-outlined" id="pvRejS" data-action="reject-selected">${de?"Ablehnen":"Reject"}</button><button class="btn btn-filled" id="pvAccS" data-action="accept-selected"><span class="ms" aria-hidden="true" data-icon="check"></span>${de?`${sel.length} annehmen`:`Accept ${sel.length}`}</button>`
+    :prev.length?`<button class="btn btn-text" id="pvAll" data-action="select-all-previews">${de?"Alle auswählen":"Select all"}</button><button class="btn btn-filled" id="pvRev" data-action="review-previews"><span class="ms" aria-hidden="true" data-icon="preview"></span>${de?"Nacheinander prüfen":"Review one by one"}</button>`:""}</div>
+  <div class="pv-b">${groups.map(g=>`<section class="pg" aria-label="${de?"Quelle":"Source"} ${g.src.file}" data-object="source-group" data-id="src-${g.src.id}"><div class="pg-h"><span class="gg-th">${g.src.svg}</span><b>${g.src.file}</b><small>· ${de?"Quellbild":"source image"}</small></div><ul class="pgl">${g.jobs.map(jtile).join("")}${g.prev.map(tile).join("")}${g.arch.map(atile).join("")}</ul></section>`).join("")||`<p class="gp-empty">${de?"Nichts zu prüfen.":"Nothing to review."}</p>`}</div>
+  ${arch.length?`<div class="pv-f"><button class="btn btn-text" id="pvArch" aria-pressed="${S.showArch}" data-action="toggle-archived"><span class="ms" aria-hidden="true" data-icon="inventory_2"></span>${S.showArch?(de?"Archiv ausblenden":"Hide archived"):(de?"Archiv anzeigen":"Show archived")} (${arch.length})</button></div>`:""}
+  <div class="anno" style="margin:0 16px 10px"><b>v2.3 · decided (Ron + Tamas):</b> AI images get a "preview" state and need Accept before they go live. Normal uploads skip this. Processing and finished previews stay here, grouped by source image. Open: retention of archived images (Tamas).</div>`;
+ const q=x=>el.querySelector(x);
+ el.querySelectorAll("[data-ps]").forEach(c=>c.onchange=()=>{const id=+c.dataset.ps;c.checked?S.psel.add(id):S.psel.delete(id);renderPrev();if(S.ovView==="table")renderList();const n=$("#prev").querySelector(`[data-ps="${id}"]`);if(n)n.focus()});
+ el.querySelectorAll("[data-pv]").forEach(b=>b.onclick=()=>openReview(null,+b.dataset.pv));
+ el.querySelectorAll("[data-qc]").forEach(b=>b.onclick=()=>cancelJob(+b.dataset.qc));
+ el.querySelectorAll("[data-qr]").forEach(b=>b.onclick=()=>retryJob(+b.dataset.qr));
+ el.querySelectorAll("[data-pr]").forEach(b=>b.onclick=()=>restoreAI(+b.dataset.pr));
+ if(q("#pvAll"))q("#pvAll").onclick=()=>{prev.forEach(a=>S.psel.add(a.id));renderList();const b=$("#pvAccS");if(b)b.focus()};
+ if(q("#pvClr"))q("#pvClr").onclick=()=>{S.psel.clear();renderList();const b=$("#pvAll");if(b)b.focus()};
+ if(q("#pvAccS"))q("#pvAccS").onclick=()=>acceptAI(selPrev());
+ if(q("#pvRejS"))q("#pvRejS").onclick=()=>rejectAI(selPrev());
+ if(q("#pvRev"))q("#pvRev").onclick=()=>openReview();
+ if(q("#pvArch"))q("#pvArch").onclick=()=>{S.showArch=!S.showArch;renderList();const b=$("#pvArch");if(b)b.focus()}}
+function refreshAll(){if($("#ed").classList.contains("open"))renderEditor();else renderList();renderTasks()}
+function acceptAI(ids){const de=S.lang==="de";ids=ids.filter(id=>{const a=findImg(id);return a&&a.status!=="kept"});if(!ids.length)return;
+ ids.forEach((id,i)=>{const a=findImg(id);a.status="kept";a.keptAt=Date.now()+i;a.avail=a.avail||"none";a.isNew=true;S.psel.delete(id)});refreshAll();
+ const m=ids.length>1?(de?`${ids.length} Bilder angenommen. Sie sind jetzt bei den Live-Bildern – noch auf keinem Kanal.`:`${ids.length} images accepted. They're now with the live images, not on any channel yet.`):(de?"Angenommen. Jetzt bei den Live-Bildern – noch auf keinem Kanal.":"Accepted. Now with the live images, not on any channel yet.");
+ snack(m,{label:t("undo"),fn:()=>{ids.forEach(id=>{const a=findImg(id);if(a){a.status="draft";a.isNew=false}});refreshAll()}});live(m)}
+function rejectAI(ids){const de=S.lang==="de";ids=ids.filter(id=>{const a=findImg(id);return a&&a.status==="draft"});if(!ids.length)return;
+ ids.forEach(id=>{findImg(id).status="arch";S.psel.delete(id)});refreshAll();
+ const m=ids.length>1?(de?`${ids.length} Vorschauen archiviert. Tokens werden nicht erstattet.`:`${ids.length} previews archived. Tokens aren't refunded.`):(de?"Vorschau archiviert. Tokens werden nicht erstattet.":"Preview archived. Tokens aren't refunded.");
+ snack(m,{label:t("undo"),fn:()=>{ids.forEach(id=>{const a=findImg(id);if(a)a.status="draft"});refreshAll()}});live(m)}
+function restoreAI(id){const a=findImg(id);if(!a)return;a.status="draft";refreshAll();const m=S.lang==="de"?"Wiederhergestellt: wieder bei den Vorschauen.":"Restored to the previews.";snack(m);live(m)}
+function keepAI(id,fromEd){acceptAI([id])}
+function discardAI(id,fromEd){rejectAI([id])}
+function focusDraft(id){const c=document.querySelector(`[data-pv="${id}"]`)||document.querySelector("#prev");if(c){c.scrollIntoView({block:"nearest",behavior:"smooth"})}}
+/* Review popover (Ron: "click preview → popover → accept or reject") */
+function prevOrder(){const p=(S.aiImgs||[]).filter(a=>a.status==="draft");return IMAGES.flatMap(src=>p.filter(a=>a.src.id===src.id).sort((a,b)=>b.created-a.created)).map(a=>a.id)}
+function openReview(ids,startId){S.rv={ids:ids||prevOrder(),i:0,orig:false};if(startId!=null){const k=S.rv.ids.indexOf(startId);S.rv.i=k<0?0:k}if(!S.rv.ids.length)return;S.rvFrom=document.activeElement;$("#rvScrim").classList.add("open");renderReview();$("#rvAcc").focus()}
+function closeReview(){$("#rvScrim").classList.remove("open");S.rv=null;const f=S.rvFrom;if(f&&document.contains(f))f.focus();else{const p=$("#prev");if(p&&!p.hidden){const b=p.querySelector("button");if(b)b.focus()}}}
+function renderReview(){const de=S.lang==="de",r=S.rv;r.ids=r.ids.filter(id=>{const a=findImg(id);return a&&a.status==="draft"});if(!r.ids.length){closeReview();return}r.i=Math.min(r.i,r.ids.length-1);const a=findImg(r.ids[r.i]);
+ $("#rvH").textContent=de?`KI-Vorschau prüfen · ${r.i+1} von ${r.ids.length}`:`Review AI preview · ${r.i+1} of ${r.ids.length}`;
+ $("#rvImg").innerHTML=`${r.orig?a.src.svg:a.svg}<span class="lbl">${r.orig?(de?"Original":"Original"):(de?"KI-Vorschau":"AI preview")}</span>`;$("#rvImg").classList.toggle("checker",!r.orig&&!!a.checker);
+ $("#rvMeta").innerHTML=`<span class="th">${a.src.svg}</span><span><b>${a.label}</b><small>${de?"aus":"from"} ${a.src.file} · ${a.file}</small></span>`;
+ const o=$("#rvOrig");o.setAttribute("aria-pressed",r.orig);o.innerHTML=`<span class="ms" aria-hidden="true" data-icon="${r.orig?"visibility_off":"compare"}"></span>${r.orig?(de?"KI-Vorschau zeigen":"Show AI preview"):(de?"Original zeigen":"Show original")}`;
+ $("#rvPrev").disabled=r.i===0;$("#rvNext").disabled=r.i>=r.ids.length-1;
+ $("#rvRej").innerHTML=`${de?"Ablehnen":"Reject"}`;$("#rvAcc").innerHTML=`<span class="ms" aria-hidden="true" data-icon="check"></span>${de?"Annehmen":"Accept"}`;
+ $("#rvX").setAttribute("aria-label",de?"Schließen":"Close")}
+function rvAct(fn){const r=S.rv,id=r.ids[r.i];fn([id]);r.ids=r.ids.filter(x=>x!==id);if(!r.ids.length){closeReview();return}r.orig=false;renderReview();$("#rvAcc").focus()}
+$("#rvAcc").onclick=()=>rvAct(acceptAI);$("#rvRej").onclick=()=>rvAct(rejectAI);
+$("#rvPrev").onclick=()=>{S.rv.i--;S.rv.orig=false;renderReview();(S.rv.i===0?$("#rvNext"):$("#rvPrev")).focus()};
+$("#rvNext").onclick=()=>{S.rv.i++;S.rv.orig=false;renderReview();(S.rv.i>=S.rv.ids.length-1?$("#rvPrev"):$("#rvNext")).focus()};
+$("#rvOrig").onclick=()=>{S.rv.orig=!S.rv.orig;renderReview();$("#rvOrig").focus()};
+$("#rvX").onclick=closeReview;
+$("#rvScrim").addEventListener("click",e=>{if(e.target===$("#rvScrim"))closeReview()});
+document.addEventListener("keydown",e=>{if(!$("#rvScrim").classList.contains("open"))return;
+ if(e.key==="Escape"){e.stopImmediatePropagation();closeReview()}
+ else if(e.key==="ArrowLeft"&&!$("#rvPrev").disabled){$("#rvPrev").click()}else if(e.key==="ArrowRight"&&!$("#rvNext").disabled){$("#rvNext").click()}
+ else if(e.key==="Tab")trap($("#rvScrim .dlg"),e)},true);
+/* Tasks (existing app feature, right rail) — background jobs show here (Ron) */
+function tasksShow(v){const p=$("#tasksPanel");p.hidden=!v;$("#shell").classList.toggle("tasks-open",v);$("#tasksBtn").setAttribute("aria-expanded",v);if(v){renderTasks();setTimeout(()=>$("#tpH").focus(),0)}}
+function renderTasks(){const de=S.lang==="de",q=S.queue||[],act=q.filter(j=>j.state!=="failed"),fail=q.filter(j=>j.state==="failed"),done=S.done||[],np=(S.aiImgs||[]).filter(a=>a.status==="draft").length;
+ const n=act.length+fail.length,b=$("#taskBdg");b.hidden=!n;b.textContent=n;$("#tasksBtn").setAttribute("aria-label",(de?"Aufgaben":"Tasks")+(n?(de?`, ${n} laufend`:`, ${n} running`):""));
+ $("#tpH").textContent=de?"Aufgaben":"Tasks";$("#tpClear").disabled=!done.length;$("#tpClear").setAttribute("aria-label",de?"Erledigte Aufgaben entfernen":"Clear finished tasks");$("#tpClose").setAttribute("aria-label",de?"Aufgaben schließen":"Close tasks");
+ const body=$("#tpBody");
+ if(!q.length&&!done.length){body.innerHTML=`<div class="tp-empty"><span class="ms" aria-hidden="true" data-icon="checklist"></span><p>${de?"Es gibt noch keine Aufgaben.":"There are no tasks yet."}</p></div>`;return}
+ const row=j=>{const st=j.state==="failed"?"failed":act.indexOf(j)===0?"generating":"queued";
+  return `<li class="tp-i" data-object="task" data-id="job-${j.id}" data-state="${st}"><span class="qth">${j.thumb}</span><div class="tp-t"><b>${de?"KI-Bild":"AI image"} · ${j.label}</b><small>2-in-1 Multi-Skate (4743) · ${j.file}</small>
+   ${st==="failed"?`<div class="tp-s e"><span class="ms" aria-hidden="true" data-icon="error"></span>${de?"Nicht geliefert · Inhaltsnachweis fehlgeschlagen · Tokens erstattet":"Not delivered · content credentials failed · tokens refunded"}</div><div class="tp-a"><button class="btn btn-text" data-tq="retry" data-j="${j.id}">${de?"Erneut versuchen":"Try again"}</button><button class="btn btn-text" data-tq="dismiss" data-j="${j.id}">${de?"Ausblenden":"Dismiss"}</button></div>`
+    :st==="generating"?`<div class="tp-s"><span class="ms qspin" aria-hidden="true" data-icon="progress_activity"></span>${de?"Wird verarbeitet…":"Processing…"}</div><div class="tp-bar" aria-hidden="true"><i></i></div>`
+    :`<div class="tp-s"><span class="ms" aria-hidden="true" data-icon="schedule"></span>${de?"In Warteschlange":"In queue"}</div><div class="tp-a"><button class="btn btn-text" data-tq="cancel" data-j="${j.id}" aria-label="${de?"Abbrechen":"Cancel"}: ${j.label}">${de?"Abbrechen":"Cancel"}</button></div>`}</div></li>`};
+ const drow=d=>`<li class="tp-i" data-object="task" data-state="done"><span class="qth">${d.thumb}</span><div class="tp-t"><b>${de?"KI-Bild":"AI image"} · ${d.label}</b><small>2-in-1 Multi-Skate (4743) · ${d.file}</small><div class="tp-s ok"><span class="ms" aria-hidden="true" data-icon="check_circle"></span>${de?`Fertig · ${d.n} ${d.n>1?"Vorschauen":"Vorschau"}`:`Done · ${d.n} preview${d.n>1?"s":""}`} · ${d.time.toLocaleTimeString(de?"de-DE":"en-GB",{hour:"2-digit",minute:"2-digit"})}</div>${d.first&&findImg(d.first)&&findImg(d.first).status==="draft"?`<div class="tp-a"><button class="btn btn-text" data-td="${d.first}">${de?"Prüfen":"Review"}</button></div>`:""}</div></li>`;
+ body.innerHTML=`${q.length?`<h3 class="tp-g">${de?"Laufend":"Running"} · ${q.length}</h3><ul class="tp-l">${q.map(row).join("")}</ul>`:""}
+  ${done.length?`<h3 class="tp-g">${de?"Erledigt":"Finished"} · ${done.length}</h3><ul class="tp-l">${done.map(drow).join("")}</ul>`:""}
+  ${np?`<div style="padding:8px 16px"><button class="btn btn-outlined" id="tkPrev">${de?`${np} KI-Vorschauen prüfen`:`Review ${np} AI preview${np>1?"s":""}`}</button></div>`:""}
+  <div class="anno" style="margin:8px 16px"><b>v2.3.1:</b> background generation shows in the existing Tasks side panel (docked, like today in PlentyONE). Ron finds the name "Tasks" weak — app-wide, not this project.</div>`;
+ body.querySelectorAll("[data-tq]").forEach(x=>x.onclick=()=>{const id=+x.dataset.j;({cancel:cancelJob,retry:retryJob,dismiss:dismissJob})[x.dataset.tq](id);renderTasks();const h=$("#tpH");if(h)h.focus()});
+ body.querySelectorAll("[data-td]").forEach(x=>x.onclick=()=>{const id=+x.dataset.td;const a=findImg(id);if(!a)return;openReview(kidsOf(a.src).filter(y=>y.status==="draft").map(y=>y.id),id)});
+ const tp=$("#tkPrev");if(tp)tp.onclick=()=>{if($("#ed").classList.contains("open"))closeEditor();openReview()}}
+$("#tasksBtn").onclick=()=>tasksShow($("#tasksPanel").hidden);
+$("#tpClose").onclick=()=>{tasksShow(false);$("#tasksBtn").focus()};
+$("#tpClear").onclick=()=>{S.done=[];renderTasks();$("#tpH").focus()};
+function renderQueue(){$("#qbar").hidden=true;renderTasks();if($("#prev"))renderPrev()}
+function renderDrafts(){$("#dbar").hidden=true}
+function renderList(){const L=T[S.lang],de=S.lang==="de";
+ document.querySelectorAll("[data-t]").forEach(el=>{const v=L[el.dataset.t];if(typeof v==="string")el.textContent=v});
+ const list=liveImgs();$("#imgCount").textContent=list.length;$("#qbar").hidden=true;$("#dbar").hidden=true;
+ renderPrev();renderBell();renderTasks();renderViewSw();
+ $("#liveH").innerHTML=`<span class="ms" aria-hidden="true" data-icon="check_circle" style="color:#2e7d32"></span>${de?"Live-Bilder · im Artikel":"Live images · on the item"} <small>${list.length}</small>`;
+ const G=$("#grid");G.classList.toggle("tbl",S.ovView==="table");
+ G.innerHTML=S.ovView==="table"?tableHtml():list.map(cardHtml).join("");
+ G.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{const im=findImg(b.dataset.img);if(!im)return;const a=b.dataset.act;if(a==="preview")openZoom(im);else if(a==="edit")openEditor(im)});
+ G.querySelectorAll("[data-kid]").forEach(b=>b.onclick=()=>{const id=b.dataset.kid;S.kids[id]=!S.kids[id];renderList();const n=document.querySelector(`[data-kid="${id}"]`);if(n)n.focus()});
+ G.querySelectorAll("[data-kv]").forEach(b=>b.onclick=()=>{const a=findImg(b.dataset.kv);if(!a)return;if(a.status==="draft")openReview(kidsOf(a.src).filter(x=>x.status==="draft").map(x=>x.id),a.id);else openZoom(a)});
+ G.querySelectorAll("[data-tx]").forEach(b=>b.onclick=()=>{const id=b.dataset.tx;S.tkids[id]=S.tkids[id]===false;renderList();const n=document.querySelector(`[data-tx="${id}"]`);if(n)n.focus()});
+ G.querySelectorAll("[data-ts]").forEach(c=>c.onchange=()=>{const id=+c.dataset.ts;c.checked?S.psel.add(id):S.psel.delete(id);renderPrev()});
+ G.querySelectorAll("[data-tr]").forEach(b=>b.onclick=()=>openReview(null,+b.dataset.tr));
+ G.querySelectorAll("[data-trs]").forEach(b=>b.onclick=()=>restoreAI(+b.dataset.trs));
+ G.querySelectorAll("[data-te]").forEach(b=>b.onclick=()=>openEditor(findImg(b.dataset.te)));
+ G.querySelectorAll("[data-ai-pos]").forEach(inp=>inp.oninput=()=>{const id=inp.dataset.aiPos,h=$("#psh"+id),bad=inp.value.trim()==="0";inp.setAttribute("aria-invalid",bad);
+  h.classList.toggle("err",bad);h.textContent=bad?(de?"KI-Bilder können nicht Hauptbild sein. Amazon verlangt dort ein echtes Foto.":"AI images can't be the main image. Amazon requires a real photo there."):(de?"Position 0 (Hauptbild) braucht ein echtes Foto.":"Position 0 (main image) needs a real photo.")});
+ G.querySelectorAll("[data-ai-alt]").forEach(inp=>inp.oninput=()=>{const im=findImg(inp.dataset.aiAlt);im.altEdited=inp.value;const h=$("#alh"+im.id);if(h)h.remove()});
+ G.querySelectorAll("[data-ai-avail]").forEach(sel=>sel.onchange=()=>{const im=findImg(sel.dataset.aiAvail);im.avail=sel.value;const h=$("#avh"+im.id);if(h&&sel.value!=="none")h.remove()});
+}
+/* Editor: carousel back — before + afters for this source, fills while you stay (Ron) */
+function selectInEditor(id){const a=findImg(id);if(!a)return;if(!$("#ed").classList.contains("open")){openEditor(a);return}S.img=a;S.versions=versionsBase();S.cur=1;S.view="compare";S.tool=null;S.started=null;a.isNew=false;renderEditor();const b=document.querySelector(`.vsel[data-kv="${id}"]`);if(b)b.focus()}
+function renderStrip(){const de=S.lang==="de",vl=$("#vlist");$("#showAll").hidden=true;
+ const src=S.img.ai?S.img.src:S.img;const kids=kidsOf(src).filter(a=>a.status!=="arch");const jobs=(S.queue||[]).filter(j=>j.state!=="failed"&&j.src.id===src.id);
+ $("#stripHint").textContent=kids.length||jobs.length?(de?`Vorher: ${src.file} · ${kids.length} danach${jobs.length?` · ${jobs.length} in Arbeit`:""}. Klicken zum Vergleichen.`:`Before: ${src.file} · ${kids.length} after${kids.length===1?"":"s"}${jobs.length?` · ${jobs.length} processing`:""}. Click one to compare.`):(de?"Ergebnisse erscheinen hier, sobald sie fertig sind – wenn Sie bleiben. Sonst unter „KI-Vorschauen“ auf der Bildseite.":"Results appear here as they finish, if you stay. Otherwise under “AI previews” on the image page.");
+ vl.innerHTML=`<li class="v" data-object="image-version" data-id="src-${src.id}" data-state="original"><span class="vrl" aria-hidden="true">${de?"Vorher":"Before"}</span><button class="vsel" data-ko="1" aria-current="${!S.img.ai}"><span class="th">${src.svg}</span><span class="nm">Original</span><span class="st">${src.file}</span></button></li>`
+  +kids.map((a,i)=>`<li class="v ${i===0?"g1":""}" data-object="ai-image" data-id="ai-${a.id}" data-state="${stOf(a)}"><span class="vrl" aria-hidden="true">${i===0?(de?"Danach":"After"):"&nbsp;"}</span><button class="vsel" data-kv="${a.id}" aria-current="${S.img.id===a.id}"><span class="th ${a.checker?"checker":""}">${a.svg}</span><span class="nm">${a.label}</span><span class="pchip s-${stOf(a)}">${stTxt(a)}</span></button></li>`).join("")
+  +jobs.map(j=>`<li class="v ghost" data-object="generation" data-state="processing"><span class="vrl">&nbsp;</span><span class="vsel" style="cursor:default"><span class="th"><span class="ms qspin" aria-hidden="true" data-icon="progress_activity"></span></span><span class="nm">${j.label}</span><span class="st">${de?"Wird verarbeitet…":"Processing…"}</span></span></li>`).join("");
+ vl.querySelectorAll("[data-ko]").forEach(b=>b.onclick=()=>{if(S.img.ai){S.img=src;S.versions=versionsBase();S.cur=0;S.view="single"}renderEditor()});
+ vl.querySelectorAll("[data-kv]").forEach(b=>b.onclick=()=>selectInEditor(+b.dataset.kv));
+}
+function startedRow(){const de=S.lang==="de",r=S.started.ready;
+ return `<div class="stbox" id="startedBox" tabindex="-1" role="status" data-object="generation" data-state="${r?"ready":"started"}" data-mat="status note (async job)"><b>${r?(de?"Ihr Bild ist fertig.":"Your image is ready."):(de?"Bildgenerierung gestartet.":"Image generation started.")}</b><small>${r?(de?"Es ist im Karussell unten und unter „KI-Vorschauen“ auf der Bildseite.":"It's in the carousel below and under “AI previews” on the image page."):(de?"Das kann einige Minuten dauern – der Auftrag ist in der Warteschlange. Sie können die Seite verlassen und weiterarbeiten: Das Bild kommt zu den „KI-Vorschauen“ auf der Bildseite und erscheint unter „Aufgaben“. Wenn Sie bleiben, erscheint es im Karussell unten.":"This can take a few minutes — it's in the queue. Feel free to leave and keep working: it arrives under “AI previews” on the image page and shows in Tasks. If you stay, it appears in the carousel below.")}</small>
+  <button class="btn btn-text linkbtn" id="goOverview" data-mat="mat-button" data-action="back-to-overview">${de?"Zur Bildseite":"Back to image page"}</button></div>`}
+const _startGen23=startGen;startGen=function(){_startGen23();renderTasks();renderStrip()};
+const _finishJob23=finishJob;finishJob=function(j){const was=(S.queue||[]).includes(j);const before=(S.aiImgs||[]).length;_finishJob23(j);if(was&&!j.sigFail){const made=(S.aiImgs||[]).slice(before);S.done=S.done||[];S.done.unshift({label:j.label,file:j.file,thumb:j.thumb||j.src.svg,n:made.length,first:made[0]&&made[0].id,time:new Date()})}renderTasks();if($("#ed").classList.contains("open"))renderStrip()};
+const _cancel23=cancelJob;cancelJob=function(id){_cancel23(id);renderTasks()};
+/* prototype bar: hidden, invisible hover button bottom-left (Ron) */
+$("#pcT").onclick=()=>{const o=document.body.classList.toggle("pcopen");$("#pcT").setAttribute("aria-expanded",o)};
+function reset(){clearInterval(S.timer);(S.jobT||[]).forEach(clearTimeout);S.jobT=[];S.aiImgs=[];S.started=null;S.queue=[];S.qOpen=false;S.notes=[];S.lockUntil=0;S.aiSeq=0;S.psel=new Set();S.kids={};S.tkids={};S.showArch=false;S.rv=null;S.done=[];
+ $("#snack").classList.remove("show");bellShow(false);tasksShow(false);
+ Object.assign(S,{bgMode:"white",swatch:1,ratio:"4:3",lastSaved:null,tool:null,gen:null,fail:false,limit:false,noperm:false,noflag:false,saving:false,saved:false,recolorOk:false,newTile:false,tok:1200,zoom:1,cnt:2,preset:0,base:null,prompt:"",view:"single",ovView:"cards"});
+ ["#scrim","#tokScrim","#zoomScrim","#rvScrim"].forEach(x=>$(x).classList.remove("open"))}
+function seedPrev(){const runs=[[IMAGES[0],"bg",{bgMode:"white"}],[IMAGES[0],"stage",{preset:0,cnt:2}],[IMAGES[0],"stage",{preset:1,cnt:1}],[IMAGES[1],"expand",{ratio:"4:3"}],[IMAGES[1],"bg",{bgMode:"transparent"}],[IMAGES[0],"bg",{bgMode:"colour",swatch:2}]];
+ const out=[];runs.forEach(([im,k,o],i)=>{const items=makeItems(im,k,o);const made=toDrafts({label:runLabel(items[0]),items,src:im,file:im.file});made.forEach(a=>{a.created=new Date(Date.now()-(runs.length-i)*600e3);a.isNew=false});out.push(...made)});
+ S.tool=null;S.preset=0;S.bgMode="white";S.ratio="4:3";S.swatch=1;S.cnt=2;
+ out[6].status="kept";out[6].keptAt=1;out[6].avail="web";out[5].status="arch";return out}
+function addProc(im,k,o,ms){const made=makeItems(im,k,o);const j=queueJob({label:runLabel(made[0]),items:made,src:im,file:im.file,thumb:im.svg,cost:jobCost(k)},ms);S.tool=null;S.preset=0;S.bgMode="white";S.ratio="4:3";return j}
+function jump(s){
+ reset();
+ if(s==="list"){closeEditor();return}
+ if(s==="zoom"){closeEditor();openZoom(IMAGES[0]);return}
+ if(["prev","review","bulk","arch","table","kids"].includes(s)){const d=seedPrev();
+  if(s==="prev")addProc(IMAGES[0],"stage",{preset:3,cnt:1},20000);
+  if(s==="bulk")[0,1,2].forEach(i=>S.psel.add(d[i].id));
+  if(s==="arch")S.showArch=true;
+  if(s==="table")S.ovView="table";
+  if(s==="kids")S.kids[IMAGES[0].id]=true;
+  closeEditor();
+  if(["prev","bulk","arch","review"].includes(s)){const pv=$("#prev");if(pv&&!pv.hidden)pv.scrollIntoView({block:"start"})}
+  if(s==="review")openReview();
+  if(s==="kids"){const k=document.querySelector(`[data-kid="${IMAGES[0].id}"]`);if(k){k.scrollIntoView({block:"center"});k.focus()}}
+  if(s==="table"){const t=document.querySelector(".itbl");if(t)t.scrollIntoView({block:"start"})}
+  return}
+ if(s==="queue"||s==="sigfail"){seedPrev();closeEditor();
+  const seed=s==="queue"?[[IMAGES[0],"bg",{bgMode:"white"},9000],[IMAGES[1],"expand",{ratio:"4:3"},16000],[IMAGES[0],"stage",{preset:0,cnt:1},24000]]:[[IMAGES[1],"stage",{preset:1,cnt:1},null,true],[IMAGES[0],"bg",{bgMode:"white"},12000]];
+  seed.forEach(([im,k,o,ms,f])=>{const j=addProc(im,k,o,ms);if(f){j.state="failed";j.sigFail=true;S.tok+=j.cost;addNote({icon:"error",err:true,title:S.lang==="de"?"Bild nicht geliefert":"Image not delivered",sub:`${j.label} · ${j.file}`})}});
+  if(s==="queue"){const d=(S.aiImgs||[]).find(a=>a.status==="draft"&&a.src.id===IMAGES[0].id);S.done=[{label:d.label,file:IMAGES[0].file,thumb:IMAGES[0].svg,n:2,first:d.id,time:new Date(Date.now()-900e3)}]}
+  S.img=IMAGES[0];renderList();renderTasks();{const pv=$("#prev");if(pv)pv.scrollIntoView({block:"start"})}tasksShow(true);return}
+ if(s==="tasksempty"){closeEditor();tasksShow(true);return}
+ openEditor(IMAGES[0]);
+ if(s==="start"){return}
+ if(s==="noperm"){S.noperm=true;renderEditor();return}
+ if(s==="noflag"){S.noflag=true;renderEditor();return}
+ S.tool="bg";
+ if(s==="tool"){renderEditor();return}
+ if(s==="gen"){startGen();return}
+ if(s==="carousel"){seedPrev();S.img=IMAGES[0];S.versions=versionsBase();S.cur=0;S.view="single";S.tool="stage";S.preset=3;renderEditor();startGen();S.lockUntil=0;renderEditor();return}
+ if(s==="limit"){S.limit=true;S.tok=0;renderEditor();return}
+ if(s==="notif"){const d=seedPrev();S.img=IMAGES[0];S.versions=versionsBase();S.cur=0;S.tool="stage";
+  addNote({icon:"auto_awesome",title:S.lang==="de"?"2 KI-Vorschauen fertig":"2 AI previews ready",sub:`2-in-1 Multi-Skate (4743) · ${d[1].label}`,draft:d[1].id});
+  addNote({icon:"auto_awesome",title:S.lang==="de"?"KI-Vorschau fertig":"AI preview ready",sub:`2-in-1 Multi-Skate (4743) · ${d[4].label}`,draft:d[4].id});
+  renderEditor();renderBell();bellShow(true);return}
+}
+
 $("#jump").onchange=e=>jump(e.target.value);
 $("#costMode").onchange=e=>{S.cost=e.target.value;S.screen==="list"?renderList():renderEditor()};
-$("#lang").onchange=e=>{S.lang=e.target.value;document.documentElement.lang=S.lang;
+$("#lang").onchange=e=>{S.lang=e.target.value;document.documentElement.lang=S.lang;renderBell();
   S.versions.forEach(v=>{if(v.n===0)v.label=t("original");else if(v.tool)v.label=T[S.lang].tools[v.tool][0]});
   $("#ed").classList.contains("open")?renderEditor():renderList()};
 $("#plExpand").onclick=()=>{const e=$("#shell").classList.toggle("exp");$("#plExpand").setAttribute("aria-expanded",e);$("#plExpand").setAttribute("aria-label",e?"Collapse navigation":"Expand navigation")};
